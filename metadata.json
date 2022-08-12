@@ -1,0 +1,38 @@
+{
+  "icon": "docker.svg",
+  "vm": {
+    "composefile": "docker-compose.yaml",
+    "exposes": {
+      "socket": "extension-gefyra-docker-extension.sock"
+    }
+  },
+  "ui": {
+    "dashboard-tab": {
+      "title": "Gefyra-Docker-Extension",
+      "src": "index.html",
+      "root": "ui",
+      "backend": {
+        "socket": "extension-gefyra-docker-extension.sock"
+      }
+    }
+  },
+  "host": {
+    "binaries": [
+      {
+        "darwin": [
+          {
+            "path": "/gefyra_mac"
+          },
+          {
+            "path": "/darwin/kubectl"
+          }
+        ],
+        "windows": [
+          {
+            "path": "/windows/kubectl.exe"
+          }
+        ]
+      }
+    ]
+  }
+}
