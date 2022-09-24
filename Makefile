@@ -1,4 +1,4 @@
-IMAGE?=gefyra/docker-extension
+IMAGE?=gefyra/docker-desktop-extension
 TAG?=latest
 
 BUILDER=buildx-multi-arch

@@ -1,87 +1,138 @@
 import React, {useEffect} from 'react';
 import Button from '@mui/material/Button';
-import { createDockerDesktopClient } from '@docker/extension-api-client';
-import { Stack, Select, InputLabel, TextField, MenuItem, Typography } from '@mui/material';
-import { Gefyra } from './gefyraClient';
+import {createDockerDesktopClient} from '@docker/extension-api-client';
+import { Typography, LinearProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
+import Grid from '@mui/material/Grid';
+import store from './store'
+import { Provider, TypedUseSelectorHook, useSelector } from 'react-redux'
 
-// Note: This line relies on Docker Desktop's presence as a host application.
-// If you're running this React app in a browser, it won't work properly.
+import {Gefyra} from './gefyraClient';
+import { TopBar } from './TopBar';
+import { Chooser } from './Chooser';
+import { GefyraStatus, statusMap } from './types';
+import { Settings } from './Settings'
+import { RootState } from './store'
+
+
 const client = createDockerDesktopClient();
-const gefyra = new Gefyra(client)
+const gefyra = new Gefyra(client);
 
 function useDockerDesktopClient() {
-  return client;
+    return client;
 }
 
 export function App() {
-  const [response, setResponse] = React.useState<string>();
-  const [availableContexts, setAvailableContexts] = React.useState<string[]>([]);
-  const [context, setContext] = React.useState<string>("test");
-  const ddClient = useDockerDesktopClient();
-
-  const handleContextChange = async (e, b) => {
-      setContext(e.target.value)
-  }
-
-  useEffect(() => {
-    setAvailableContexts(["test", "bulbby", "blubb"])
-      gefyra.version().then(res => {
-          console.log(res)
-      })
-  }, []);
-
-
-  const fetchAndDisplayResponse = async () => {
-   await ddClient.extension.host.cli.exec("kubectl", ["config", "get-contexts"], {
-      stream: {
-        onOutput(data): void {
-          if (data.stdout) {
-            console.error(data.stdout);
-          } else {
-            console.log(data.stderr);
-          }
-        },
-        onError(error: any): void {
-          console.error(error);
-        },
-        onClose(exitCode: number): void {
-          console.log("onClose with exit code " + exitCode);
-        },
-      },
+    const [status, setStatus] = React.useState<GefyraStatus>({
+        text: '',
+        action: '',
+        help: ''
     });
+    const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
 
-  };
+    const mode = useAppSelector(state => state.ui.mode)
+    const view = useAppSelector(state => state.ui.view)
+    
+    const [images, setImages] = React.useState<any[]>([]);
+    const ddClient = useDockerDesktopClient();
 
-  return (
-    <>
-      <Typography variant="h3">Gefyra Docker Desktop Extension1</Typography>
-      <Typography variant="body1" color="text.secondary" sx={{ mt: 2 }}>
-        Bridge containers into Kubernetes clusters with ease.
-      </Typography>
-      <InputLabel id="context-select-label">Context</InputLabel>
-      <Select labelId="context-select-label" id="context-select" value={context} label="Context" onChange={handleContextChange}>
-          {availableContexts.map((name) => (
-            <MenuItem key={name} value={name}>
-              {name}
-            </MenuItem>
-          ))}
-      </Select>
-        <Typography variant="body1" color="text.secondary" sx={{ mt: 2 }}>
-            No gefyra cluster installation detected.
-        </Typography>
-        <Button variant="contained" onClick={fetchAndDisplayResponse}>
-          Install gefyra cluster-side components
-        </Button>
+    useEffect(() => {
+        setStatus(statusMap[0])
+        ddClient.docker.listImages().then((res: any) => {
+            if (!res) return;
+            const images = []
+            res.map(i => {
+                const image: {repo?: string, tag?: string, id?: string} = {}
+                if (i.RepoTags) {
+                    console.log(i.RepoTags)
+                    image.repo = i.RepoTags[0].split(":")[0];
+                    image.tag = i.RepoTags[0].split(":")[1];
+                }
+                else {
+                    return
+                }
+                if (image.repo !== '<none>') {
+                    image.id = i.Id;
+                    images.push(image);
+                }
 
-        <TextField
-          label="Backend response"
-          sx={{ width: 480 }}
-          disabled
-          multiline
-          variant="outlined"
-          minRows={5}
-          value={response ?? ''}
-        />
-    </>
-  );
+            })
+            setImages(images);
+        });
+    }, []);
+
+    const fetchAndDisplayResponse = async () => {
+        gefyra.status().then(res => {
+            alert(res.status)
+        })
+
+    };
+
+    return (
+        <>
+            <Grid container spacing={2}>
+                <TopBar/>
+                { view === 'mode' &&
+                    <Chooser/>
+                }
+                { view === 'settings' &&
+                    <Settings />
+                }
+                <Grid item xs={6}>
+                    <Typography variant="body1" fontWeight={600} sx={{mt: 2}}>
+                        Status:
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary">
+                        {status.text}
+                    </Typography>
+                    {status.loading ? (
+                            <LinearProgress sx={{mr: 5, mt: 1}}/>
+                        )
+                        : ''
+                    }
+                    {status.action ? (
+                        <div>
+                            <Typography variant="body1" fontWeight={600} sx={{mt: 2}}>
+                                What to do:
+                            </Typography>
+                            <Typography variant="body1" color="text.secondary">
+                                {status.action}
+                            </Typography>
+                        </div>) : ''
+                    }
+                    <Button variant="contained" onClick={fetchAndDisplayResponse} sx={{mt: 3}}>
+                        Install gefyra cluster-side components
+                    </Button>
+                </Grid>
+                <Grid item xs={12}>
+                       <TableContainer>
+                          <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                            <TableHead>
+                              <TableRow>
+                                <TableCell>NAME</TableCell>
+                                <TableCell>TAG</TableCell>
+                                <TableCell>IMAGE ID</TableCell>
+                                <TableCell></TableCell>
+                                <TableCell></TableCell>
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {images.map((image) => (
+                                <TableRow
+                                  key={image.id}
+                                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                >
+                                  <TableCell component="th" scope="row">
+                                    {image.repo}
+                                  </TableCell>
+                                  <TableCell>{image.tag}</TableCell>
+                                  <TableCell>{image.id}</TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
+                </Grid>
+            </Grid>
+        </>
+    );
 }
