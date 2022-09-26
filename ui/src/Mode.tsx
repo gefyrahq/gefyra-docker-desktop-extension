@@ -16,16 +16,18 @@ const steps = {
         { label: 'Mode (Run)' },
         { label: 'Kubernetes Settings' },
         { label: 'Container Settings' },
+        { label: 'Execute' },
     ],
     bridge: [
         { label: 'Mode (Bridge)' },
         { label: 'Kubernetes Settings' },
         { label: 'Container Settings' },
+        { label: 'Execute' },
     ],
 }
 
 export function Mode(props: ModeProps) {
-    const dispatch = useDispatch()      
+    const dispatch = useDispatch()
     function doStuff () {
         dispatch(setMode(props.mode))  
         dispatch(setView('settings'))  
@@ -35,7 +37,7 @@ export function Mode(props: ModeProps) {
 
     return (    
         <>
-            <Card sx={{ px: 4, pt: 3, maxWidth: '80%' }} onClick={doStuff}>
+            <Card sx={{ px: 4, pt: 3, maxWidth: '80%', cursor: 'pointer' }} onClick={doStuff}>
                 <CardMedia
                     onClick={doStuff}
                     component="img"

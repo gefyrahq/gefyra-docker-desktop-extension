@@ -1,45 +1,46 @@
 import { createDockerDesktopClient } from "@docker/extension-api-client";
-import { Button, Grid, InputLabel, MenuItem, Select, TextField } from "@mui/material";
-import React from "react";
+import { Button, Grid, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
+import React, { useState } from "react";
 import { statusMap } from "./types";
 import { Kubectl } from "./utils/kubectl";
 import { GefyraStatus } from "./types";
+import { resetSteps, setMode, setView } from "./store/ui";
+import { setContext, setKubeconfig, setNamespace } from "./store/gefyra";
+import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+import { RootState } from "./store";
 
 const ddClient = createDockerDesktopClient();
 const loading = 'Loading...';
 const kubectl = new Kubectl(ddClient);
 
-export class Settings extends React.Component {
-    state = {
-        kubeconfig: '',
-        availableNamespaces: [],
-        namespace: '',
-        availableContexts: [],
-        context: '',
-        namespaceInputActive: false,
-        status: {}
-    }
+export function Settings() {
+    const dispatch = useDispatch()
+    const selectContext = 'Select context first';
+    const loading = 'Loading...'
+    const [availableNamespaces, setAvailableNamespaces] = useState([]);
+    const [availableContexts, setAvailableContexts] = useState([]);
+    const [namespaceInputActive, setNamespaceInputActive] = useState(false);
+    const [status, setStatus] = useState({});
 
-    loadContexts() {
-        this.setState({
-            availableNamespaces: ['Select context first'],
-            availableContexts: [loading],
-            context: loading,
-            namespace: 'Select context first'
-        })
-        kubectl.getContexts(this.state.kubeconfig).then((contexts) => {
+    const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
+
+    const kubeconfig = useAppSelector(state => state.gefyra.kubeconfig)
+    const context = useAppSelector(state => state.gefyra.context)
+    const namespace = useAppSelector(state => state.gefyra.namespace)
+
+    function loadContexts() {
+        setAvailableNamespaces([selectContext])
+        setAvailableContexts([loading])
+        kubectl.getContexts(kubeconfig).then((contexts) => {
             if (!contexts.error) {
-                this.setState({
-                    availableContexts: ['No context selected'].concat(contexts.value),
-                    context: 'No context selected',
-                });
+                setAvailableContexts(['No context selected'].concat(contexts.value))
             } else {
-                this.setState({status: statusMap[4]})
+                setStatus(statusMap[4])
             }
         })
     }
 
-    async handleKubeConfigChange (e) {
+    async function handleKubeConfigChange (e) {
         const result = await ddClient.desktopUI.dialog.showOpenDialog({
             filters: [{
                 extensions: ['yaml', 'yml']
@@ -49,70 +50,92 @@ export class Settings extends React.Component {
         if (!result.canceled) {
           const directory = result.filePaths.shift();
           if (directory !== undefined) {
-              this.setState({kubeconfig: directory})
+              dispatch(setKubeconfig(directory))
           }
         }
 
     };
 
-    async handleContextChange (e, b) {
+    async function handleContextChange (e, b) {
 
-        this.setState({
-            context: e.target.value,
-            availableNamespaces: [loading],
-            namespace: loading
-        })
-        this.setState({status: statusMap[5]})
-        kubectl.getNamespaces(e.target.value, this.state.kubeconfig).then((namespaces) => {
+        dispatch(setContext(e.target.value))
+        setAvailableNamespaces([loading])
+        setStatus(statusMap[5])
+        kubectl.getNamespaces(e.target.value, kubeconfig).then((namespaces) => {
             const select = 'Select a namespace'
-            this.setState({
-                availableNamespaces: [select].concat(namespaces),
-                namespace: 'Select a namespace',
-                namespaceInputActive: true
-            })
-            this.setState({status: statusMap[2]})
+            setAvailableNamespaces([select].concat(namespaces))
+            setNamespaceInputActive(true)
+            setStatus(statusMap[2])
         })
     }
 
-    async handleNamespaceChange (e, b) {
-        await this.setState({namespace: e.target.value})
+    function back() {
+        dispatch(setMode(''))
+        dispatch(setView('mode'))
+        dispatch(resetSteps())
     }
 
-    render() {
-        return (
-            <>
-                <Grid item xs={6}>
-                    <InputLabel sx={{ mb: 1 }} id="kubeconfig-label">Kubeconfig</InputLabel>
-                    <TextField id="kubeconfig" variant="outlined" fullWidth disabled value={this.state.kubeconfig} />
-                    <Button
-                        variant="contained"
-                        component="label"
-                        color="primary"
-                        onClick={this.handleKubeConfigChange}
-                        sx={{ marginTop: 1 }}
-                    >
-                        Choose Kubeconfig
-                    </Button>
-                    <InputLabel sx={{ mb: 1, mt: 2 }} id="context-select-label">Context</InputLabel>
-                    <Select labelId="context-select-label" id="context-select" value={this.state.context} label="Context"
-                        onChange={this.handleContextChange}>
-                        {this.state.availableContexts.map((name, index) => (
-                            <MenuItem key={name} value={name} disabled={index === 0}>
-                                {name}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                    <InputLabel sx={{ mb: 1, mt: 2 }} id="namespace-select-label">Namespace</InputLabel>
-                    <Select labelId="namespace-select-label" id="namespace-select" value={this.state.namespace} label="Namespace"
-                        onChange={this.handleNamespaceChange} disabled={!this.state.namespaceInputActive}>
-                        {this.state.context ? this.state.availableNamespaces.map((name, index) => (
-                            <MenuItem key={name} value={name} divider={index === 0} disabled={index === 0}>
-                                {name}
-                            </MenuItem>
-                        )) : <MenuItem>Please select a valid context.</MenuItem>}
-                    </Select>
-                </Grid>
-            </>
-        )
+    async function handleNamespaceChange (e, b) {
+        await dispatch(setNamespace(e.target.value))
     }
+
+    // loadContexts()
+
+    
+    return (
+        <>
+            <Grid item xs={12} alignItems="center">
+                <Typography variant="subtitle1">
+                    Please set Kubernetes configuration.
+                </Typography>
+            </Grid>
+            <Grid item xs={6}>
+                <InputLabel sx={{ mb: 1 }} id="kubeconfig-label">Kubeconfig</InputLabel>
+                <TextField id="kubeconfig" variant="outlined" fullWidth InputProps={{ readOnly: true }} value={kubeconfig}
+                onClick={handleKubeConfigChange}/>
+            </Grid>
+            <Grid item xs={6}>
+                <Button
+                    variant="contained"
+                    component="label"
+                    color="primary"
+                    onClick={handleKubeConfigChange}
+                    sx={{ marginTop: '37px', ml: -1 }}
+                >
+                    Choose Kubeconfig
+                </Button>
+            </Grid>
+            <Grid item xs={6}>
+                <InputLabel sx={{ mb: 1, mt: 2 }} id="context-select-label">Context</InputLabel>
+                <Select labelId="context-select-label" id="context-select" value={context} label="Context"
+                    onChange={handleContextChange} sx={{minWidth: 200}}>
+                    {availableContexts.map((name, index) => (
+                        <MenuItem key={name} value={name} disabled={index === 0}>
+                            {name}
+                        </MenuItem>
+                    ))}
+                </Select>
+                <InputLabel sx={{ mb: 1, mt: 2 }} id="namespace-select-label">Namespace</InputLabel>
+                <Select labelId="namespace-select-label" id="namespace-select" value={namespace} label="Namespace"
+                    onChange={handleNamespaceChange} disabled={!namespaceInputActive} sx={{minWidth: 200}}>
+                    {namespaceInputActive ? availableNamespaces.map((name, index) => (
+                        <MenuItem key={name} value={name} divider={index === 0} disabled={index === 0}>
+                            {name}
+                        </MenuItem>
+                    )) : <MenuItem selected={true} value={null}>Please select a valid context.</MenuItem>}
+                </Select>
+            </Grid>
+            <Grid item xs={12}>
+                <Button
+                    variant="contained"
+                    component="label"
+                    color="primary"
+                    onClick={back}
+                    sx={{ marginTop: 1 }}
+                >
+                    Back
+                </Button>
+            </Grid>
+        </>
+    )
 }

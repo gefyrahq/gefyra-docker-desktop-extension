@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit'
 import uiReducer from './store/ui'
+import gefyraReducer from './store/gefyra'
 
 const store = configureStore({
     reducer: {
-        ui: uiReducer
+        ui: uiReducer,
+        gefyra: gefyraReducer
     }
 })
 
