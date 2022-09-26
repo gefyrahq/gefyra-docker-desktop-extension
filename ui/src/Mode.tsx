@@ -1,6 +1,6 @@
 import { Card, CardContent, CardMedia, Typography } from "@mui/material";
 import { useSelector, useDispatch } from 'react-redux'
-import { setMode, setView } from './store/ui'
+import { setMode, setView, setSteps, setActiveStep } from './store/ui'
 
 
 type ModeProps = {
@@ -11,11 +11,26 @@ type ModeProps = {
     mode: string
 }
 
+const steps = {
+    run: [
+        { label: 'Mode (Run)' },
+        { label: 'Kubernetes Settings' },
+        { label: 'Container Settings' },
+    ],
+    bridge: [
+        { label: 'Mode (Bridge)' },
+        { label: 'Kubernetes Settings' },
+        { label: 'Container Settings' },
+    ],
+}
+
 export function Mode(props: ModeProps) {
     const dispatch = useDispatch()      
     function doStuff () {
         dispatch(setMode(props.mode))  
         dispatch(setView('settings'))  
+        dispatch(setSteps(steps[props.mode]))  
+        dispatch(setActiveStep(1))
     }
 
     return (    
