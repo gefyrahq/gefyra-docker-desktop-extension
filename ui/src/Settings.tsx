@@ -1,10 +1,10 @@
 import { createDockerDesktopClient } from "@docker/extension-api-client";
-import { Button, Grid, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
+import { Autocomplete, Button, Grid, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
-import { statusMap } from "./types";
+import { DockerImage, statusMap } from "./types";
 import { Kubectl } from "./utils/kubectl";
 import { GefyraStatus } from "./types";
-import { resetSteps, setMode, setView } from "./store/ui";
+import { resetSteps, setActiveStep, setMode, setView } from "./store/ui";
 import { setContext, setKubeconfig, setNamespace } from "./store/gefyra";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { RootState } from "./store";
@@ -17,19 +17,40 @@ export function Settings() {
     const dispatch = useDispatch()
     const selectContext = 'Select context first';
     const loading = 'Loading...'
-    const [availableNamespaces, setAvailableNamespaces] = useState([]);
     const [availableContexts, setAvailableContexts] = useState([]);
-    const [namespaceInputActive, setNamespaceInputActive] = useState(false);
     const [status, setStatus] = useState({});
+    
+    const [images, setImages] = React.useState<DockerImage[]>([]);
+    const ddClient = createDockerDesktopClient();
+    ddClient.docker.listImages().then((res: any) => {
+        if (!res) return;
+        console.log(res)
+        const images = []
+        res.map(i => {
+            const image: DockerImage = {}
+            if (i.RepoTags) {
+                image.repo = i.RepoTags[0].split(":")[0];
+                image.tag = i.RepoTags[0].split(":")[1];
+                image.created = i.Created
+            }
+            else {
+                return
+            }
+            if (image.repo !== '<none>') {
+                image.id = i.Id
+                image.type = 'local'
+                images.push(image);
+            }
 
+        })
+        setImages(images);
+    });
     const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
 
     const kubeconfig = useAppSelector(state => state.gefyra.kubeconfig)
     const context = useAppSelector(state => state.gefyra.context)
-    const namespace = useAppSelector(state => state.gefyra.namespace)
 
     function loadContexts() {
-        setAvailableNamespaces([selectContext])
         setAvailableContexts([loading])
         kubectl.getContexts(kubeconfig).then((contexts) => {
             if (!contexts.error) {
@@ -57,14 +78,10 @@ export function Settings() {
     };
 
     async function handleContextChange (e, b) {
-
         dispatch(setContext(e.target.value))
-        setAvailableNamespaces([loading])
         setStatus(statusMap[5])
         kubectl.getNamespaces(e.target.value, kubeconfig).then((namespaces) => {
             const select = 'Select a namespace'
-            setAvailableNamespaces([select].concat(namespaces))
-            setNamespaceInputActive(true)
             setStatus(statusMap[2])
         })
     }
@@ -75,9 +92,11 @@ export function Settings() {
         dispatch(resetSteps())
     }
 
-    async function handleNamespaceChange (e, b) {
-        await dispatch(setNamespace(e.target.value))
+    function next() {
+        dispatch(setView('container'))
+        dispatch(setActiveStep(2))
     }
+
 
     // loadContexts()
 
@@ -89,12 +108,12 @@ export function Settings() {
                     Please set Kubernetes configuration.
                 </Typography>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={5}>
                 <InputLabel sx={{ mb: 1 }} id="kubeconfig-label">Kubeconfig</InputLabel>
                 <TextField id="kubeconfig" variant="outlined" fullWidth InputProps={{ readOnly: true }} value={kubeconfig}
                 onClick={handleKubeConfigChange}/>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={2}>
                 <Button
                     variant="contained"
                     component="label"
@@ -105,25 +124,26 @@ export function Settings() {
                     Choose Kubeconfig
                 </Button>
             </Grid>
-            <Grid item xs={6}>
-                <InputLabel sx={{ mb: 1, mt: 2 }} id="context-select-label">Context</InputLabel>
+            <Grid item xs={4}>
+                <InputLabel sx={{ mb: 1 }} id="context-select-label">Context</InputLabel>
                 <Select labelId="context-select-label" id="context-select" value={context} label="Context"
-                    onChange={handleContextChange} sx={{minWidth: 200}}>
+                    onChange={handleContextChange} sx={{minWidth: 300}}>
                     {availableContexts.map((name, index) => (
                         <MenuItem key={name} value={name} disabled={index === 0}>
                             {name}
                         </MenuItem>
                     ))}
                 </Select>
-                <InputLabel sx={{ mb: 1, mt: 2 }} id="namespace-select-label">Namespace</InputLabel>
-                <Select labelId="namespace-select-label" id="namespace-select" value={namespace} label="Namespace"
-                    onChange={handleNamespaceChange} disabled={!namespaceInputActive} sx={{minWidth: 200}}>
-                    {namespaceInputActive ? availableNamespaces.map((name, index) => (
-                        <MenuItem key={name} value={name} divider={index === 0} disabled={index === 0}>
-                            {name}
-                        </MenuItem>
-                    )) : <MenuItem selected={true} value={null}>Please select a valid context.</MenuItem>}
-                </Select>
+            </Grid>
+            <Grid item xs={12}>
+            <Autocomplete
+                id="grouped-images"
+                options={images.sort((a, b) => -b.repo[0].localeCompare(a.repo[0]))}
+                groupBy={(image) => image.type}
+                getOptionLabel={(image: DockerImage) => `${image.repo}:${image.tag}`}
+                sx={{ width: 300 }}
+                renderInput={(params) => <TextField {...params} label="Select image" />}
+                />
             </Grid>
             <Grid item xs={12}>
                 <Button
@@ -134,6 +154,15 @@ export function Settings() {
                     sx={{ marginTop: 1 }}
                 >
                     Back
+                </Button>
+                <Button
+                    variant="contained"
+                    component="label"
+                    color="primary"
+                    onClick={next}
+                    sx={{ marginTop: 1, ml: 2 }}
+                >
+                    Next
                 </Button>
             </Grid>
         </>

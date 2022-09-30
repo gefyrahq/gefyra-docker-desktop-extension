@@ -3,6 +3,7 @@ export type DockerImage = {
     tag?: string
     id?: string
     created?: number
+    type?: string
 }
 
 export type GefyraStatus = {
@@ -10,6 +11,11 @@ export type GefyraStatus = {
     action?: string
     help?: string
     loading?: boolean
+}
+
+export type EnvironmentVariable = {
+    name: string
+    value: string
 }
 
 export const statusMap = {

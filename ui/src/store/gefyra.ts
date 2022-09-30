@@ -7,6 +7,7 @@ export const gefyraSlice = createSlice({
       kubeconfig: '',
       context: '',
       namespace: '',
+      environmentVariables: []
     },
     reducers: {
       setMode: (state, action) => {
@@ -21,10 +22,16 @@ export const gefyraSlice = createSlice({
       setNamespace: (state, action) => {
         state.namespace = action.payload
       },
+      addEnvironmentVariable: (state, action) => {
+        state.environmentVariables.push(action.payload)
+      },
+      removeEnvironmentVariable: (state, action) => {
+        state.environmentVariables = state.environmentVariables.filter((e, index) => index !== action.payload)
+      }
     }
 })
 
 
-export const { setMode, setKubeconfig, setContext, setNamespace } = gefyraSlice.actions
+export const { setMode, setKubeconfig, setContext, setNamespace, addEnvironmentVariable, removeEnvironmentVariable } = gefyraSlice.actions
 
 export default gefyraSlice.reducer

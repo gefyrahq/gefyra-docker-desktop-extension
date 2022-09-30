@@ -1,7 +1,7 @@
 import { Grid, Step, StepButton, StepLabel, Stepper } from "@mui/material";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { RootState } from "./store";
-import { resetSteps, setMode, setView } from "./store/ui";
+import { resetSteps, setActiveStep, setMode, setView } from "./store/ui";
 
 
 export function Progress() {
@@ -13,6 +13,10 @@ export function Progress() {
             dispatch(setMode(''))  
             dispatch(setView('mode'))  
             dispatch(resetSteps())
+        }
+        if (index === 1) {
+            dispatch(setView('settings'))
+            dispatch(setActiveStep(1))
         }
     }
 
@@ -27,9 +31,9 @@ export function Progress() {
         <Grid item xs={12}>
             <Stepper activeStep={activeStep} alternativeLabel>
                 {steps.map((step, index) => (
-                    <Step key={step.label} onClick={() => handleStepClick(index)}>
+                    <Step key={step.label}>
                         {index < activeStep ?
-                        <StepButton>{step.label}</StepButton>
+                        <StepButton onClick={() => handleStepClick(index)}>{step.label}</StepButton>
                         :
                         <StepLabel>{step.label}</StepLabel  >
                     }

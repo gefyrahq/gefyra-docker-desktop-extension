@@ -12,6 +12,7 @@ import { Chooser } from './Chooser';
 import { GefyraStatus, statusMap } from './types';
 import { Progress } from './Progress'
 import { Settings } from './Settings'
+import { Container } from './Container'
 import { RootState } from './store'
 
 
@@ -45,6 +46,9 @@ export function App() {
             }
             { view === 'settings' &&
                 <Settings />
+            }
+            { view === 'container' &&
+                <Container />
             }
             </Grid>
         </Paper>
