@@ -6,6 +6,7 @@ To build make sure to add executable from https://github.com/gefyrahq/gefyra-ext
 ## Development
 
 Make sure to follow Docker's extension guidelines: https://docs.docker.com/desktop/extensions-sdk/
+UI component library: https://mui.com/
 
 Install extension:
 
