@@ -2,6 +2,7 @@ import { Button, Grid, InputLabel, MenuItem, Select, TextField, Typography } fro
 import { useState } from "react";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { EnvironmentVariables } from "./EnvironmentVariables";
+import { VolumeMounts } from "./VolumeMounts";
 import { RootState } from "./store";
 import { setNamespace } from "./store/gefyra";
 import { setActiveStep, setView } from "./store/ui";
@@ -57,6 +58,7 @@ export function Container() {
             </Select>
         </Grid>
         <EnvironmentVariables />
+        <VolumeMounts></VolumeMounts>
         <Grid item xs={12}>
             <Button
                 variant="contained"

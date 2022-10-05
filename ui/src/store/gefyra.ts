@@ -7,7 +7,8 @@ export const gefyraSlice = createSlice({
       kubeconfig: '',
       context: '',
       namespace: '',
-      environmentVariables: []
+      environmentVariables: [],
+      volumeMounts: []
     },
     reducers: {
       setMode: (state, action) => {
@@ -27,11 +28,20 @@ export const gefyraSlice = createSlice({
       },
       removeEnvironmentVariable: (state, action) => {
         state.environmentVariables = state.environmentVariables.filter((e, index) => index !== action.payload)
+      },  
+      addVolumeMount: (state, action) => {
+        state.volumeMounts.push(action.payload)
+      },
+      setVolumeMount: (state, action) => {
+        state.volumeMounts[action.payload.index] = action.payload.volumeMount
+      },
+      removeVolumeMount: (state, action) => {
+        state.volumeMounts = state.volumeMounts.filter((e, index) => index !== action.payload)
       }
     }
 })
 
 
-export const { setMode, setKubeconfig, setContext, setNamespace, addEnvironmentVariable, removeEnvironmentVariable } = gefyraSlice.actions
+export const { setMode, setKubeconfig, setContext, setNamespace, addEnvironmentVariable, removeEnvironmentVariable, addVolumeMount, removeVolumeMount, setVolumeMount } = gefyraSlice.actions
 
 export default gefyraSlice.reducer
