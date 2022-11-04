@@ -3,8 +3,8 @@ import { useState } from "react";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { EnvironmentVariables } from "./EnvironmentVariables";
 import { VolumeMounts } from "./VolumeMounts";
-import { RootState } from "./store";
-import { setNamespace } from "./store/gefyra";
+import store, { RootState } from "./store";
+import { setNamespace, setExpose } from "./store/gefyra";
 import { setActiveStep, setView } from "./store/ui";
 
 
@@ -28,6 +28,10 @@ export function Container() {
         await dispatch(setNamespace(e.target.value))
     }
 
+    async function handleExposeChange (e) {
+        await dispatch(setExpose(e.target.value))
+    }
+
     return (
         <>
         <Grid item xs={12} alignItems="center">
@@ -35,28 +39,35 @@ export function Container() {
                 Configure your container.
             </Typography>
         </Grid>
-        <Grid item xs={5}>
-            <InputLabel sx={{ mb: 1, mt: 2 }} id="namespace-select-label">Namespace</InputLabel>
-            <Select labelId="namespace-select-label" id="namespace-select" value={namespace} label="Namespace"
-                onChange={handleNamespaceChange} disabled={!namespaceInputActive} sx={{minWidth: 400}}>
-                {namespaceInputActive ? availableNamespaces.map((name, index) => (
-                    <MenuItem key={name} value={name} divider={index === 0} disabled={index === 0}>
-                        {name}
-                    </MenuItem>
-                )) : <MenuItem selected={true} value={null}>Please select a valid context.</MenuItem>}
-            </Select>
+        <Grid container spacing={1}>
+            <Grid item xs={4}>
+                <InputLabel sx={{ mb: 1, mt: 2 }} id="namespace-select-label">Namespace</InputLabel>
+                <Select labelId="namespace-select-label" id="namespace-select" value={namespace} label="Namespace"
+                    onChange={handleNamespaceChange} disabled={!namespaceInputActive} sx={{minWidth: 300}}>
+                    {namespaceInputActive ? availableNamespaces.map((name, index) => (
+                        <MenuItem key={name} value={name} divider={index === 0} disabled={index === 0}>
+                            {name}
+                        </MenuItem>
+                    )) : <MenuItem selected={true} value={null}>Please select a valid context.</MenuItem>}
+                </Select>
+            </Grid>
+            <Grid item xs={4}>
+                <InputLabel sx={{ mb: 1, mt: 2 }} id="namespace-select-label">Environment</InputLabel>
+                <Select labelId="namespace-select-label" id="namespace-select" value={namespace} label="Environment"
+                    onChange={handleNamespaceChange} disabled={!namespaceInputActive} sx={{minWidth: 300}}>
+                    {namespaceInputActive ? availableNamespaces.map((name, index) => (
+                        <MenuItem key={name} value={name} divider={index === 0} disabled={index === 0}>
+                            {name}
+                        </MenuItem>
+                    )) : <MenuItem selected={true} value={null}>Please select a valid context.</MenuItem>}
+                </Select>
+            </Grid>
+            <Grid item xs={4}>
+                <InputLabel sx={{ mb: 1, mt: 2 }} id="expose-label">Expose</InputLabel>
+                <TextField id="expose" variant="outlined" placeholder={"hostPort:containerPort"} fullWidth onChange={(e) => handleExposeChange(e)}/>
+            </Grid>
         </Grid>
-        <Grid item xs={7}>
-            <InputLabel sx={{ mb: 1, mt: 2 }} id="namespace-select-label">Environment</InputLabel>
-            <Select labelId="namespace-select-label" id="namespace-select" value={namespace} label="Environment"
-                onChange={handleNamespaceChange} disabled={!namespaceInputActive} sx={{minWidth: 400}}>
-                {namespaceInputActive ? availableNamespaces.map((name, index) => (
-                    <MenuItem key={name} value={name} divider={index === 0} disabled={index === 0}>
-                        {name}
-                    </MenuItem>
-                )) : <MenuItem selected={true} value={null}>Please select a valid context.</MenuItem>}
-            </Select>
-        </Grid>
+        
         <EnvironmentVariables />
         <VolumeMounts></VolumeMounts>
         <Grid item xs={12}>
