@@ -1,11 +1,14 @@
 import { createDockerDesktopClient } from "@docker/extension-api-client";
 import { Autocomplete, Button, Grid, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
+import { GefyraUpRequest } from "gefyra/lib/protocol";
+
 import { DockerImage, statusMap } from "./types";
 import { Kubectl } from "./utils/kubectl";
+import { Gefyra } from "./gefyraClient";
 import { GefyraStatus } from "./types";
 import { resetSteps, setActiveStep, setMode, setView } from "./store/ui";
-import { setContext, setKubeconfig, setNamespace } from "./store/gefyra";
+import { setContext, setKubeconfig, setNamespace, setImage } from "./store/gefyra";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { RootState } from "./store";
 
@@ -24,7 +27,7 @@ export function Settings() {
     const ddClient = createDockerDesktopClient();
     ddClient.docker.listImages().then((res: any) => {
         if (!res) return;
-        console.log(res)
+        // console.log(res)
         const images = []
         res.map(i => {
             const image: DockerImage = {}
@@ -49,6 +52,13 @@ export function Settings() {
 
     const kubeconfig = useAppSelector(state => state.gefyra.kubeconfig)
     const context = useAppSelector(state => state.gefyra.context)
+
+    const gefyraClient = new Gefyra(ddClient);
+
+    function gefyraTest()  {
+	let upRequest = new GefyraUpRequest();
+	gefyraClient.exec(upRequest).then(res => console.log(res))
+    }
 
     function loadContexts() {
         setAvailableContexts([loading])
@@ -76,6 +86,10 @@ export function Settings() {
         }
 
     };
+
+    async function handleImageChange (e, b) {
+	dispatch(setImage(e.target.value))
+    }
 
     async function handleContextChange (e, b) {
         dispatch(setContext(e.target.value))
@@ -164,6 +178,15 @@ export function Settings() {
                 >
                     Next
                 </Button>
+                <Button
+                    variant="contained"
+                    component="label"
+                    color="primary"
+                    onClick={gefyraTest}
+                    sx={{ marginTop: 1 }}
+                >
+		 Gefyra Up
+		</Button>
             </Grid>
         </>
     )

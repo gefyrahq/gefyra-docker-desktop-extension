@@ -3,9 +3,12 @@ import { useState } from "react";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { EnvironmentVariables } from "./EnvironmentVariables";
 import { VolumeMounts } from "./VolumeMounts";
-import { RootState } from "./store";
+import store, { RootState } from "./store";
 import { setNamespace } from "./store/gefyra";
 import { setActiveStep, setView } from "./store/ui";
+import { GefyraRunRequest, GefyraUpRequest } from "gefyra/lib/protocol";
+import { createDockerDesktopClient } from "@docker/extension-api-client";
+import { Gefyra } from "./gefyraClient";
 
 
 export function Container() {
@@ -14,6 +17,7 @@ export function Container() {
     const [availableNamespaces, setAvailableNamespaces] = useState([]);
     const [namespaceInputActive, setNamespaceInputActive] = useState(false);
     const namespace = useAppSelector(state => state.gefyra.namespace)
+    const ddClient = createDockerDesktopClient();
 
     
     const dispatch = useDispatch()
@@ -22,6 +26,31 @@ export function Container() {
         dispatch(setActiveStep(1))
     }
     function next() {}
+
+    function run() {
+	const gefyraClient = new Gefyra(ddClient);
+
+	let kubeconfig = store.getState().gefyra.kubeconfig
+	let context = store.getState().gefyra.context
+	
+	
+	let image = store.getState().gefyra.image
+	let volumes = store.getState().gefyra.volumes
+	let namespace = store.getState().gefyra.namespace
+
+	let upRequest = new GefyraUpRequest({
+		kubeconfig: kubeconfig,
+		context: context
+	});
+
+	let runRequest = new GefyraRunRequest({
+		image: image,
+		volumes: volumes,
+		namespace
+	})
+
+	gefyraClient.exec(upRequest).then(res => console.log(res));
+    }
 
 
     async function handleNamespaceChange (e, b) {

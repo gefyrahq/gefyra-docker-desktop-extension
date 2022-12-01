@@ -1,6 +1,6 @@
 import {DockerDesktopClient} from '@docker/extension-api-client-types/dist/v1';
 import { GefyraBaseClient } from 'gefyra/lib/base';
-import { GefyraRequest } from 'gefyra/lib/protocol';
+import { GefyraRequest, K8sContextRequest } from 'gefyra/lib/protocol';
 
 
 class Gefyra extends GefyraBaseClient {
@@ -11,13 +11,14 @@ class Gefyra extends GefyraBaseClient {
         this.client = dockerClient
     }
 
-    protected async exec(request: GefyraRequest): Promise<string> {
+    async exec(request: GefyraRequest): Promise<string> {
       return new Promise((resolve, reject) => {
         this.client.extension.host.cli.exec("gefyra-json", [request.serialize()], {
           stream: {
             onOutput(data): void {
               if (data.stdout) {
                 resolve(data.stdout)
+		console.log(data.stdout)
               } else {
                 console.log(data.stderr);
               }
