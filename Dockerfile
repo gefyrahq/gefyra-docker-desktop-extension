@@ -52,6 +52,7 @@ COPY gefyra_icon.svg .
 COPY gefyra-json ./gefyra-json
 RUN chmod u+x gefyra-json
 COPY --from=client-builder /ui/build ui
+COPY --from=client-builder /ui/public ui/public
 # COPY --from=dl /out /
 
 CMD [ "sleep", "infinity" ]

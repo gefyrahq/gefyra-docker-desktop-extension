@@ -1,5 +1,5 @@
 import { createDockerDesktopClient } from "@docker/extension-api-client";
-import { Autocomplete, Button, Grid, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
+import { Autocomplete, Button, CircularProgress, Grid, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { GefyraStatusRequest, GefyraUpRequest, K8sContextRequest, K8sNamespaceRequest } from "gefyra/lib/protocol";
 
@@ -14,12 +14,12 @@ import store, { RootState } from "./store";
 
 const ddClient = createDockerDesktopClient();
 const loading = 'Loading...';
+const selectContext = 'Please select a context';
+
 const kubectl = new Kubectl(ddClient);
 
 export function Settings() {
     const dispatch = useDispatch()
-    const selectContext = 'Select context first';
-    const loading = 'Loading...'
     const [availableContexts, setAvailableContexts] = useState([]);
     const [status, setStatus] = useState({});
     
@@ -59,14 +59,21 @@ export function Settings() {
     const gefyraClient = new Gefyra(ddClient);
 
     function loadContexts() {
-	console.log("I'm loading contexts, please stand by");
-	let contextRequest = new K8sContextRequest();
-	contextRequest.kubeconfig = store.getState().gefyra.kubeconfig;
+        dispatch(setContext(loading))
+        console.log("I'm loading contexts, please stand by");
+        let contextRequest = new K8sContextRequest();
+        contextRequest.kubeconfig = store.getState().gefyra.kubeconfig;
 	
     	gefyraClient.exec(contextRequest).then(res => {
 	    let parsed = JSON.parse(res);
-	    console.log(parsed.response.contexts);
-	    setAvailableContexts(parsed.response.contexts);
+	    const contexts = parsed.response.contexts;
+        if (contexts.length === 1) {
+	        setAvailableContexts(contexts);
+            dispatch(setContext(contexts[0]))
+        } else {
+            dispatch(setContext(selectContext))
+            setAvailableContexts([selectContext].concat(contexts));
+        }
 	    console.log(availableContexts)
 	}).catch(err => console.error(err));
     }
@@ -95,14 +102,14 @@ export function Settings() {
     async function handleContextChange (e, b) {
         dispatch(setContext(e.target.value))
         setStatus(statusMap[5])
-	let nsRequest = new K8sNamespaceRequest();
-	nsRequest.kubeconfig = store.getState().gefyra.kubeconfig;
-	nsRequest.context = store.getState().gefyra.context;
-	gefyraClient.exec(nsRequest).then(res => {
-	    console.log(res);
-	    const select = "Select a namespace";
-	    setStatus(statusMap[2]);
-	})
+        let nsRequest = new K8sNamespaceRequest();
+        nsRequest.kubeconfig = store.getState().gefyra.kubeconfig;
+        nsRequest.context = store.getState().gefyra.context;
+        gefyraClient.exec(nsRequest).then(res => {
+            console.log(res);
+            const select = "Select a namespace";
+            setStatus(statusMap[2]);
+        })
     }
 
     function back() {
@@ -142,12 +149,15 @@ export function Settings() {
             <Grid item xs={4}>
                 <InputLabel sx={{ mb: 1 }} id="context-select-label">Context</InputLabel>
                 <Select labelId="context-select-label" id="context-select" value={context} label="Context"
-                    onChange={handleContextChange} sx={{minWidth: 300}}>
-                    {availableContexts.map((name, index) => (
+                    onChange={handleContextChange} sx={{minWidth: 300}} disabled={context === loading}>
+                    {availableContexts.length ? availableContexts.map((name, index) => (
                         <MenuItem key={name} value={name} disabled={index === 0}>
                             {name}
                         </MenuItem>
-                    ))}
+                    )) : <MenuItem value={loading}>
+                        <CircularProgress size={16} sx={{mr: 1, mb: '-2px'}}/>
+                        Loading
+                        </MenuItem>}
                 </Select>
             </Grid>
             <Grid item xs={12}>
