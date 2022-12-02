@@ -1,6 +1,6 @@
 import { createDockerDesktopClient } from "@docker/extension-api-client";
 import { Autocomplete, Button, Grid, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { GefyraStatusRequest, GefyraUpRequest, K8sContextRequest, K8sNamespaceRequest } from "gefyra/lib/protocol";
 
 import { DockerImage, statusMap } from "./types";
@@ -25,29 +25,32 @@ export function Settings() {
     
     const [images, setImages] = React.useState<DockerImage[]>([]);
     const ddClient = createDockerDesktopClient();
-    ddClient.docker.listImages().then((res: any) => {
-        if (!res) return;
-        // console.log(res)
-        const images = []
-        res.map(i => {
-            const image: DockerImage = {}
-            if (i.RepoTags) {
-                image.repo = i.RepoTags[0].split(":")[0];
-                image.tag = i.RepoTags[0].split(":")[1];
-                image.created = i.Created
-            }
-            else {
-                return
-            }
-            if (image.repo !== '<none>') {
-                image.id = i.Id
-                image.type = 'local'
-                images.push(image);
-            }
+    useEffect(() => {
+	    ddClient.docker.listImages().then((res: any) => {
+		if (!res) return;
+		// console.log(res)
+		const images = []
+		res.map(i => {
+		    const image: DockerImage = {}
+		    if (i.RepoTags) {
+			image.repo = i.RepoTags[0].split(":")[0];
+			image.tag = i.RepoTags[0].split(":")[1];
+			image.created = i.Created
+		    }
+		    else {
+			return
+		    }
+		    if (image.repo !== '<none>') {
+			image.id = i.Id
+			image.type = 'local'
+			images.push(image);
+		    }
 
-        })
-        setImages(images);
-    });
+		})
+		setImages(images);
+	    });
+
+    }, []);
     const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
 
     const kubeconfig = useAppSelector(state => state.gefyra.kubeconfig)
