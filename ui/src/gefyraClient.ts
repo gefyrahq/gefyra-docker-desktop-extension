@@ -12,6 +12,7 @@ class Gefyra extends GefyraBaseClient {
     }
 
     async exec(request: GefyraRequest): Promise<string> {
+	console.log(request.serialize());
       return new Promise((resolve, reject) => {
         this.client.extension.host.cli.exec("gefyra-json", [request.serialize()], {
           stream: {

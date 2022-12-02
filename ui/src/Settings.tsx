@@ -1,7 +1,7 @@
 import { createDockerDesktopClient } from "@docker/extension-api-client";
 import { Autocomplete, Button, Grid, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
-import { GefyraUpRequest } from "gefyra/lib/protocol";
+import { GefyraStatusRequest, GefyraUpRequest, K8sContextRequest, K8sNamespaceRequest } from "gefyra/lib/protocol";
 
 import { DockerImage, statusMap } from "./types";
 import { Kubectl } from "./utils/kubectl";
@@ -10,7 +10,7 @@ import { GefyraStatus } from "./types";
 import { resetSteps, setActiveStep, setMode, setView } from "./store/ui";
 import { setContext, setKubeconfig, setNamespace, setImage } from "./store/gefyra";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import { RootState } from "./store";
+import store, { RootState } from "./store";
 
 const ddClient = createDockerDesktopClient();
 const loading = 'Loading...';
@@ -55,20 +55,17 @@ export function Settings() {
 
     const gefyraClient = new Gefyra(ddClient);
 
-    function gefyraTest()  {
-	let upRequest = new GefyraUpRequest();
-	gefyraClient.exec(upRequest).then(res => console.log(res))
-    }
-
     function loadContexts() {
-        setAvailableContexts([loading])
-        kubectl.getContexts(kubeconfig).then((contexts) => {
-            if (!contexts.error) {
-                setAvailableContexts(['No context selected'].concat(contexts.value))
-            } else {
-                setStatus(statusMap[4])
-            }
-        })
+	console.log("I'm loading contexts, please stand by");
+	let contextRequest = new K8sContextRequest();
+	contextRequest.kubeconfig = store.getState().gefyra.kubeconfig;
+	
+    	gefyraClient.exec(contextRequest).then(res => {
+	    let parsed = JSON.parse(res);
+	    console.log(parsed.response.contexts);
+	    setAvailableContexts(parsed.response.contexts);
+	    console.log(availableContexts)
+	}).catch(err => console.error(err));
     }
 
     async function handleKubeConfigChange (e) {
@@ -83,6 +80,7 @@ export function Settings() {
           if (directory !== undefined) {
               dispatch(setKubeconfig(directory))
           }
+	  loadContexts();
         }
 
     };
@@ -94,10 +92,14 @@ export function Settings() {
     async function handleContextChange (e, b) {
         dispatch(setContext(e.target.value))
         setStatus(statusMap[5])
-        kubectl.getNamespaces(e.target.value, kubeconfig).then((namespaces) => {
-            const select = 'Select a namespace'
-            setStatus(statusMap[2])
-        })
+	let nsRequest = new K8sNamespaceRequest();
+	nsRequest.kubeconfig = store.getState().gefyra.kubeconfig;
+	nsRequest.context = store.getState().gefyra.context;
+	gefyraClient.exec(nsRequest).then(res => {
+	    console.log(res);
+	    const select = "Select a namespace";
+	    setStatus(statusMap[2]);
+	})
     }
 
     function back() {
@@ -111,10 +113,6 @@ export function Settings() {
         dispatch(setActiveStep(2))
     }
 
-
-    // loadContexts()
-
-    
     return (
         <>
             <Grid item xs={12} alignItems="center">
@@ -178,15 +176,6 @@ export function Settings() {
                 >
                     Next
                 </Button>
-                <Button
-                    variant="contained"
-                    component="label"
-                    color="primary"
-                    onClick={gefyraTest}
-                    sx={{ marginTop: 1 }}
-                >
-		 Gefyra Up
-		</Button>
             </Grid>
         </>
     )
