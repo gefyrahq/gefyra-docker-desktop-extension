@@ -14,10 +14,7 @@ import store, { RootState } from "./store";
 import { LSelect } from "./components/LSelect";
 
 const ddClient = createDockerDesktopClient();
-const loading = 'Loading...';
 const selectContext = 'Please select a context';
-
-const kubectl = new Kubectl(ddClient);
 
 export function Settings() {
     const dispatch = useDispatch()
