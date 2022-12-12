@@ -1,7 +1,7 @@
 import { createDockerDesktopClient } from "@docker/extension-api-client";
 import { Autocomplete, Button, CircularProgress, Grid, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
 import React, { useState, useEffect } from "react";
-import { GefyraStatusRequest, GefyraUpRequest, K8sContextRequest, K8sNamespaceRequest } from "gefyra/lib/protocol";
+import { GefyraStatusRequest, GefyraUpRequest, K8sContextRequest, K8sContextResponse, K8sNamespaceRequest } from "gefyra/lib/protocol";
 
 import { DockerImage, statusMap } from "./types";
 import { Kubectl } from "./utils/kubectl";
@@ -11,6 +11,7 @@ import { resetSteps, setActiveStep, setMode, setView } from "./store/ui";
 import { setContext, setKubeconfig, setNamespace, setImage } from "./store/gefyra";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import store, { RootState } from "./store";
+import { LSelect } from "./components/LSelect";
 
 const ddClient = createDockerDesktopClient();
 const loading = 'Loading...';
@@ -22,8 +23,9 @@ export function Settings() {
     const dispatch = useDispatch()
     const [availableContexts, setAvailableContexts] = useState([]);
     const [status, setStatus] = useState({});
+    const [contextLoading, setContextLoading] = useState<boolean>(false);
     
-    const [images, setImages] = React.useState<DockerImage[]>([]);
+    const [images, setImages] = useState<DockerImage[]>([]);
     const ddClient = createDockerDesktopClient();
     useEffect(() => {
 	    ddClient.docker.listImages().then((res: any) => {
@@ -59,22 +61,23 @@ export function Settings() {
     const gefyraClient = new Gefyra(ddClient);
 
     function loadContexts() {
-        dispatch(setContext(loading))
+        setContextLoading(true)
         console.log("I'm loading contexts, please stand by");
         let contextRequest = new K8sContextRequest();
         contextRequest.kubeconfig = store.getState().gefyra.kubeconfig;
 	
     	gefyraClient.exec(contextRequest).then(res => {
-	    let parsed = JSON.parse(res);
+	    let parsed: K8sContextResponse = JSON.parse(res);
 	    const contexts = parsed.response.contexts;
+        const contextItems = contexts.map(c => { return {label: c, value: c}});
         if (contexts.length === 1) {
-	        setAvailableContexts(contexts);
+	        setAvailableContexts(contextItems);
             dispatch(setContext(contexts[0]))
         } else {
             dispatch(setContext(selectContext))
-            setAvailableContexts([selectContext].concat(contexts));
+            setAvailableContexts([{label: selectContext, value: selectContext}].concat(contextItems));
         }
-	    console.log(availableContexts)
+        setContextLoading(false)
 	}).catch(err => console.error(err));
     }
 
@@ -148,17 +151,7 @@ export function Settings() {
             </Grid>
             <Grid item xs={4}>
                 <InputLabel sx={{ mb: 1 }} id="context-select-label">Context</InputLabel>
-                <Select labelId="context-select-label" id="context-select" value={context} label="Context"
-                    onChange={handleContextChange} sx={{minWidth: 300}} disabled={context === loading}>
-                    {availableContexts.length ? availableContexts.map((name, index) => (
-                        <MenuItem key={name} value={name} disabled={index === 0}>
-                            {name}
-                        </MenuItem>
-                    )) : <MenuItem value={loading}>
-                        <CircularProgress size={16} sx={{mr: 1, mb: '-2px'}}/>
-                        Loading
-                        </MenuItem>}
-                </Select>
+                <LSelect disabled={contextLoading} loading={contextLoading} value={context} label={"Context"} items={availableContexts} id={"context-input"} labelId={"context-select-label"} handleChange={handleContextChange}></LSelect>
             </Grid>
             <Grid item xs={12}>
             <Autocomplete

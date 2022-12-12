@@ -18,6 +18,23 @@ export type EnvironmentVariable = {
     value: string
 }
 
+export type SelectItem = {
+    label: string
+    value: string
+}
+
+export type SelectProps = {
+    loading: boolean
+    value: string
+    label: string
+    items: SelectItem[]
+    disabled: boolean
+    id: string
+    labelId: string
+    loadingText?: string
+    handleChange: (e: any, b: any) => {}
+}
+
 export const statusMap = {
     0: {
         text: 'Missing context',
