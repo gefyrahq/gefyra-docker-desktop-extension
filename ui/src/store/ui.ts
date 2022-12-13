@@ -11,17 +11,19 @@ const initialSteps = [
 export const uiSlice = createSlice({
   name: 'ui',
   initialState: {
-    mode: '',
-    view: 'mode',
+    mode: localStorage.getItem("mode") || "",
+    view: localStorage.getItem("view") || "mode",
     steps: initialSteps,
-    activeStep: 0
+    activeStep: parseInt(localStorage.getItem("activeStep")) || 0,
   },
   reducers: {
     setMode: (state, action) => {
       state.mode = action.payload
+      localStorage.setItem("mode", action.payload)
     },
     setView: (state, action) => {
       state.view = action.payload
+      localStorage.setItem("view", action.payload)
     },
     setSteps: (state, action) => {
       state.steps = action.payload
@@ -32,6 +34,7 @@ export const uiSlice = createSlice({
     },
     setActiveStep: (state, action) => {
       state.activeStep = action.payload
+      localStorage.setItem("activeStep", action.payload)
     },
   }
 })

@@ -59,7 +59,6 @@ export function Settings() {
 
     function loadContexts() {
         setContextLoading(true)
-        console.log("I'm loading contexts, please stand by");
         let contextRequest = new K8sContextRequest();
         contextRequest.kubeconfig = store.getState().gefyra.kubeconfig;
 	
