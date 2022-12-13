@@ -1,19 +1,16 @@
 import { createDockerDesktopClient } from "@docker/extension-api-client";
-import { Autocomplete, Button, CircularProgress, Grid, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
+import { Autocomplete, Button, Grid, InputLabel, TextField, Typography } from "@mui/material";
 import React, { useState, useEffect } from "react";
-import { GefyraStatusRequest, GefyraUpRequest, K8sContextRequest, K8sContextResponse, K8sNamespaceRequest } from "gefyra/lib/protocol";
+import { K8sContextRequest, K8sContextResponse, K8sNamespaceRequest } from "gefyra/lib/protocol";
 
 import { DockerImage, statusMap } from "./types";
-import { Kubectl } from "./utils/kubectl";
 import { Gefyra } from "./gefyraClient";
-import { GefyraStatus } from "./types";
-import { resetSteps, setActiveStep, setMode, setView } from "./store/ui";
 import { setContext, setKubeconfig, setNamespace, setImage } from "./store/gefyra";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import store, { RootState } from "./store";
 import { LSelect } from "./components/LSelect";
+import useNavigation from "./composable/navigation";
 
-const ddClient = createDockerDesktopClient();
 const selectContext = 'Please select a context';
 
 export function Settings() {
@@ -21,6 +18,11 @@ export function Settings() {
     const [availableContexts, setAvailableContexts] = useState([]);
     const [status, setStatus] = useState({});
     const [contextLoading, setContextLoading] = useState<boolean>(false);
+
+    const [back, next] = useNavigation(
+        {resetMode: true, step: 0, view: 'mode'},
+        {resetMode: false, step: 1, view: 'container'},
+    )
     
     const [images, setImages] = useState<DockerImage[]>([]);
     const ddClient = createDockerDesktopClient();
@@ -109,17 +111,6 @@ export function Settings() {
             const select = "Select a namespace";
             setStatus(statusMap[2]);
         })
-    }
-
-    function back() {
-        dispatch(setMode(''))
-        dispatch(setView('mode'))
-        dispatch(resetSteps())
-    }
-
-    function next() {
-        dispatch(setView('container'))
-        dispatch(setActiveStep(2))
     }
 
     return (

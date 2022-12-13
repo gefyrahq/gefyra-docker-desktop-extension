@@ -9,6 +9,7 @@ import { setActiveStep, setView } from "./store/ui";
 import { GefyraRunRequest, GefyraUpRequest, K8sNamespaceRequest } from "gefyra/lib/protocol";
 import { createDockerDesktopClient } from "@docker/extension-api-client";
 import { Gefyra } from "./gefyraClient";
+import useNavigation from "./composable/navigation";
 
 
 export function Container() {
@@ -23,11 +24,10 @@ export function Container() {
     const dispatch = useDispatch()
     const gefyraClient = new Gefyra(ddClient);
 
-    function back() {
-        dispatch(setView('settings'))
-        dispatch(setActiveStep(1))
-    }
-    function next() {}
+    const [back, next] = useNavigation(
+        {resetMode: false, step: 1, view: 'settings'},
+        {resetMode: false, step: 3, view: 'run'},
+    )
 
     function run() {
 	const gefyraClient = new Gefyra(ddClient);

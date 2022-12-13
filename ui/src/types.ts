@@ -35,6 +35,12 @@ export type SelectProps = {
     handleChange: (e: any, b: any) => {}
 }
 
+export type GefyraRoute = {
+    resetMode: boolean
+    view: string
+    step: number
+}
+
 export const statusMap = {
     0: {
         text: 'Missing context',
