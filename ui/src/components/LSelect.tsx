@@ -4,7 +4,6 @@ import { SelectProps } from "../types";
 
 export function LSelect(props: SelectProps) {
     const loading = "Loading"
-    console.log(props)
     return (
         <Select labelId={props.labelId} id={props.id} value={props.loading ? "loading" : props.value} label={props.label}
             onChange={props.handleChange} sx={{ minWidth: 300 }} disabled={props.disabled}>

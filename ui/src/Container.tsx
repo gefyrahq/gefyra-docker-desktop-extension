@@ -5,11 +5,11 @@ import { EnvironmentVariables } from "./EnvironmentVariables";
 import { VolumeMounts } from "./VolumeMounts";
 import store, { RootState } from "./store";
 import { setNamespace } from "./store/gefyra";
-import { setActiveStep, setView } from "./store/ui";
 import { GefyraRunRequest, GefyraUpRequest, K8sNamespaceRequest } from "gefyra/lib/protocol";
 import { createDockerDesktopClient } from "@docker/extension-api-client";
 import { Gefyra } from "./gefyraClient";
 import useNavigation from "./composable/navigation";
+import { LSelect } from "./components/LSelect";
 
 
 export function Container() {
@@ -20,104 +20,105 @@ export function Container() {
     const namespace = useAppSelector(state => state.gefyra.namespace)
     const ddClient = createDockerDesktopClient();
 
-    
+
     const dispatch = useDispatch()
     const gefyraClient = new Gefyra(ddClient);
 
     const [back, next] = useNavigation(
-        {resetMode: false, step: 1, view: 'settings'},
-        {resetMode: false, step: 3, view: 'run'},
+        { resetMode: false, step: 1, view: 'settings' },
+        { resetMode: false, step: 3, view: 'run' },
     )
 
     function run() {
-	const gefyraClient = new Gefyra(ddClient);
+        const gefyraClient = new Gefyra(ddClient);
 
-	let kubeconfig = store.getState().gefyra.kubeconfig
-	let context = store.getState().gefyra.context
-	
-	
-	let image = store.getState().gefyra.image
-	let namespace = store.getState().gefyra.namespace
-	let upRequest = new GefyraUpRequest();
-	upRequest.kubeconfig = kubeconfig;
-	upRequest.context = context;
+        let kubeconfig = store.getState().gefyra.kubeconfig
+        let context = store.getState().gefyra.context
 
-	let runRequest = new GefyraRunRequest();
-	runRequest.image = image;
 
-	gefyraClient.exec(upRequest).then(res => {
-		console.log(res);
-		gefyraClient.exec(runRequest).then(res  => {
-			console.log(res)
-		})
-	})
+        let image = store.getState().gefyra.image
+        let namespace = store.getState().gefyra.namespace
+        let upRequest = new GefyraUpRequest();
+        upRequest.kubeconfig = kubeconfig;
+        upRequest.context = context;
 
-	
-	// let volumes = store.getState().gefyra.volumes
-	// let namespace = store.getState().gefyra.namespace
+        let runRequest = new GefyraRunRequest();
+        runRequest.image = image;
+
+        gefyraClient.exec(upRequest).then(res => {
+            console.log(res);
+            gefyraClient.exec(runRequest).then(res => {
+                console.log(res)
+            })
+        })
+
+        next()
+
+
+        // let volumes = store.getState().gefyra.volumes
+        // let namespace = store.getState().gefyra.namespace
 
     }
 
 
-    function initNamespaces () {
-	let nsRequest = new K8sNamespaceRequest();
-	nsRequest.kubeconfig = store.getState().gefyra.kubeconfig;
-	nsRequest.context = store.getState().gefyra.context;
-	gefyraClient.exec(nsRequest).then(res => {
-	    let parsed = JSON.parse(res);
-	    setAvailableNamespaces(parsed.response.namespaces);
-	    setNamespaceInputActive(true);
-	})
+    function initNamespaces() {
+        let nsRequest = new K8sNamespaceRequest();
+        nsRequest.kubeconfig = store.getState().gefyra.kubeconfig;
+        nsRequest.context = store.getState().gefyra.context;
+        gefyraClient.exec(nsRequest).then(res => {
+            let parsed = JSON.parse(res);
+            const namespaces = parsed.response.namespaces;
+            setNamespaceInputActive(true);
+            setAvailableNamespaces([{label: 'Select a namespace', value: 'select'}].concat(namespaces.map(n => ({label: n, value: n}))));
+            if (!namespace) {
+                dispatch(setNamespace('select'))
+            }
+        })
     }
 
-    async function handleNamespaceChange (e, b) {
-        await dispatch(setNamespace(e.target.value))
+    function handleNamespaceChange(e, b): any {
+        dispatch(setNamespace(e.target.value))
     }
 
     useEffect(() => {
-    	initNamespaces();
-    },[])
+        initNamespaces();
+    }, [])
 
     return (
         <>
-        <Grid item xs={12} alignItems="center">
-            <Typography variant="subtitle1">
-                Configure your container.
-            </Typography>
-        </Grid>
-        <Grid item xs={5}>
-            <InputLabel sx={{ mb: 1, mt: 2 }} id="namespace-select-label">Namespace</InputLabel>
-            <Select labelId="namespace-select-label" id="namespace-select" value={namespace} label="Namespace"
-                onChange={handleNamespaceChange} disabled={!namespaceInputActive} sx={{minWidth: 400}}>
-                {namespaceInputActive ? availableNamespaces.map((name, index) => (
-                    <MenuItem key={name} value={name} divider={index === 0} disabled={index === 0}>
-                        {name}
-                    </MenuItem>
-                )) : <MenuItem selected={true} value={null}>Please select a valid context.</MenuItem>}
-            </Select>
-        </Grid>
-        <EnvironmentVariables />
-        <VolumeMounts></VolumeMounts>
-        <Grid item xs={12}>
-            <Button
-                variant="contained"
-                component="label"
-                color="primary"
-                onClick={back}
-                sx={{ marginTop: 1 }}
-            >
-                Back
-            </Button>
-            <Button
-                variant="contained"
-                component="label"
-                color="primary"
-                onClick={run}
-                sx={{ marginTop: 1, ml: 2 }}
-            >
-                Run
-            </Button>
-        </Grid>
+            <Grid item xs={12} alignItems="center">
+                <Typography variant="subtitle1">
+                    Configure your container.
+                </Typography>
+            </Grid>
+            <Grid item xs={5}>
+                <InputLabel sx={{ mb: 1, mt: 2 }} id="namespace-select-label">Namespace</InputLabel>
+                <LSelect labelId="namespace-select-label" id="namespace-select" value={namespace} label="Namespace"
+                    handleChange={handleNamespaceChange} disabled={!namespaceInputActive} loading={!namespaceInputActive} items={availableNamespaces}/>
+                
+            </Grid>
+            <EnvironmentVariables />
+            <VolumeMounts></VolumeMounts>
+            <Grid item xs={12}>
+                <Button
+                    variant="contained"
+                    component="label"
+                    color="primary"
+                    onClick={back}
+                    sx={{ marginTop: 1 }}
+                >
+                    Back
+                </Button>
+                <Button
+                    variant="contained"
+                    component="label"
+                    color="primary"
+                    onClick={run}
+                    sx={{ marginTop: 1, ml: 2 }}
+                >
+                    Run
+                </Button>
+            </Grid>
         </>
     )
 }

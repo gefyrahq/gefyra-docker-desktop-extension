@@ -154,6 +154,7 @@ export function Settings() {
                     loading={imagesLoading}
                     disabled={imagesLoading}
                     inputValue={image}
+                    sx={{width: 300}}
                     onChange={handleImageChange}
                     noOptionsText="No Images found"
                     />
