@@ -11,7 +11,6 @@ import store, { RootState } from "./store";
 import { LSelect } from "./components/LSelect";
 import useNavigation from "./composable/navigation";
 import useDockerImages from "./composable/dockerImages";
-import { LAutocomplete } from "./components/LAutocomplete";
 
 const selectContext = 'Please select a context';
 
