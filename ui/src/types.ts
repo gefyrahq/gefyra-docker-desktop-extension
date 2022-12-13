@@ -4,6 +4,7 @@ export type DockerImage = {
     id?: string
     created?: number
     type?: string
+    name?: string
 }
 
 export type GefyraStatus = {
@@ -33,6 +34,23 @@ export type SelectProps = {
     labelId: string
     loadingText?: string
     handleChange: (e: any, b: any) => {}
+}
+
+export type AutocompleteItem = {
+    label: string
+    value: string
+}
+
+export type AutocompleteProps = {
+    loading: boolean
+    options: any[]
+    disabled: boolean
+    groupBy: string
+    id: string
+    loadingText?: string
+    getOptionLabel: (option: unknown) => string
+    handleChange: (e: any, b: any) => {}
+    renderInput: (e: any, b: any) => {}
 }
 
 export type GefyraRoute = {

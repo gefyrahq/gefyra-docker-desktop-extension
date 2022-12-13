@@ -10,6 +10,8 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import store, { RootState } from "./store";
 import { LSelect } from "./components/LSelect";
 import useNavigation from "./composable/navigation";
+import useDockerImages from "./composable/dockerImages";
+import { LAutocomplete } from "./components/LAutocomplete";
 
 const selectContext = 'Please select a context';
 
@@ -20,38 +22,14 @@ export function Settings() {
     const [contextLoading, setContextLoading] = useState<boolean>(false);
 
     const [back, next] = useNavigation(
-        {resetMode: true, step: 0, view: 'mode'},
-        {resetMode: false, step: 1, view: 'container'},
+        { resetMode: true, step: 0, view: 'mode' },
+        { resetMode: false, step: 1, view: 'container' },
     )
     
-    const [images, setImages] = useState<DockerImage[]>([]);
+    const {images: images, loading: imagesLoading} = useDockerImages();
+
     const ddClient = createDockerDesktopClient();
-    useEffect(() => {
-	    ddClient.docker.listImages().then((res: any) => {
-		if (!res) return;
-		// console.log(res)
-		const images = []
-		res.map(i => {
-		    const image: DockerImage = {}
-		    if (i.RepoTags) {
-			image.repo = i.RepoTags[0].split(":")[0];
-			image.tag = i.RepoTags[0].split(":")[1];
-			image.created = i.Created
-		    }
-		    else {
-			return
-		    }
-		    if (image.repo !== '<none>') {
-			image.id = i.Id
-			image.type = 'local'
-			images.push(image);
-		    }
 
-		})
-		setImages(images);
-	    });
-
-    }, []);
     const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
 
     const kubeconfig = useAppSelector(state => state.gefyra.kubeconfig)
@@ -63,23 +41,23 @@ export function Settings() {
         setContextLoading(true)
         let contextRequest = new K8sContextRequest();
         contextRequest.kubeconfig = store.getState().gefyra.kubeconfig;
-	
-    	gefyraClient.exec(contextRequest).then(res => {
-	    let parsed: K8sContextResponse = JSON.parse(res);
-	    const contexts = parsed.response.contexts;
-        const contextItems = contexts.map(c => { return {label: c, value: c}});
-        if (contexts.length === 1) {
-	        setAvailableContexts(contextItems);
-            dispatch(setContext(contexts[0]))
-        } else {
-            dispatch(setContext(selectContext))
-            setAvailableContexts([{label: selectContext, value: selectContext}].concat(contextItems));
-        }
-        setContextLoading(false)
-	}).catch(err => console.error(err));
+
+        gefyraClient.exec(contextRequest).then(res => {
+            let parsed: K8sContextResponse = JSON.parse(res);
+            const contexts = parsed.response.contexts;
+            const contextItems = contexts.map(c => { return { label: c, value: c } });
+            if (contexts.length === 1) {
+                setAvailableContexts(contextItems);
+                dispatch(setContext(contexts[0]))
+            } else {
+                dispatch(setContext(selectContext))
+                setAvailableContexts([{ label: selectContext, value: selectContext }].concat(contextItems));
+            }
+            setContextLoading(false)
+        }).catch(err => console.error(err));
     }
 
-    async function handleKubeConfigChange (e) {
+    async function handleKubeConfigChange(e) {
         const result = await ddClient.desktopUI.dialog.showOpenDialog({
             filters: [{
                 extensions: ['yaml', 'yml']
@@ -87,20 +65,20 @@ export function Settings() {
             properties: ["openFile"],
         });
         if (!result.canceled) {
-          const directory = result.filePaths.shift();
-          if (directory !== undefined) {
-              dispatch(setKubeconfig(directory))
-          }
-	  loadContexts();
+            const directory = result.filePaths.shift();
+            if (directory !== undefined) {
+                dispatch(setKubeconfig(directory))
+            }
+            loadContexts();
         }
 
     };
 
-    async function handleImageChange (e, b) {
-	dispatch(setImage(e.target.value))
+    async function handleImageChange(e, b) {
+        dispatch(setImage(e.target.value))
     }
 
-    async function handleContextChange (e, b) {
+    async function handleContextChange(e, b) {
         dispatch(setContext(e.target.value))
         setStatus(statusMap[5])
         let nsRequest = new K8sNamespaceRequest();
@@ -123,7 +101,7 @@ export function Settings() {
             <Grid item xs={5}>
                 <InputLabel sx={{ mb: 1 }} id="kubeconfig-label">Kubeconfig</InputLabel>
                 <TextField id="kubeconfig" variant="outlined" fullWidth InputProps={{ readOnly: true }} value={kubeconfig}
-                onClick={handleKubeConfigChange}/>
+                    onClick={handleKubeConfigChange} />
             </Grid>
             <Grid item xs={2}>
                 <Button
@@ -138,17 +116,21 @@ export function Settings() {
             </Grid>
             <Grid item xs={4}>
                 <InputLabel sx={{ mb: 1 }} id="context-select-label">Context</InputLabel>
-                <LSelect disabled={contextLoading} loading={contextLoading} value={context} label={"Context"} items={availableContexts} id={"context-input"} labelId={"context-select-label"} handleChange={handleContextChange}></LSelect>
+                <LSelect disabled={contextLoading} loading={contextLoading} value={context} 
+                    label={"Context"} items={availableContexts} id={"context-input"} labelId={"context-select-label"} handleChange={handleContextChange}
+                ></LSelect>
             </Grid>
             <Grid item xs={12}>
-            <Autocomplete
-                id="grouped-images"
-                options={images.sort((a, b) => -b.repo[0].localeCompare(a.repo[0]))}
-                groupBy={(image) => image.type}
-                getOptionLabel={(image: DockerImage) => `${image.repo}:${image.tag}`}
-                sx={{ width: 300 }}
-                renderInput={(params) => <TextField {...params} label="Select image" />}
-                />
+                <Autocomplete
+                    id="grouped-images"
+                    options={images.sort((a, b) => -b.repo[0].localeCompare(a.repo[0]))}
+                    groupBy={(o) => o.type}
+                    getOptionLabel={(image: DockerImage) => image.name}
+                    renderInput={(params) => <TextField {...params} label="Select image" />}
+                    loading={imagesLoading}
+                    disabled={imagesLoading}
+                    onChange={handleImageChange}
+                    />
             </Grid>
             <Grid item xs={12}>
                 <Button
@@ -173,3 +155,4 @@ export function Settings() {
         </>
     )
 }
+
