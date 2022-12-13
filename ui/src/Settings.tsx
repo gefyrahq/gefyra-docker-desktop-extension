@@ -1,4 +1,5 @@
 import { createDockerDesktopClient } from "@docker/extension-api-client";
+
 import { Autocomplete, Button, Grid, InputLabel, TextField, Typography } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { K8sContextRequest, K8sContextResponse, K8sNamespaceRequest } from "gefyra/lib/protocol";
@@ -16,23 +17,25 @@ const selectContext = 'Please select a context';
 
 export function Settings() {
     const dispatch = useDispatch()
+
+    const ddClient = createDockerDesktopClient();
+    
     const [availableContexts, setAvailableContexts] = useState([]);
     const [status, setStatus] = useState({});
     const [contextLoading, setContextLoading] = useState<boolean>(false);
+    const [nextEnabled, setNextEnabled] = useState<boolean>(false);
 
     const [back, next] = useNavigation(
         { resetMode: true, step: 0, view: 'mode' },
-        { resetMode: false, step: 1, view: 'container' },
+        { resetMode: false, step: 2, view: 'container' },
     )
-    
     const {images: images, loading: imagesLoading} = useDockerImages();
-
-    const ddClient = createDockerDesktopClient();
-
+    
     const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
 
     const kubeconfig = useAppSelector(state => state.gefyra.kubeconfig)
     const context = useAppSelector(state => state.gefyra.context)
+    const image = useAppSelector(state => state.gefyra.image)
 
     const gefyraClient = new Gefyra(ddClient);
 
@@ -49,7 +52,9 @@ export function Settings() {
                 setAvailableContexts(contextItems);
                 dispatch(setContext(contexts[0]))
             } else {
-                dispatch(setContext(selectContext))
+                if (!context) {
+                    dispatch(setContext(selectContext))
+                }
                 setAvailableContexts([{ label: selectContext, value: selectContext }].concat(contextItems));
             }
             setContextLoading(false)
@@ -73,9 +78,13 @@ export function Settings() {
 
     };
 
-    async function handleImageChange(e, b) {
-        dispatch(setImage(e.target.value))
+    function handleImageChange(e, b: DockerImage) {
+        dispatch(setImage(b ? b.name : null))
     }
+
+    useEffect(() => {
+        checkNextEnabled()
+    }, [kubeconfig, image, context])
 
     async function handleContextChange(e, b) {
         dispatch(setContext(e.target.value))
@@ -88,7 +97,23 @@ export function Settings() {
             const select = "Select a namespace";
             setStatus(statusMap[2]);
         })
+        checkNextEnabled()
     }
+
+    function checkNextEnabled() {
+        console.log(image)
+        if (kubeconfig && context && image) {
+            setNextEnabled(true)
+        } else {
+            setNextEnabled(false)
+        }
+    }
+
+    useEffect(() => {
+        if (kubeconfig && !availableContexts.length) {
+            loadContexts()
+        }
+    }, [])
 
     return (
         <>
@@ -128,7 +153,9 @@ export function Settings() {
                     renderInput={(params) => <TextField {...params} label="Select image" />}
                     loading={imagesLoading}
                     disabled={imagesLoading}
+                    inputValue={image}
                     onChange={handleImageChange}
+                    noOptionsText="No Images found"
                     />
             </Grid>
             <Grid item xs={12}>
@@ -147,6 +174,7 @@ export function Settings() {
                     color="primary"
                     onClick={next}
                     sx={{ marginTop: 1, ml: 2 }}
+                    disabled={!nextEnabled}
                 >
                     Next
                 </Button>
