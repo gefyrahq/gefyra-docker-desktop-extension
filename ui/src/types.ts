@@ -36,6 +36,11 @@ export type SelectProps = {
     handleChange: (e: any, b: any) => {}
 }
 
+export type ContainerLogsProps = {
+    container: string
+    height: number
+}
+
 export type AutocompleteItem = {
     label: string
     value: string

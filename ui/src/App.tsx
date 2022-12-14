@@ -13,6 +13,7 @@ import { GefyraStatus, statusMap } from './types';
 import { Progress } from './Progress'
 import { Settings } from './Settings'
 import { Container } from './Container'
+import { Run } from './Run'
 import { RootState } from './store'
 
 
@@ -49,6 +50,9 @@ export function App() {
             }
             { view === 'container' &&
                 <Container />
+            }
+            { view === 'run' &&
+                <Run />
             }
             </Grid>
         </Paper>

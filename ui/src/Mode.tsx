@@ -9,6 +9,7 @@ type ModeProps = {
     headline: string
     caption: string
     mode: string
+    disabled?: boolean
 }
 
 const steps = {
@@ -28,18 +29,27 @@ const steps = {
 
 export function Mode(props: ModeProps) {
     const dispatch = useDispatch()
-    function doStuff () {
+    function activateMode () {
         dispatch(setMode(props.mode))  
         dispatch(setView('settings'))  
         dispatch(setSteps(steps[props.mode]))  
         dispatch(setActiveStep(1))
     }
 
+    const styles = {
+        px: 4,
+        pt: 3,
+        maxWidth: '80%',
+        cursor: 'pointer',
+        pointerEvents: props.disabled ? 'none': 'default',
+        opacity: props.disabled ? '0.5': '1',
+    }
+
     return (    
         <>
-            <Card sx={{ px: 4, pt: 3, maxWidth: '80%', cursor: 'pointer' }} onClick={doStuff}>
+            <Card sx={styles} onClick={activateMode}>
                 <CardMedia
-                    onClick={doStuff}
+                    onClick={activateMode}
                     component="img"
                     height=""
                     image={props.image}

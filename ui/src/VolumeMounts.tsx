@@ -39,12 +39,11 @@ export function VolumeMounts() {
     return (
         <>
             <Grid item xs={12}>
-                Volume Mounts
-                <InputLabel sx={{ mb: 1 }} id="kubeconfig-label">Kubeconfig</InputLabel>
+                <p>Volume Mounts</p>
                 
                 {volumeMounts.map((v, index) => 
                     ( v ?
-                        <Grid container spacing={4}>
+                        <Grid container spacing={4} key={index}>
                                 <Grid item xs={5}>
                                     <InputLabel sx={{ mb: 1 }} id="variable-label">Host Path</InputLabel>
                                     <TextField id="host" variant="outlined" fullWidth InputProps={{ readOnly: true }} onClick={(e) => handleHostVolumeMountChange(e, index, 'host')} value={store.getState().gefyra.volumeMounts[index].host}/>

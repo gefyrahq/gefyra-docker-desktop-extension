@@ -17,7 +17,7 @@ export function Chooser() {
             </Grid>
             <Grid item xs={6}>
                 <Mode image="/assets/bridge.svg" imageAlt="Bridge container in Kubernetes" headline="Bridge Container in Kubernetes"
-                        caption="Bridge a local container into an existing workload of a Kubernetes cluster." mode="bridge"/>
+                        caption="Bridge a local container into an existing workload of a Kubernetes cluster." mode="bridge" disabled/>
             </Grid>
         </>
     )
