@@ -18,6 +18,10 @@ export function Progress() {
             dispatch(setView('settings'))
             dispatch(setActiveStep(1))
         }
+        if (index === 2) {
+            dispatch(setView('container'))
+            dispatch(setActiveStep(2))
+        }
     }
 
     const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
@@ -35,7 +39,7 @@ export function Progress() {
                         {index < activeStep ?
                         <StepButton onClick={() => handleStepClick(index)}>{step.label}</StepButton>
                         :
-                        <StepLabel>{step.label}</StepLabel  >
+                        <StepLabel>{step.label}</StepLabel>
                     }
                     </Step>
                 ))}

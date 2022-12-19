@@ -11,7 +11,7 @@ class Gefyra extends GefyraBaseClient {
         this.client = dockerClient
     }
 
-    async exec(request: GefyraRequest): Promise<string> {
+    async exec(request: GefyraRequest): Promise<any> {
 	console.log(request.serialize());
       return new Promise((resolve, reject) => {
         this.client.extension.host.cli.exec("gefyra-json", [request.serialize()], {

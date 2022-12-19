@@ -2,6 +2,7 @@ import { Button, Grid, InputLabel, TextField } from "@mui/material"
 import { useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
 import { setEnvironmentVariables } from "./store/gefyra"
+import { EnvironmentVariable } from "./types"
 
 
 export function EnvironmentVariables() {
@@ -20,7 +21,7 @@ export function EnvironmentVariables() {
     }
 
     const handleChange = (i, t, value) => {
-        const newEnvironment = variables.map((v, index) => {
+        const newEnvironment = variables.map((v: EnvironmentVariable, index) => {
             if (index === i) {
                 const n = {label: '', value: ''}
                 n[t] = value
@@ -66,7 +67,7 @@ export function EnvironmentVariables() {
                 component="label"
                 color="primary"
                 onClick={addVariable}
-                >+</Button>
+                >+ Environment Variable</Button>
             </Grid>
         </>
     )

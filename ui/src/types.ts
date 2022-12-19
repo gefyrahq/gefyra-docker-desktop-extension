@@ -15,7 +15,7 @@ export type GefyraStatus = {
 }
 
 export type EnvironmentVariable = {
-    name: string
+    label: string
     value: string
 }
 
@@ -92,4 +92,10 @@ export const statusMap = {
         text: 'Loading available namespaces',
         loading: true
     }
+}
+
+export type GefyraStatusBarProps = {
+    error: boolean
+    label: string
+    progress: number
 }
