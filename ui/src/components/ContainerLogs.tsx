@@ -26,7 +26,6 @@ export function ContainerLogs(props: ContainerLogsProps) {
     }, [logs]);
 
     useEffect(() => {
-        setOutput('Loadings logs...')
         ddClient.docker.cli.exec("logs", ["-f", props.container], {
             stream: {
                 onOutput(data) {
@@ -59,7 +58,7 @@ export function ContainerLogs(props: ContainerLogsProps) {
     }
 
     return (
-        <Box sx={styles}>{logs.map((log, index) => <div><Ansi key={index} linkify>{log}</Ansi></div>)}
+        <Box sx={styles}>{logs.map((log, index) => <div key={index}><Ansi linkify>{log}</Ansi></div>)}
             <div ref={scrollable} />
         </Box>
     )

@@ -4,7 +4,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { EnvironmentVariables } from "./EnvironmentVariables";
 import { VolumeMounts } from "./VolumeMounts";
 import store, { RootState } from "./store";
-import gefyra, { setNamespace } from "./store/gefyra";
+import gefyra, { setNamespace, setContainerName } from "./store/gefyra";
 import { GefyraRunRequest, GefyraStatusRequest, GefyraUpRequest, K8sNamespaceRequest } from "gefyra/lib/protocol";
 import { createDockerDesktopClient } from "@docker/extension-api-client";
 import { Gefyra } from "./gefyraClient";
@@ -26,6 +26,8 @@ export function Container() {
 
     const namespace = useAppSelector(state => state.gefyra.namespace)
     const environmentVariables = useAppSelector(state => state.gefyra.environmentVariables)
+    // TODO check if container is already running on startup
+    const containerName = useAppSelector(state => state.gefyra.containerName)
     const ddClient = createDockerDesktopClient();
 
 
@@ -66,10 +68,12 @@ export function Container() {
         upRequest.context = context;
 
         const runRequest = new GefyraRunRequest();
+        const containerName = `gefyra-${(Math.random() + 1).toString(36).substring(7)}`;
         runRequest.image = image;
-        runRequest.command = "sleep 300"
+        runRequest.command = "sh -c 'echo hello && sleep 300'"
         runRequest.namespace = namespace
-        console.log(environmentVariables)
+        runRequest.name = containerName
+        dispatch(setContainerName(containerName))
         runRequest.env = environmentVariables.map((item: EnvironmentVariable) => `${item.label}=${item.value}`);
 
         const statusRequest = new GefyraStatusRequest()
@@ -137,7 +141,7 @@ export function Container() {
         //     })
         // })
 
-        // next()
+        next()
 
 
         // let volumes = store.getState().gefyra.volumes

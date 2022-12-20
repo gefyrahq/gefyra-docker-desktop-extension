@@ -2,6 +2,7 @@ import { Button, Grid, Typography } from "@mui/material";
 
 import { useState, useEffect, useRef, useMemo } from "react";
 import { createDockerDesktopClient } from "@docker/extension-api-client";
+import store from "./store";
 import useNavigation from "./composable/navigation";
 import { ContainerLogs } from "./components/ContainerLogs";
 
@@ -18,7 +19,6 @@ export function Run() {
         return convertOutput(output)
     }, [output])
 
-    const container = false
     const scrollable = useRef<HTMLDivElement | null>(null);
     useEffect(() => {
         scrollable?.current?.scrollIntoView({ behavior: 'smooth' });
@@ -29,28 +29,13 @@ export function Run() {
         { resetMode: false, step: 3, view: 'run' },
     )
 
-    useEffect(() => {
-        ddClient.docker.cli.exec("logs", ["-f", "kind-control-plane"], {
-            stream: {
-              onOutput(data) {
-                if (data.stdout) {
-                  setOutput(old => old + data.stdout)
-                } else {
-                  console.log(data.stderr);
-                }
-              },
-              onError(error) {
-                console.error(error);
-              },
-              onClose(exitCode) {
-                console.log("onClose with exit code " + exitCode);
-              },
-              splitOutputLines: false,
-            },
-          });
-
-    }, [])
-
+    const stopContainer = () => {
+      ddClient.docker.cli.exec("stop", [store.getState().gefyra.containerName]).then(res => {
+        console.log("stopped")
+        console.log(res)
+        back()
+      })
+    }
 
 
     return (
@@ -61,16 +46,16 @@ export function Run() {
                 </Typography>
             </Grid>
             
-            {container ? <Grid item xs={12}>
-                <ContainerLogs container="kind-control-plane" height={500} />
-            </Grid>: ''}
+            <Grid item xs={12}>
+                <ContainerLogs container={store.getState().gefyra.containerName} height={500} />
+            </Grid>
 
             <Grid item xs={12} textAlign="right">
                 <Button
                     variant="contained"
                     component="label"
                     color="error"
-                    onClick={back}
+                    onClick={stopContainer}
                     sx={{ marginTop: 1 }}
                 >
                     Stop container

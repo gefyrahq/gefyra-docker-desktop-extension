@@ -8,6 +8,7 @@ export const gefyraSlice = createSlice({
       context: localStorage.getItem("kubectx") || "",
       image: localStorage.getItem("runImage") || "",
       namespace: localStorage.getItem("namespace") || "",
+      containerName: localStorage.getItem("containerName") || "",
       environmentVariables: [],
       volumeMounts: JSON.parse(localStorage.getItem("volumeMounts")) || [],
     },
@@ -26,6 +27,10 @@ export const gefyraSlice = createSlice({
       setNamespace: (state, action) => {
         state.namespace = action.payload
         localStorage.setItem("namespace", action.payload)
+      },
+      setContainerName: (state, action) => {
+        state.containerName = action.payload
+        localStorage.setItem("containerName", action.payload)
       },
       setImage: (state, action) => {
 	      state.image = action.payload
@@ -59,6 +64,6 @@ export const gefyraSlice = createSlice({
 })
 
 
-export const { setMode, setKubeconfig, setContext, setNamespace, addEnvironmentVariable, removeEnvironmentVariable, addVolumeMount, removeVolumeMount, setVolumeMount, setImage, setEnvironmentVariables } = gefyraSlice.actions
+export const { setMode, setKubeconfig, setContext, setNamespace, addEnvironmentVariable, removeEnvironmentVariable, addVolumeMount, removeVolumeMount, setVolumeMount, setImage, setEnvironmentVariables, setContainerName } = gefyraSlice.actions
 
 export default gefyraSlice.reducer
