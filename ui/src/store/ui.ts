@@ -1,21 +1,37 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { AlertColor } from '@mui/material';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 
 const initialSteps = [
     { label: 'Choose Mode' },
     { label: 'Kubernetes Settings' },
     { label: 'Container Settings' },
-    { label: 'Execute' },
+    { label: 'Logs' },
 ];
+
+interface UIState {
+  mode: string
+  view: string
+  steps: Array<{label: string}>
+  activeStep: number
+  snackbarText: string
+  snackbarVisible: boolean
+  snackbarType: AlertColor
+}
+
+const initialState: UIState = {
+  mode: localStorage.getItem("mode") || "",
+  view: localStorage.getItem("view") || "mode",
+  steps: initialSteps,
+  activeStep: parseInt(localStorage.getItem("activeStep")) || 0,
+  snackbarText: "",
+  snackbarVisible: false,
+  snackbarType: "success"
+}
 
 export const uiSlice = createSlice({
   name: 'ui',
-  initialState: {
-    mode: localStorage.getItem("mode") || "",
-    view: localStorage.getItem("view") || "mode",
-    steps: initialSteps,
-    activeStep: parseInt(localStorage.getItem("activeStep")) || 0,
-  },
+  initialState: initialState,
   reducers: {
     setMode: (state, action) => {
       state.mode = action.payload
@@ -36,9 +52,18 @@ export const uiSlice = createSlice({
       state.activeStep = action.payload
       localStorage.setItem("activeStep", action.payload)
     },
+    setSnackbar: (state, action: PayloadAction<{text: string, type: AlertColor}>) => {
+      state.snackbarText = action.payload.text
+      state.snackbarType = action.payload.type
+      state.snackbarVisible = true
+
+    },
+    closeSnackbar: (state) => {
+      state.snackbarVisible = false
+    }
   }
 })
 
-export const { setMode, setView, setSteps, resetSteps, setActiveStep } = uiSlice.actions
+export const { setMode, setView, setSteps, resetSteps, setActiveStep, setSnackbar, closeSnackbar } = uiSlice.actions
 
 export default uiSlice.reducer

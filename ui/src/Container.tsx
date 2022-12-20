@@ -26,6 +26,10 @@ export function Container() {
 
     const namespace = useAppSelector(state => state.gefyra.namespace)
     const environmentVariables = useAppSelector(state => state.gefyra.environmentVariables)
+    const kubeconfig = useAppSelector(state => state.gefyra.kubeconfig)
+    const context = useAppSelector(state => state.gefyra.context)
+    const image = useAppSelector(state => state.gefyra.image)
+    const volumeMounts = useAppSelector(state => state.gefyra.volumeMounts)
     // TODO check if container is already running on startup
     const containerName = useAppSelector(state => state.gefyra.containerName)
     const ddClient = createDockerDesktopClient();
@@ -56,13 +60,8 @@ export function Container() {
         setRunError(false);
         const gefyraClient = new Gefyra(ddClient);
 
-        let kubeconfig = store.getState().gefyra.kubeconfig
-        let context = store.getState().gefyra.context
 
         setRunLabel("Checking cluster for existing Gefyra installation.")
-
-        let image = store.getState().gefyra.image
-        let namespace = store.getState().gefyra.namespace
         const upRequest = new GefyraUpRequest();
         upRequest.kubeconfig = kubeconfig;
         upRequest.context = context;
@@ -75,6 +74,9 @@ export function Container() {
         runRequest.name = containerName
         dispatch(setContainerName(containerName))
         runRequest.env = environmentVariables.map((item: EnvironmentVariable) => `${item.label}=${item.value}`);
+        // TODO fix volumes - seems typing is wrong
+        // runRequest.volumes = volumeMounts;
+        
 
         const statusRequest = new GefyraStatusRequest()
 
