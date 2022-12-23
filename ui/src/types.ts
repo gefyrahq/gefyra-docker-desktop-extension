@@ -19,6 +19,16 @@ export type EnvironmentVariable = {
     value: string
 }
 
+export type VolumeMount = {
+    host: string
+    container: string
+}
+
+export type VolumeMountUpdate = {
+    index: number
+    volumeMount: VolumeMount
+}
+
 export type SelectItem = {
     label: string
     value: string

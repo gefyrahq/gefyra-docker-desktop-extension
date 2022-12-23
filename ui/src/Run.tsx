@@ -3,11 +3,11 @@ import TerminalIcon from '@mui/icons-material/Terminal';
 
 import { useState, useEffect, useRef, useMemo } from "react";
 import { createDockerDesktopClient } from "@docker/extension-api-client";
-import store from "./store";
+import store, { RootState } from "./store";
 import useNavigation from "./composable/navigation";
 import { ContainerLogs } from "./components/ContainerLogs";
 import { setSnackbar } from "./store/ui";
-import { useDispatch } from "react-redux";
+import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 
 const copyShellText = "Copy Shell Command"
@@ -16,6 +16,10 @@ export function Run() {
     const [output, setOutput] = useState<string>('')
     const [tooltipClipboard, setTooltipClipboard] = useState<string>("")
     const ddClient = createDockerDesktopClient();
+    const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
+
+    const containerName = useAppSelector(state => state.gefyra.containerName)
+
     const dispatch = useDispatch()
 
     function convertOutput(output: string) {
@@ -26,6 +30,30 @@ export function Run() {
         return convertOutput(output)
     }, [output])
 
+    const checkContainerRunning = () => {
+      ddClient.docker.listContainers({
+        all: true,
+        filters: JSON.stringify({name: [containerName]})
+      }).then((res: any) => {
+        if (res.length > 1) {
+          console.warn("Cannot check container - multiple found.")
+        }
+        console.log(res)
+        if (res.length === 1) {
+          console.log(1)
+          if (res[0].State !== "running") {
+            console.log(2)
+            dispatch(setSnackbar({text: "Container stopped for unknown reason. ", type: "warning"}))
+            back()
+          }
+        }
+        if (res.length === 0) {
+          dispatch(setSnackbar({text: "Container lost for unknown reason. ", type: "warning"}))
+          back()
+        }
+      })
+    }
+
     const scrollable = useRef<HTMLDivElement | null>(null);
     useEffect(() => {
         scrollable?.current?.scrollIntoView({ behavior: 'smooth' });
@@ -33,7 +61,15 @@ export function Run() {
 
     useEffect(() => {
       setTooltipClipboard(copyShellText)
+      const intervalId = setInterval(() => {
+          checkContainerRunning()
+      }, 5000)
+      return(() => {
+        clearInterval(intervalId)
+      })
     }, [])
+
+    
 
     const [back, next] = useNavigation(
         { resetMode: false, step: 1, view: 'settings' },
@@ -41,9 +77,8 @@ export function Run() {
     )
 
     const stopContainer = () => {
-      ddClient.docker.cli.exec("stop", [store.getState().gefyra.containerName]).then(res => {
-        console.log("stopped")
-        console.log(res)
+      ddClient.docker.cli.exec("stop", [containerName]).then(res => {
+        dispatch(setSnackbar({text: "Container stopped. ", type: "success"}))
         back()
       }).catch(err => {
         console.log(err)
@@ -53,7 +88,7 @@ export function Run() {
     }
 
     const dockerCommandClipboard = () => {
-      const command = `docker exec -it ${store.getState().gefyra.containerName} sh`
+      const command = `docker exec -it ${containerName} sh`
       navigator.clipboard.writeText(command);
       setTooltipClipboard("Command copied!")
       setTimeout(() => {

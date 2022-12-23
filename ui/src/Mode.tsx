@@ -1,10 +1,11 @@
 import { Card, CardContent, CardMedia, Typography } from "@mui/material";
+import { Component, FunctionComponent } from "react";
 import { useSelector, useDispatch } from 'react-redux'
 import { setMode, setView, setSteps, setActiveStep } from './store/ui'
 
 
 type ModeProps = {
-    image: string
+    image: FunctionComponent
     imageAlt: string
     headline: string
     caption: string
@@ -48,13 +49,7 @@ export function Mode(props: ModeProps) {
     return (    
         <>
             <Card sx={styles} onClick={activateMode}>
-                <CardMedia
-                    onClick={activateMode}
-                    component="img"
-                    height=""
-                    image={props.image}
-                    alt={props.imageAlt}
-                />
+                <props.image />
                 <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
                         {props.headline}

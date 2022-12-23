@@ -1,5 +1,8 @@
-import { Card, CardContent, CardMedia, Grid, Typography } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import { Mode } from "./Mode";
+import { ReactComponent as RunSVG } from "./assets/run.svg"
+import { ReactComponent as BridgeSVG } from "./assets/bridge.svg"
+
 
 
 export function Chooser() {
@@ -12,11 +15,11 @@ export function Chooser() {
                 </Typography>
             </Grid>
             <Grid item xs={6} alignItems="center">
-                <Mode image="/assets/run.svg" imageAlt="Run container in Kubernetes" headline="Run Container in Kubernetes"
+                <Mode image={RunSVG} imageAlt="Run container in Kubernetes" headline="Run Container in Kubernetes"
                     caption="Run a local container as new workload in a Kubernetes cluster." mode="run"/>
             </Grid>
             <Grid item xs={6}>
-                <Mode image="/assets/bridge.svg" imageAlt="Bridge container in Kubernetes" headline="Bridge Container in Kubernetes"
+                <Mode image={BridgeSVG} imageAlt="Bridge container in Kubernetes" headline="Bridge Container in Kubernetes"
                         caption="Bridge a local container into an existing workload of a Kubernetes cluster." mode="bridge" disabled/>
             </Grid>
         </>

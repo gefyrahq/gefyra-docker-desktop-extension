@@ -6,12 +6,13 @@ import { K8sContextRequest, K8sContextResponse, K8sNamespaceRequest } from "gefy
 
 import { DockerImage, statusMap } from "./types";
 import { Gefyra } from "./gefyraClient";
-import { setContext, setKubeconfig, setNamespace, setImage } from "./store/gefyra";
+import { setContext, setKubeconfig, setNamespace, setImage, setAvailableNamespaces } from "./store/gefyra";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import store, { RootState } from "./store";
 import { LSelect } from "./components/LSelect";
 import useNavigation from "./composable/navigation";
 import useDockerImages from "./composable/dockerImages";
+import { setSnackbar } from "./store/ui";
 
 const selectContext = 'Please select a context';
 
@@ -62,6 +63,8 @@ export function Settings() {
     }
 
     async function handleKubeConfigChange(e) {
+        dispatch(setKubeconfig(""))
+        dispatch(setContext(""))
         const result = await ddClient.desktopUI.dialog.showOpenDialog({
             filters: [{
                 extensions: ['yaml', 'yml']
@@ -87,23 +90,32 @@ export function Settings() {
     }, [kubeconfig, image, context])
 
     async function handleContextChange(e, b) {
+        setNextEnabled(false)
         dispatch(setContext(e.target.value))
         setStatus(statusMap[5])
-        let nsRequest = new K8sNamespaceRequest();
-        nsRequest.kubeconfig = store.getState().gefyra.kubeconfig;
-        nsRequest.context = store.getState().gefyra.context;
-        gefyraClient.exec(nsRequest).then(res => {
-            console.log(res);
-            const select = "Select a namespace";
-            setStatus(statusMap[2]);
-        })
         checkNextEnabled()
     }
 
     function checkNextEnabled() {
         console.log(image)
         if (kubeconfig && context && image) {
-            setNextEnabled(true)
+            dispatch(setSnackbar({text: "Checking available namespaces.", type: "info"}))
+
+            let nsRequest = new K8sNamespaceRequest();
+            nsRequest.kubeconfig = store.getState().gefyra.kubeconfig;
+            nsRequest.context = store.getState().gefyra.context;
+            gefyraClient.exec(nsRequest).then(res => {
+                const resp = JSON.parse(res)
+                if (resp.response && resp.response.namespaces) {
+                    dispatch(setSnackbar({text: "Namespaces have been loaded.", type: "success"}))
+                    dispatch(setAvailableNamespaces(resp.response.namespaces))
+                    setNextEnabled(true)
+                } else {
+                    dispatch(setSnackbar({text: "Cannot load cluster namespaces.", type: "error"}))
+                }
+            })
+            // TODO handle namespaces not available
+
         } else {
             setNextEnabled(false)
         }

@@ -1,10 +1,10 @@
-import { Button, Grid, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material";
+import { Button, Grid, InputLabel, TextField, Typography } from "@mui/material";
 import { useState, useEffect } from "react";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { EnvironmentVariables } from "./EnvironmentVariables";
 import { VolumeMounts } from "./VolumeMounts";
 import store, { RootState } from "./store";
-import gefyra, { setNamespace, setContainerName } from "./store/gefyra";
+import gefyra, { setNamespace, setContainerName, setCommand } from "./store/gefyra";
 import { GefyraRunRequest, GefyraStatusRequest, GefyraUpRequest, K8sNamespaceRequest } from "gefyra/lib/protocol";
 import { createDockerDesktopClient } from "@docker/extension-api-client";
 import { Gefyra } from "./gefyraClient";
@@ -12,19 +12,21 @@ import useNavigation from "./composable/navigation";
 import { LSelect } from "./components/LSelect";
 import { GefyraStatusBar } from "./components/GefyraStatusBar";
 import { EnvironmentVariable } from "./types";
-
+import { checkStowawayReady, gefyraUp } from "./utils/gefyra";
 
 
 export function Container() {
     const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
 
-    const [availableNamespaces, setAvailableNamespaces] = useState([]);
     const [namespaceInputActive, setNamespaceInputActive] = useState(false);
+    const [selectNamespaces, setSelectNamespaces] = useState([]);
     const [runLabel, setRunLabel] = useState("");
     const [runProgress, setRunProgress] = useState(0);
     const [runError, setRunError] = useState(false);
 
     const namespace = useAppSelector(state => state.gefyra.namespace)
+    const availableNamespaces = useAppSelector(state => state.gefyra.availableNamespaces)
+    const command = useAppSelector(state => state.gefyra.command)
     const environmentVariables = useAppSelector(state => state.gefyra.environmentVariables)
     const kubeconfig = useAppSelector(state => state.gefyra.kubeconfig)
     const context = useAppSelector(state => state.gefyra.context)
@@ -56,8 +58,12 @@ export function Container() {
         updateProgress(msg, null, true)        
     }
 
+    const handleCommandChange = (e) => {
+        dispatch(setCommand(e.target.value))
+    }
+
     async function run() {
-        setRunError(false);
+        updateProgress("", 0, false)
         const gefyraClient = new Gefyra(ddClient);
 
 
@@ -69,14 +75,13 @@ export function Container() {
         const runRequest = new GefyraRunRequest();
         const containerName = `gefyra-${(Math.random() + 1).toString(36).substring(7)}`;
         runRequest.image = image;
-        runRequest.command = "sh -c 'echo hello && sleep 300'"
+        runRequest.command = command
         runRequest.namespace = namespace
         runRequest.name = containerName
         dispatch(setContainerName(containerName))
         runRequest.env = environmentVariables.map((item: EnvironmentVariable) => `${item.label}=${item.value}`);
         // TODO fix volumes - seems typing is wrong
-        // runRequest.volumes = volumeMounts;
-        
+        runRequest.volumes = volumeMounts.map(item => `${item.host}:${item.container}`);
 
         const statusRequest = new GefyraStatusRequest()
 
@@ -91,26 +96,27 @@ export function Container() {
             updateProgress("Cluster connection confirmed.", 5)
             if (!cluster.operator) {
                 updateProgress("Gefyra Operator not found. Installing now.")
-                const res = await gefyraClient.exec(upRequest).then((res) => {
-                    const response = JSON.parse(res)
-                    return response.status === "success"
-                })
+                const res = await gefyraUp(gefyraClient, upRequest)
                 if (!res) {
                     displayError("Could not install Gefyra")
+                    return;
                 }
             } else {
                 updateProgress("Gefyra Operator confirmed.", 15)
             }
-            if (!cluster.stowaway) {
+            updateProgress("Waiting for stowaway to become ready.", 15)
+            const stowawayReady = await checkStowawayReady(gefyraClient, 2).catch(err => false)
+            // cycles stowaway retry
+            if (!stowawayReady) {
                 displayError("Could not confirm Stowaway - fatal error.")
                 return;
             }
-            updateProgress("Gefyra Stowaway confirmed.", 20)
+            updateProgress("Gefyra Stowaway confirmed.", 25)
             if (!client.cargo) {
                 displayError("Gefyra Cargo not running.")
                 return;
             }
-            updateProgress("Gefyra Cargo confirmed.", 30)
+            updateProgress("Gefyra Cargo confirmed.", 30)   
             if (!client.network) {
                 displayError("Gefyra network missing.")
                 return;
@@ -123,9 +129,10 @@ export function Container() {
             updateProgress("Gefyra Cargo connection confirmed.", 60)
 
             updateProgress("Starting local container.", 70)
+            console.log(runRequest)
             const runResult = await gefyraClient.exec(runRequest).then(async res => {
                 const result = JSON.parse(res)
-                console.log(result)
+                console.log(result) 
                 return result.status === "success"
             })
             if (!runResult) {
@@ -133,38 +140,19 @@ export function Container() {
                 return;
             }
             updateProgress("Container is running!", 100)
-
+            next()
+        }).catch(err => {
+            console.log(err)
         })
-
-        // gefyraClient.exec(upRequest).then(res => {
-        //     console.log(res);
-        //     gefyraClient.exec(runRequest).then(res => {
-        //         console.log(res)
-        //     })
-        // })
-
-        next()
-
-
-        // let volumes = store.getState().gefyra.volumes
-        // let namespace = store.getState().gefyra.namespace
-
     }
 
 
     function initNamespaces() {
-        let nsRequest = new K8sNamespaceRequest();
-        nsRequest.kubeconfig = store.getState().gefyra.kubeconfig;
-        nsRequest.context = store.getState().gefyra.context;
-        gefyraClient.exec(nsRequest).then(res => {
-            let parsed = JSON.parse(res);
-            const namespaces = parsed.response.namespaces;
-            setNamespaceInputActive(true);
-            setAvailableNamespaces([{label: 'Select a namespace', value: 'select'}].concat(namespaces.map(n => ({label: n, value: n}))));
-            if (!namespace) {
-                dispatch(setNamespace('select'))
-            }
-        })
+        setNamespaceInputActive(true);
+        setSelectNamespaces([{label: 'Select a namespace', value: 'select'}].concat(availableNamespaces.map(n => ({label: n, value: n}))));
+        if (!namespace) {
+            dispatch(setNamespace('select'))
+        }   
     }
 
     function handleNamespaceChange(e, b): any {
@@ -183,10 +171,15 @@ export function Container() {
                 </Typography>
             </Grid>
             <Grid item xs={5}>
-                <InputLabel sx={{ mb: 1, mt: 2 }} id="namespace-select-label">Namespace</InputLabel>
+                <InputLabel sx={{ mb: 1 }} id="namespace-select-label">Namespace</InputLabel>
                 <LSelect labelId="namespace-select-label" id="namespace-select" value={namespace} label="Namespace"
-                    handleChange={handleNamespaceChange} disabled={!namespaceInputActive} loading={!namespaceInputActive} items={availableNamespaces}/>
-                
+                    handleChange={handleNamespaceChange} disabled={!namespaceInputActive} loading={!namespaceInputActive} items={selectNamespaces}/>
+            </Grid>
+
+            <Grid item xs={7}>
+                <InputLabel sx={{ mb: 1 }} id="command-label">Command (Overwrite)</InputLabel>
+                <TextField id="command" variant="outlined" fullWidth value={command}
+                    onInput={handleCommandChange} />
             </Grid>
             <EnvironmentVariables />
             <VolumeMounts></VolumeMounts>
