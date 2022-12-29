@@ -22,7 +22,7 @@ const initialState: GefyraState = {
   containerName: localStorage.getItem("containerName") || "",
   environmentVariables: [],
   volumeMounts: JSON.parse(localStorage.getItem("volumeMounts")) || [],
-  command: localStorage.getItem("command") || "",
+  command: JSON.parse(localStorage.getItem("command")) || "",
 }
 
 export const gefyraSlice = createSlice({
