@@ -12,7 +12,7 @@ import useNavigation from "./composable/navigation";
 import { LSelect } from "./components/LSelect";
 import { GefyraStatusBar } from "./components/GefyraStatusBar";
 import { EnvironmentVariable } from "./types";
-import { checkStowawayReady, gefyraUp } from "./utils/gefyra";
+import { checkCargoReady, checkStowawayReady, gefyraUp } from "./utils/gefyra";
 
 
 export function Container() {
@@ -87,8 +87,8 @@ export function Container() {
 
         await gefyraClient.exec(statusRequest).then(async (res) => {
             const response = JSON.parse(res).response;
-            const cluster = response.cluster;
-            const client = response.client;
+            let cluster = response.cluster;
+            let client = response.client;
             if (!cluster.connected) {
                 displayError("Cluster connection not available.")
                 return;
@@ -105,16 +105,21 @@ export function Container() {
                 updateProgress("Gefyra Operator confirmed.", 15)
             }
             updateProgress("Waiting for stowaway to become ready.", 15)
-            const stowawayReady = await checkStowawayReady(gefyraClient, 2).catch(err => false)
+            cluster = await checkStowawayReady(gefyraClient, 10).catch(err => false)
             // cycles stowaway retry
-            if (!stowawayReady) {
+            if (!cluster.stowaway) {
                 displayError("Could not confirm Stowaway - fatal error.")
                 return;
             }
             updateProgress("Gefyra Stowaway confirmed.", 25)
             if (!client.cargo) {
-                displayError("Gefyra Cargo not running.")
-                return;
+                updateProgress("Cargo not found - starting Cargo now...", 27)
+                await gefyraUp(gefyraClient, upRequest)
+                client = await checkCargoReady(gefyraClient, 10).catch(err => false)
+                if (!client.cargo) {
+                    displayError("Gefyra Cargo not running.")
+                    return;
+                }
             }
             updateProgress("Gefyra Cargo confirmed.", 30)   
             if (!client.network) {
