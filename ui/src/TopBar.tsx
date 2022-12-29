@@ -1,9 +1,11 @@
-import { ReactComponent as Logo } from "./assets/gefyra_horizontal.svg"
+import { ReactComponent as LogoLight } from "./assets/gefyra_horizontal.svg"
+import { ReactComponent as LogoDark } from "./assets/gefyra_horizontal_dark.svg"
 import { createDockerDesktopClient } from "@docker/extension-api-client";
-import { Button, Grid, Typography } from "@mui/material";
+import { Button, Grid, Typography, useMediaQuery } from "@mui/material";
 
 export function TopBar() {
     const docker = createDockerDesktopClient();
+    const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
     function githubLink(e) {
         docker.host.openExternal("https://github.com/gefyrahq/gefyra");
     }
@@ -14,7 +16,8 @@ export function TopBar() {
     return (
         <Grid container>
             <Grid item xs={8}>
-                <Logo width="200" height="60"/>
+                {prefersDarkMode ? <LogoDark width="200" height="60"/> : <LogoLight width="200" height="60"/>}
+                
             </Grid>
             <Grid item xs={4} textAlign="right" alignSelf={"flex-end"}>
                 <Button sx={{marginRight: 2}} variant="contained" onClick={githubExtensionLink}>
