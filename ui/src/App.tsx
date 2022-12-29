@@ -1,27 +1,22 @@
-import React, {useEffect} from 'react';
+import { useEffect } from 'react';
 import { Alert, Paper, Snackbar } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 
 import { TopBar } from './TopBar';
 import { Chooser } from './Chooser';
-import { GefyraStatus } from './types';
 import { Progress } from './Progress'
 import { Settings } from './Settings'
 import { Container } from './Container'
 import { Run } from './Run'
-import store, { RootState } from './store'
+import { RootState } from './store'
 import { closeSnackbar, setActiveStep, setView } from './store/ui';
+import { RunProgress } from './RunProgress';
 
 
 
 
 export function App() {
-    const [status, setStatus] = React.useState<GefyraStatus>({
-        text: '',
-        action: '',
-        help: ''
-    });
     const useAppSelector: TypedUseSelectorHook<RootState> = useSelector
     const dispatch = useDispatch()
 
@@ -63,7 +58,10 @@ export function App() {
             { view === 'container' && kubeconfig &&
                 <Container />
             }
-            { view === 'run' &&
+            { view === 'run' && kubeconfig &&
+                <RunProgress />
+            }
+            { view === 'logs' &&
                 <Run />
             }
             </Grid>

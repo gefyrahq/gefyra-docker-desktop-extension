@@ -6,6 +6,7 @@ const initialSteps = [
     { label: 'Choose Mode' },
     { label: 'Kubernetes Settings' },
     { label: 'Container Settings' },
+    { label: 'Start Gefyra' },
     { label: 'Logs' },
 ];
 
