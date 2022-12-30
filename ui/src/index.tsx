@@ -21,5 +21,5 @@ ReactDOM.render(
       </Provider>
     </DockerMuiThemeProvider>
   </React.StrictMode>,
-  document.getElementById('root'),
+  document.getElementById('root')
 );
