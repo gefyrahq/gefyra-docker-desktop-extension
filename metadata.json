@@ -19,14 +19,19 @@
   "host": {
     "binaries": [
       {
+        "linux": [
+          {
+            "path": "/linux/gefyra-json"
+          } 
+        ],
         "darwin": [
           {
-            "path": "/gefyra-json"
+            "path": "/darwin/gefyra-json"
           } 
         ],
         "windows": [
           {
-            "path": "/windows/kubectl.exe"
+            "path": "/windows/gefyra-json.exe"
           }
         ]
       }

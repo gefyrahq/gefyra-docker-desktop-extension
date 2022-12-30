@@ -2,19 +2,24 @@
 
 FROM alpine AS dl
 WORKDIR /tmp
-RUN apk add --no-cache curl tar
+RUN apk add --no-cache wget unzip
 ARG TARGETARCH
-# RUN <<EOT ash
-#     mkdir -p /out/darwin
-#     curl -fSsLo /out/darwin/kubectl "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/darwin/${TARGETARCH}/kubectl"
-#     chmod a+x /out/darwin/kubectl
-# EOT
-# RUN <<EOT ash
-#     if [ "amd64" = "$TARGETARCH" ]; then
-#         mkdir -p /out/windows
-#         curl -fSsLo /out/windows/kubectl.exe "https://dl.k8s.io/release/$(curl -Ls https://dl.k8s.io/release/stable.txt)/bin/windows/amd64/kubectl.exe"
-#     fi
-# EOT
+ARG GEFYRA_EXT_RELEASE
+RUN <<EOT ash
+    wget -qO- https://api.github.com/repos/gefyrahq/gefyra-ext/releases/tags/${GEFYRA_EXT_RELEASE} | grep browser_download_url | cut -d '"' -f 4 | wget -qi -
+    tar --help
+    mkdir /windows
+    mkdir /darwin
+    mkdir /linux
+    # unzip windows files
+    unzip -j gefyra-${GEFYRA_EXT_RELEASE}-windows-x86_64.zip -d /windows 
+    # unzip mac files
+    unzip -j gefyra-${GEFYRA_EXT_RELEASE}-darwin-universal.zip -d /darwin 
+    # unzip linux files
+    unzip -j gefyra-${GEFYRA_EXT_RELEASE}-linux-amd64.zip -d /linux 
+
+EOT
+    
 
 FROM alpine
 LABEL org.opencontainers.image.title="example-extension" \
@@ -49,11 +54,16 @@ LABEL org.opencontainers.image.title="gefyra-docker-extension" \
 COPY docker-compose.yaml .
 COPY metadata.json .
 COPY gefyra_icon.svg .
-COPY gefyra-json ./gefyra-json
-RUN chmod u+x gefyra-json
+
+RUN mkdir /windows
+RUN mkdir /darwin
+RUN mkdir /linux
+
 COPY --from=client-builder /ui/build ui
 COPY --from=client-builder /ui/public ui/public
-# COPY --from=dl /out /
+COPY --from=dl /windows/gefyra-json.exe /windows
+COPY --from=dl /darwin/gefyra-json /darwin
+COPY --from=dl /linux/gefyra-json /linux
 
 CMD [ "sleep", "infinity" ]
 
