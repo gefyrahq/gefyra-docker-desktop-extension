@@ -17,12 +17,14 @@ const steps = {
     { label: 'Mode (Run)' },
     { label: 'Kubernetes Settings' },
     { label: 'Container Settings' },
+    { label: 'Start Gefyra' },
     { label: 'Execute' }
   ],
   bridge: [
     { label: 'Mode (Bridge)' },
     { label: 'Kubernetes Settings' },
     { label: 'Container Settings' },
+    { label: 'Start Gefyra' },
     { label: 'Execute' }
   ]
 };
