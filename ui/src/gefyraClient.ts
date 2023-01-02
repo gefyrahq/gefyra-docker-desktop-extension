@@ -12,14 +12,17 @@ class Gefyra extends GefyraBaseClient {
   }
 
   async exec(request: GefyraRequest): Promise<any> {
-    console.log(request.serialize());
+    const host = this.client.host;
+    Sentry.setTag('action', request.action);
+    Sentry.setTag('os', host.platform);
+    Sentry.setTag('arch', host.arch);
+    Sentry.captureMessage('geyfra-ext action');
+
     return new Promise((resolve, reject) => {
       this.client.extension.host.cli.exec('gefyra-json', [request.serialize()], {
         stream: {
           onOutput(data): void {
-            Sentry.setTag('action', request.action);
             if (data.stdout) {
-              Sentry.captureMessage('geyfra-ext action');
               resolve(data.stdout);
             } else {
               Sentry.captureMessage('geyfra-ext action failed');

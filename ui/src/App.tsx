@@ -30,7 +30,8 @@ export function App() {
 
   useEffect(() => {
     const initApp = () => {
-      if (process.env.NODE_ENV === 'production') {
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('init sentry');
         Sentry.init({
           dsn: 'https://11cee47c7bdd4a2a91e211b2119cb8fb@sentry.unikube.io/6',
           release: process.env.REACT_APP_VERSION
