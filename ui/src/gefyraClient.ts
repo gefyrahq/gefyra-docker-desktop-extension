@@ -18,9 +18,8 @@ class Gefyra extends GefyraBaseClient {
           onOutput(data): void {
             if (data.stdout) {
               resolve(data.stdout);
-              console.log(data.stdout);
             } else {
-              console.log(data.stderr);
+              // console.log(data.stderr);
             }
           },
           onError(error: any): void {
