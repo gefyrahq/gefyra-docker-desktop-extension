@@ -18,13 +18,6 @@ RUN <<EOT ash
     unzip -j gefyra-${GEFYRA_EXT_RELEASE}-linux-amd64.zip -d /linux 
 
 EOT
-    
-
-FROM alpine
-LABEL org.opencontainers.image.title="example-extension" \
-    org.opencontainers.image.description="My Example Extension" \
-    org.opencontainers.image.vendor="Docker Inc." \
-    com.docker.desktop.extension.api.version=">= 0.1.0"
 
 FROM --platform=$BUILDPLATFORM node:17.7-alpine3.14 AS client-builder
 WORKDIR /ui
