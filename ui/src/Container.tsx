@@ -4,18 +4,28 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { EnvironmentVariables } from './EnvironmentVariables';
 import { VolumeMounts } from './VolumeMounts';
 import { RootState } from './store';
-import { setNamespace, setCommand } from './store/gefyra';
+import { setNamespace, setCommand, setEnvFrom } from './store/gefyra';
 import useNavigation from './composable/navigation';
 import { LSelect } from './components/LSelect';
+import { K8sWorkloadsRequest, K8sWorkloadsResponse } from 'gefyra/lib/protocol';
+import { Gefyra } from './gefyraClient';
+import { createDockerDesktopClient } from '@docker/extension-api-client';
 
 export function Container() {
   const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+  const ddClient = createDockerDesktopClient();
 
   const [namespaceInputActive, setNamespaceInputActive] = useState(false);
   const [selectNamespaces, setSelectNamespaces] = useState([]);
+  const [selectEnvFrom, setSelectEnvFrom] = useState([]);
+  const [envFromActive, setEnvFromActive] = useState(false);
 
   const namespace = useAppSelector((state) => state.gefyra.namespace);
   const availableNamespaces = useAppSelector((state) => state.gefyra.availableNamespaces);
+
+  const envFrom = useAppSelector((state) => state.gefyra.envFrom);
+  const availableWorkloads = useAppSelector((state) => state.gefyra.availableWorkloads);
+
   const command = useAppSelector((state) => state.gefyra.command);
   // TODO check if container is already running on startup
 
@@ -30,8 +40,30 @@ export function Container() {
     dispatch(setCommand(e.target.value));
   };
 
+  const updateEnvFromSelect = (namespaceVal) => {
+    const wlrRequest = new K8sWorkloadsRequest();
+
+    const gefyraClient = new Gefyra(ddClient);
+    gefyraClient.exec(wlrRequest).then((res) => {
+      const wlr: K8sWorkloadsResponse = JSON.parse(res);
+      dispatch(setEnvFrom('select'));
+      setEnvFromActive(true);
+      setSelectEnvFrom(
+        [{ label: 'Select a workload', value: 'select' }].concat(
+          wlr.response.workloads[namespaceVal].map((w) => ({ label: w, value: w }))
+        )
+      );
+    });
+  };
+
   function handleNamespaceChange(e, b): any {
-    dispatch(setNamespace(e.target.value));
+    const namespaceVal = e.target.value;
+    dispatch(setNamespace(namespaceVal));
+    updateEnvFromSelect(namespaceVal);
+  }
+
+  function handleEnvFromChange(e, b): any {
+    dispatch(setEnvFrom(e.target.value));
   }
 
   useEffect(() => {
@@ -46,8 +78,12 @@ export function Container() {
         dispatch(setNamespace('select'));
       }
     }
+    if (namespace) {
+      updateEnvFromSelect(namespace);
+    }
+
     initNamespaces();
-  }, [dispatch, availableNamespaces, namespace]);
+  }, [dispatch, availableNamespaces, namespace, envFrom, availableWorkloads]);
 
   return (
     <>
@@ -80,6 +116,22 @@ export function Container() {
           fullWidth
           value={command}
           onInput={handleCommandChange}
+        />
+      </Grid>
+
+      <Grid item xs={5}>
+        <InputLabel sx={{ mb: 1 }} id="envFrom-select-label">
+          Copy environment from
+        </InputLabel>
+        <LSelect
+          labelId="envFrom-select-label"
+          id="envFrom-select"
+          value={envFrom}
+          label="Copy Environment From"
+          handleChange={handleEnvFromChange}
+          disabled={!envFromActive}
+          loading={!envFromActive}
+          items={selectEnvFrom}
         />
       </Grid>
       <EnvironmentVariables />

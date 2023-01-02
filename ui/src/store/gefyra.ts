@@ -11,6 +11,8 @@ interface GefyraState {
   environmentVariables: Array<EnvironmentVariable>;
   volumeMounts: Array<VolumeMount>;
   command: string;
+  availableWorkloads: Array<string>;
+  envFrom: string;
 }
 
 const initialState: GefyraState = {
@@ -22,7 +24,9 @@ const initialState: GefyraState = {
   containerName: localStorage.getItem('containerName') || '',
   environmentVariables: [],
   volumeMounts: JSON.parse(localStorage.getItem('volumeMounts')) || [],
-  command: JSON.parse(localStorage.getItem('command')) || ''
+  command: JSON.parse(localStorage.getItem('command')) || '',
+  availableWorkloads: [],
+  envFrom: JSON.parse(localStorage.getItem('envFrom')) || ''
 };
 
 export const gefyraSlice = createSlice({
@@ -81,6 +85,13 @@ export const gefyraSlice = createSlice({
     },
     setAvailableNamespaces: (state, action: PayloadAction<Array<string>>) => {
       state.availableNamespaces = action.payload;
+    },
+    setAvailableWorkloads: (state, action: PayloadAction<Array<string>>) => {
+      state.availableWorkloads = action.payload;
+    },
+    setEnvFrom: (state, action: PayloadAction<string>) => {
+      state.envFrom = action.payload;
+      localStorage.setItem('envFrom', JSON.stringify(state.envFrom));
     }
   }
 });
@@ -98,7 +109,9 @@ export const {
   setEnvironmentVariables,
   setContainerName,
   setCommand,
-  setAvailableNamespaces
+  setAvailableNamespaces,
+  setAvailableWorkloads,
+  setEnvFrom
 } = gefyraSlice.actions;
 
 export default gefyraSlice.reducer;

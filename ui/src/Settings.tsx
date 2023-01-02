@@ -107,9 +107,9 @@ export function Settings() {
     if (kubeconfig && context && image) {
       dispatch(setSnackbar({ text: 'Checking available namespaces.', type: 'info' }));
 
-      let nsRequest = new K8sNamespaceRequest();
-      nsRequest.kubeconfig = store.getState().gefyra.kubeconfig;
-      nsRequest.context = store.getState().gefyra.context;
+      const nsRequest = new K8sNamespaceRequest();
+      nsRequest.kubeconfig = kubeconfig;
+      nsRequest.context = context;
       gefyraClient.exec(nsRequest).then((res) => {
         const resp = JSON.parse(res);
         if (resp.response && resp.response.namespaces) {
