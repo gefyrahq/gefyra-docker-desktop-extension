@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/browser';
 import { useEffect } from 'react';
 import { Alert, Paper, Snackbar } from '@mui/material';
 import Grid from '@mui/material/Grid';
@@ -29,8 +30,13 @@ export function App() {
 
   useEffect(() => {
     const initApp = () => {
+      if (process.env.NODE_ENV === 'production') {
+        Sentry.init({
+          dsn: 'https://11cee47c7bdd4a2a91e211b2119cb8fb@sentry.unikube.io/6',
+          release: process.env.REACT_APP_VERSION
+        });
+      }
       if (!kubeconfig) {
-        console.log('init app');
         dispatch(setView('settings'));
         dispatch(setActiveStep(1));
       }
