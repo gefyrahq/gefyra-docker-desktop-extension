@@ -26,6 +26,7 @@ export function RunProgress() {
   const volumeMounts = useAppSelector((state) => state.gefyra.volumeMounts);
   const namespace = useAppSelector((state) => state.gefyra.namespace);
   const command = useAppSelector((state) => state.gefyra.command);
+  const envFrom = useAppSelector((state) => state.gefyra.envFrom);
 
   const dispatch = useDispatch();
 
@@ -62,6 +63,7 @@ export function RunProgress() {
       runRequest.command = command;
       runRequest.namespace = namespace;
       runRequest.name = containerName;
+      runRequest.envfrom = envFrom;
       dispatch(setContainerName(containerName));
       runRequest.env = environmentVariables.map(
         (item: EnvironmentVariable) => `${item.label}=${item.value}`
@@ -122,7 +124,6 @@ export function RunProgress() {
           updateProgress('Gefyra Cargo connection confirmed.', 60);
 
           updateProgress('Starting local container.', 70);
-          console.log(runRequest);
           const runResult = await gefyraClient.exec(runRequest).then(async (res) => {
             const result = JSON.parse(res);
             console.log(result);

@@ -7,7 +7,6 @@ ARG TARGETARCH
 ARG GEFYRA_EXT_RELEASE
 RUN <<EOT ash
     wget -qO- https://api.github.com/repos/gefyrahq/gefyra-ext/releases/tags/${GEFYRA_EXT_RELEASE} | grep browser_download_url | cut -d '"' -f 4 | wget -qi -
-    tar --help
     mkdir /windows
     mkdir /darwin
     mkdir /linux
