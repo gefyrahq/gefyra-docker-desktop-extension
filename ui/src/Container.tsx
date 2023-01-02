@@ -46,7 +46,9 @@ export function Container() {
     const gefyraClient = new Gefyra(ddClient);
     gefyraClient.exec(wlrRequest).then((res) => {
       const wlr: K8sWorkloadsResponse = JSON.parse(res);
-      dispatch(setEnvFrom('select'));
+      if (!envFrom) {
+        dispatch(setEnvFrom('select'));
+      }
       setEnvFromActive(true);
       setSelectEnvFrom(
         [{ label: 'Select a workload', value: 'select' }].concat(
