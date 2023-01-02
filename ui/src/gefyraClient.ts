@@ -1,6 +1,7 @@
 import { DockerDesktopClient } from '@docker/extension-api-client-types/dist/v1';
 import { GefyraBaseClient } from 'gefyra/lib/base';
 import { GefyraRequest } from 'gefyra/lib/protocol';
+import * as Sentry from '@sentry/browser';
 
 class Gefyra extends GefyraBaseClient {
   client: DockerDesktopClient;
@@ -16,10 +17,12 @@ class Gefyra extends GefyraBaseClient {
       this.client.extension.host.cli.exec('gefyra-json', [request.serialize()], {
         stream: {
           onOutput(data): void {
+            Sentry.setTag('action', request.action);
             if (data.stdout) {
+              Sentry.captureMessage('geyfra-ext action');
               resolve(data.stdout);
             } else {
-              // console.log(data.stderr);
+              Sentry.captureMessage('geyfra-ext action failed');
             }
           },
           onError(error: any): void {
