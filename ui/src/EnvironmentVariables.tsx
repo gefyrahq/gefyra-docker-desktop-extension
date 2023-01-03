@@ -39,9 +39,6 @@ export function EnvironmentVariables() {
 
   return (
     <>
-      <Grid item xs={12}>
-        Environment Variables
-      </Grid>
       {variables.map((v, index) =>
         v ? (
           <Grid item xs={12} key={index}>

@@ -8,15 +8,13 @@ import { App } from './App';
 import { Provider } from 'react-redux';
 import store from './store';
 
-if (process.env.NODE_ENV !== 'production') {
-  console.log('init sentry');
-  Sentry.init({
-    dsn: 'https://11cee47c7bdd4a2a91e211b2119cb8fb@sentry.unikube.io/6',
-    release: process.env.REACT_APP_VERSION
-  });
-  Sentry.setTag('user', 'docker-desktop');
-  Sentry.setContext('user', {});
-}
+Sentry.init({
+  dsn: 'https://11cee47c7bdd4a2a91e211b2119cb8fb@sentry.unikube.io/6',
+  release: process.env.REACT_APP_VERSION,
+  environment: process.env.NODE_ENV
+});
+Sentry.setTag('user', 'docker-desktop');
+Sentry.setContext('user', {});
 
 ReactDOM.render(
   <React.StrictMode>

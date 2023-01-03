@@ -1,19 +1,10 @@
 {
   "icon": "gefyra_icon.svg",
-  "vm": {
-    "composefile": "docker-compose.yaml",
-    "exposes": {
-      "socket": "gefyra-docker-extension.sock"
-    }
-  },
   "ui": {
     "dashboard-tab": {
       "title": "Gefyra",
       "src": "index.html",
-      "root": "ui",
-      "backend": {
-        "socket": "gefyra-docker-extension.sock"
-      }
+      "root": "ui"
     }
   },
   "host": {

@@ -52,8 +52,6 @@ export function VolumeMounts() {
   return (
     <>
       <Grid item xs={12}>
-        <p>Volume Mounts</p>
-
         {volumeMounts.map((v, index) =>
           v ? (
             <Grid container spacing={4} key={index}>
