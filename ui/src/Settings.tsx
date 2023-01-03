@@ -1,17 +1,15 @@
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 
-import { Autocomplete, Button, Grid, InputLabel, TextField, Typography } from '@mui/material';
+import { Button, Grid, InputLabel, TextField, Typography } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { K8sContextRequest, K8sContextResponse, K8sNamespaceRequest } from 'gefyra/lib/protocol';
 
-import { DockerImage } from './types';
 import { Gefyra } from './gefyraClient';
-import { setContext, setKubeconfig, setImage, setAvailableNamespaces } from './store/gefyra';
+import { setContext, setKubeconfig, setAvailableNamespaces } from './store/gefyra';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import store, { RootState } from './store';
 import { LSelect } from './components/LSelect';
 import useNavigation from './composable/navigation';
-import useDockerImages from './composable/dockerImages';
 import { setSnackbar } from './store/ui';
 
 const selectContext = 'Please select a context';
@@ -29,13 +27,11 @@ export function Settings() {
     { resetMode: true, step: 0, view: 'mode' },
     { resetMode: false, step: 2, view: 'container' }
   );
-  const { images, loading: imagesLoading } = useDockerImages();
 
   const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
   const kubeconfig = useAppSelector((state) => state.gefyra.kubeconfig);
   const context = useAppSelector((state) => state.gefyra.context);
-  const image = useAppSelector((state) => state.gefyra.image);
 
   const gefyraClient = new Gefyra(ddClient);
 
@@ -88,13 +84,9 @@ export function Settings() {
     }
   }
 
-  function handleImageChange(e, b: DockerImage) {
-    dispatch(setImage(b ? b.name : null));
-  }
-
   useEffect(() => {
     checkNextEnabled();
-  }, [kubeconfig, image, context]);
+  }, [kubeconfig, context]);
 
   async function handleContextChange(e, b) {
     setNextEnabled(false);
@@ -103,8 +95,7 @@ export function Settings() {
   }
 
   function checkNextEnabled() {
-    console.log(image);
-    if (kubeconfig && context && image) {
+    if (kubeconfig && context) {
       dispatch(setSnackbar({ text: 'Checking available namespaces.', type: 'info' }));
 
       const nsRequest = new K8sNamespaceRequest();
@@ -173,21 +164,6 @@ export function Settings() {
           id={'context-input'}
           labelId={'context-select-label'}
           handleChange={handleContextChange}></LSelect>
-      </Grid>
-      <Grid item xs={12}>
-        <Autocomplete
-          id="grouped-images"
-          options={images.sort((a, b) => -b.repo[0].localeCompare(a.repo[0]))}
-          groupBy={(o) => o.type}
-          getOptionLabel={(image: DockerImage) => image.name}
-          renderInput={(params) => <TextField {...params} label="Select image" />}
-          loading={imagesLoading}
-          disabled={imagesLoading}
-          inputValue={image}
-          sx={{ width: 300 }}
-          onChange={handleImageChange}
-          noOptionsText="No Images found"
-        />
       </Grid>
       <Grid item xs={12}>
         <Button

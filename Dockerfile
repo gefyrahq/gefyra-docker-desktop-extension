@@ -16,7 +16,6 @@ RUN <<EOT ash
     unzip -j gefyra-${GEFYRA_EXT_RELEASE}-darwin-universal.zip -d /darwin 
     # unzip linux files
     unzip -j gefyra-${GEFYRA_EXT_RELEASE}-linux-amd64.zip -d /linux 
-
 EOT
 
 FROM --platform=$BUILDPLATFORM node:17.7-alpine3.14 AS client-builder
@@ -52,7 +51,6 @@ RUN mkdir /darwin
 RUN mkdir /linux
 
 COPY --from=client-builder /ui/build ui
-COPY --from=client-builder /ui/public ui/public
 COPY --from=dl /windows/gefyra-json.exe /windows
 COPY --from=dl /darwin/gefyra-json /darwin
 COPY --from=dl /linux/gefyra-json /linux

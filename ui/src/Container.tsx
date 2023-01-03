@@ -1,15 +1,28 @@
-import { Button, Grid, InputLabel, TextField, Typography } from '@mui/material';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Autocomplete,
+  Button,
+  Grid,
+  InputLabel,
+  TextField,
+  Typography
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useState, useEffect } from 'react';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { EnvironmentVariables } from './EnvironmentVariables';
 import { VolumeMounts } from './VolumeMounts';
 import { RootState } from './store';
-import { setNamespace, setCommand, setEnvFrom } from './store/gefyra';
+import { setNamespace, setCommand, setEnvFrom, setImage } from './store/gefyra';
 import useNavigation from './composable/navigation';
 import { LSelect } from './components/LSelect';
 import { K8sWorkloadsRequest, K8sWorkloadsResponse } from 'gefyra/lib/protocol';
 import { Gefyra } from './gefyraClient';
 import { createDockerDesktopClient } from '@docker/extension-api-client';
+import useDockerImages from './composable/dockerImages';
+import { DockerImage } from './types';
 
 export function Container() {
   const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
@@ -21,7 +34,10 @@ export function Container() {
   const [envFromActive, setEnvFromActive] = useState(false);
 
   const namespace = useAppSelector((state) => state.gefyra.namespace);
+  const { images, loading: imagesLoading } = useDockerImages(namespace);
+
   const availableNamespaces = useAppSelector((state) => state.gefyra.availableNamespaces);
+  const image = useAppSelector((state) => state.gefyra.image);
 
   const envFrom = useAppSelector((state) => state.gefyra.envFrom);
   const availableWorkloads = useAppSelector((state) => state.gefyra.availableWorkloads);
@@ -68,6 +84,10 @@ export function Container() {
     dispatch(setEnvFrom(e.target.value));
   }
 
+  function handleImageChange(e, b: DockerImage) {
+    dispatch(setImage(b ? b.name : null));
+  }
+
   useEffect(() => {
     function initNamespaces() {
       setNamespaceInputActive(true);
@@ -107,17 +127,22 @@ export function Container() {
           items={selectNamespaces}
         />
       </Grid>
-
       <Grid item xs={7}>
-        <InputLabel sx={{ mb: 1 }} id="command-label">
-          Command (Overwrite)
+        <InputLabel sx={{ mb: 1 }} id="image-select-label">
+          Image
         </InputLabel>
-        <TextField
-          id="command"
-          variant="outlined"
-          fullWidth
-          value={command}
-          onInput={handleCommandChange}
+        <Autocomplete
+          id="grouped-images"
+          options={images.sort((a, b) => -b.repo[0].localeCompare(a.repo[0]))}
+          groupBy={(o) => o.type}
+          getOptionLabel={(image: DockerImage) => image.name}
+          renderInput={(params) => <TextField {...params} />}
+          loading={imagesLoading}
+          disabled={imagesLoading}
+          inputValue={image}
+          sx={{ width: 300 }}
+          onChange={handleImageChange}
+          noOptionsText="No Images found"
         />
       </Grid>
 
@@ -136,8 +161,39 @@ export function Container() {
           items={selectEnvFrom}
         />
       </Grid>
-      <EnvironmentVariables />
-      <VolumeMounts></VolumeMounts>
+      <Grid item xs={6}>
+        <InputLabel sx={{ mb: 1 }} id="command-label">
+          Command (Overwrite)
+        </InputLabel>
+        <TextField
+          id="command"
+          variant="outlined"
+          fullWidth
+          value={command}
+          onInput={handleCommandChange}
+        />
+      </Grid>
+
+      <Grid item xs={11}>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography>Additional Environment Variables</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <EnvironmentVariables />
+          </AccordionDetails>
+        </Accordion>
+      </Grid>
+      <Grid item xs={11}>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography>Volume Mounts</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <VolumeMounts></VolumeMounts>
+          </AccordionDetails>
+        </Accordion>
+      </Grid>
 
       <Grid item xs={12}>
         <Button
