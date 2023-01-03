@@ -27,7 +27,6 @@ RUN --mount=type=cache,target=/usr/src/app/.npm \
     npm ci
 # install
 COPY ui /ui
-COPY ui/node_modules/gefyra /ui/node_modules/gefyra
 RUN npm run build
 
 FROM alpine
