@@ -42,7 +42,6 @@ LABEL org.opencontainers.image.title="gefyra-docker-extension" \
     com.docker.extension.additional-urls="" \
     com.docker.extension.changelog=""
 
-COPY docker-compose.yaml .
 COPY metadata.json .
 COPY gefyra_icon.svg .
 
