@@ -46,11 +46,8 @@ export function Run() {
           if (res.length > 1) {
             console.warn('Cannot check container - multiple found.');
           }
-          console.log(res);
           if (res.length === 1) {
-            console.log(1);
             if (res[0].State !== 'running') {
-              console.log(2);
               dispatch(
                 setSnackbar({ text: 'Container stopped for unknown reason. ', type: 'warning' })
               );

@@ -63,7 +63,10 @@ export function RunProgress() {
       runRequest.command = command;
       runRequest.namespace = namespace;
       runRequest.name = containerName;
-      runRequest.envfrom = envFrom;
+      if (envFrom && envFrom !== 'select') {
+        console.log(envFrom);
+        runRequest.envfrom = envFrom;
+      }
       dispatch(setContainerName(containerName));
       runRequest.env = environmentVariables.map(
         (item: EnvironmentVariable) => `${item.label}=${item.value}`

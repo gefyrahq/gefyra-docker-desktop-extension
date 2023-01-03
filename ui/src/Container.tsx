@@ -48,6 +48,7 @@ export function Container() {
 
   const availableNamespaces = useAppSelector((state) => state.gefyra.availableNamespaces);
 
+  const image = useAppSelector((state) => state.gefyra.image);
   const envFrom = useAppSelector((state) => state.gefyra.envFrom);
   const environmentVariables = useAppSelector((state) => state.gefyra.environmentVariables);
   const volumeMounts = useAppSelector((state) => state.gefyra.volumeMounts);
@@ -80,7 +81,7 @@ export function Container() {
       }
       setEnvFromActive(true);
       setSelectEnvFrom(
-        [{ label: 'Select a workload', value: 'select' }].concat(
+        [{ label: 'Select a workload', value: '' }].concat(
           wlr.response.workloads[namespaceVal].map((w) => ({ label: w, value: w }))
         )
       );
@@ -131,7 +132,6 @@ export function Container() {
       updateEnvFromSelect(namespace);
     }
 
-
     initNamespaces();
   }, [dispatch, availableNamespaces, namespace, envFrom, availableWorkloads]);
 
@@ -164,10 +164,11 @@ export function Container() {
           options={images.sort((a, b) => -b.repo[0].localeCompare(a.repo[0]))}
           groupBy={(o) => o.type}
           getOptionLabel={(image: DockerImage) => image.name}
-          renderInput={(params) => <TextField {...params} label="Select image" />}
+          renderInput={(params) => <TextField {...params} />}
           loading={imagesLoading}
           disabled={imagesLoading}
           sx={{ width: 300 }}
+          value={{ name: image }}
           onChange={handleImageChange}
           noOptionsText="No Images found"
         />
