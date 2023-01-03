@@ -21,6 +21,8 @@ jobs:
           id: ddg_meta
           uses: docker/metadata-action@v4
           with:
+            images: |
+              gefyra/docker-desktop-extension
             flavor: |
               latest=false
             tags: |
