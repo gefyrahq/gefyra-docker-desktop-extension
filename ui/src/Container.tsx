@@ -131,7 +131,6 @@ export function Container() {
     if (namespace) {
       updateEnvFromSelect(namespace);
     }
-
     initNamespaces();
   }, [dispatch, availableNamespaces, namespace, envFrom, availableWorkloads]);
 
