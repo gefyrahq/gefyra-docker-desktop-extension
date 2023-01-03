@@ -1,7 +1,6 @@
-import { createDockerDesktopClient } from "@docker/extension-api-client";
-
+import { createDockerDesktopClient } from '@docker/extension-api-client';
 
 export const openLink = (url: string): void => {
-    const client = createDockerDesktopClient()
-    client.host.openExternal(url);
-}
+  const client = createDockerDesktopClient();
+  client.host.openExternal(url);
+};

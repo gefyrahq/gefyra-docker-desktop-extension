@@ -10,8 +10,8 @@
 	<!ENTITY ns_custom "http://ns.adobe.com/GenericCustomNamespace/1.0/">
 	<!ENTITY ns_adobe_xpath "http://ns.adobe.com/XPath/1.0/">
 ]>
-<svg version="1.1" id="Слой_1" xmlns:x="&ns_extend;" xmlns:i="&ns_ai;" xmlns:graph="&ns_graphs;"
-	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 2689.9 2016.6"
+<svg version="1.1" id="Слой_1" xmlnsX="&ns_extend;" xmlnsI="&ns_ai;" xmlnsGraph="&ns_graphs;"
+	 xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 2689.9 2016.6"
 	 style="enable-background:new 0 0 2689.9 2016.6;" xml:space="preserve">
 <style type="text/css">
 	.Тень{fill:none;}

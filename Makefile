@@ -2,12 +2,13 @@ IMAGE?=gefyra/docker-desktop-extension
 TAG?=latest
 
 BUILDER=buildx-multi-arch
+GEFYRA_EXT_RELEASE=0.3.7
 
 INFO_COLOR = \033[0;36m
 NO_COLOR   = \033[m
 
 build-extension: ## Build service image to be deployed as a desktop extension
-	docker build --tag=$(IMAGE):$(TAG) .
+	docker build --build-arg GEFYRA_EXT_RELEASE=${GEFYRA_EXT_RELEASE} --tag=$(IMAGE):$(TAG) .
 
 install-extension: build-extension ## Install the extension
 	docker extension install $(IMAGE):$(TAG)

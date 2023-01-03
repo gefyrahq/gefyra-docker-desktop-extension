@@ -1,51 +1,117 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { EnvironmentVariable, VolumeMount, VolumeMountUpdate } from '../types';
+
+interface GefyraState {
+  kubeconfig: string;
+  context: string;
+  image: string;
+  namespace: string;
+  availableNamespaces: Array<string>;
+  containerName: string;
+  environmentVariables: Array<EnvironmentVariable>;
+  volumeMounts: Array<VolumeMount>;
+  command: string;
+  availableWorkloads: Array<string>;
+  envFrom: string;
+}
+
+const initialState: GefyraState = {
+  kubeconfig: localStorage.getItem('kubeconfig') || '',
+  context: localStorage.getItem('kubectx') || '',
+  image: localStorage.getItem('runImage') || '',
+  namespace: localStorage.getItem('namespace') || '',
+  availableNamespaces: [],
+  containerName: localStorage.getItem('containerName') || '',
+  environmentVariables: [],
+  volumeMounts: JSON.parse(localStorage.getItem('volumeMounts')) || [],
+  command: JSON.parse(localStorage.getItem('command')) || '',
+  availableWorkloads: [],
+  envFrom: JSON.parse(localStorage.getItem('envFrom')) || ''
+};
 
 export const gefyraSlice = createSlice({
-    name: 'gefyra',
-    initialState: {
-      mode: '',
-      kubeconfig: '',
-      context: '',
-      namespace: '',
-      environmentVariables: [],
-      volumeMounts: [],
-      expose: ''
+  name: 'gefyra',
+  initialState: initialState,
+  reducers: {
+    setKubeconfig: (state, action: PayloadAction<string>) => {
+      state.kubeconfig = action.payload;
+      localStorage.setItem('kubeconfig', action.payload);
     },
-    reducers: {
-      setMode: (state, action) => {
-        state.mode = action.payload
-      },
-      setKubeconfig: (state, action) => {
-        state.kubeconfig = action.payload
-      },
-      setContext: (state, action) => {
-        state.context = action.payload
-      },
-      setNamespace: (state, action) => {
-        state.namespace = action.payload
-      },
-      addEnvironmentVariable: (state, action) => {
-        state.environmentVariables.push(action.payload)
-      },
-      removeEnvironmentVariable: (state, action) => {
-        state.environmentVariables = state.environmentVariables.filter((e, index) => index !== action.payload)
-      },  
-      addVolumeMount: (state, action) => {
-        state.volumeMounts.push(action.payload)
-      },
-      setVolumeMount: (state, action) => {
-        state.volumeMounts[action.payload.index] = action.payload.volumeMount
-      },
-      removeVolumeMount: (state, action) => {
-        state.volumeMounts = state.volumeMounts.filter((e, index) => index !== action.payload)
-      },
-      setExpose: (state, action) => {
-        state.expose = action.payload
-      }
+    setContext: (state, action: PayloadAction<string>) => {
+      state.context = action.payload;
+      localStorage.setItem('kubectx', action.payload);
+    },
+    setNamespace: (state, action: PayloadAction<string>) => {
+      state.namespace = action.payload;
+      localStorage.setItem('namespace', action.payload);
+    },
+    setContainerName: (state, action: PayloadAction<string>) => {
+      state.containerName = action.payload;
+      localStorage.setItem('containerName', action.payload);
+    },
+    setImage: (state, action: PayloadAction<string>) => {
+      state.image = action.payload;
+      localStorage.setItem('runImage', action.payload);
+    },
+    setEnvironmentVariables: (state, action: PayloadAction<Array<EnvironmentVariable>>) => {
+      state.environmentVariables = action.payload;
+      localStorage.setItem('environmentVariables', JSON.stringify(state.environmentVariables));
+    },
+    addEnvironmentVariable: (state, action: PayloadAction<EnvironmentVariable>) => {
+      state.environmentVariables.push(action.payload);
+      localStorage.setItem('environmentVariables', JSON.stringify(state.environmentVariables));
+    },
+    removeEnvironmentVariable: (state, action: PayloadAction<number>) => {
+      state.environmentVariables = state.environmentVariables.filter(
+        (e, index) => index !== action.payload
+      );
+      localStorage.setItem('environmentVariables', JSON.stringify(state.environmentVariables));
+    },
+    addVolumeMount: (state, action: PayloadAction<VolumeMount>) => {
+      state.volumeMounts.push(action.payload);
+      localStorage.setItem('volumeMounts', JSON.stringify(state.volumeMounts));
+    },
+    setVolumeMount: (state, action: PayloadAction<VolumeMountUpdate>) => {
+      state.volumeMounts[action.payload.index] = action.payload.volumeMount;
+      localStorage.setItem('volumeMounts', JSON.stringify(state.volumeMounts));
+    },
+    removeVolumeMount: (state, action: PayloadAction<number>) => {
+      state.volumeMounts = state.volumeMounts.filter((e, index) => index !== action.payload);
+      localStorage.setItem('volumeMounts', JSON.stringify(state.volumeMounts));
+    },
+    setCommand: (state, action: PayloadAction<string>) => {
+      state.command = action.payload;
+      localStorage.setItem('command', JSON.stringify(state.command));
+    },
+    setAvailableNamespaces: (state, action: PayloadAction<Array<string>>) => {
+      state.availableNamespaces = action.payload;
+    },
+    setAvailableWorkloads: (state, action: PayloadAction<Array<string>>) => {
+      state.availableWorkloads = action.payload;
+    },
+    setEnvFrom: (state, action: PayloadAction<string>) => {
+      state.envFrom = action.payload;
+      localStorage.setItem('envFrom', JSON.stringify(state.envFrom));
     }
-})
+  }
+});
 
+export const {
+  setKubeconfig,
+  setContext,
+  setNamespace,
+  addEnvironmentVariable,
+  removeEnvironmentVariable,
+  addVolumeMount,
+  removeVolumeMount,
+  setVolumeMount,
+  setImage,
+  setEnvironmentVariables,
+  setContainerName,
+  setCommand,
+  setAvailableNamespaces,
+  setAvailableWorkloads,
+  setEnvFrom
+} = gefyraSlice.actions;
 
-export const { setMode, setKubeconfig, setContext, setNamespace, addEnvironmentVariable, removeEnvironmentVariable, addVolumeMount, removeVolumeMount, setVolumeMount, setExpose } = gefyraSlice.actions
-
-export default gefyraSlice.reducer
+export default gefyraSlice.reducer;
