@@ -15,10 +15,20 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { EnvironmentVariables } from './EnvironmentVariables';
 import { VolumeMounts } from './VolumeMounts';
 import { RootState } from './store';
-import { setNamespace, setCommand, setEnvFrom, setImage } from './store/gefyra';
+import {
+  setNamespace,
+  setCommand,
+  setEnvFrom,
+  setImage,
+  setAvailableNamespaces
+} from './store/gefyra';
 import useNavigation from './composable/navigation';
 import { LSelect } from './components/LSelect';
-import { K8sWorkloadsRequest, K8sWorkloadsResponse } from 'gefyra/lib/protocol';
+import {
+  K8sNamespaceRequest,
+  K8sWorkloadsRequest,
+  K8sWorkloadsResponse
+} from 'gefyra/lib/protocol';
 import { Gefyra } from './gefyraClient';
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import useDockerImages from './composable/dockerImages';
@@ -37,9 +47,12 @@ export function Container() {
   const { images, loading: imagesLoading } = useDockerImages(namespace);
 
   const availableNamespaces = useAppSelector((state) => state.gefyra.availableNamespaces);
-  const image = useAppSelector((state) => state.gefyra.image);
 
   const envFrom = useAppSelector((state) => state.gefyra.envFrom);
+  const environmentVariables = useAppSelector((state) => state.gefyra.environmentVariables);
+  const volumeMounts = useAppSelector((state) => state.gefyra.volumeMounts);
+  const kubeconfig = useAppSelector((state) => state.gefyra.kubeconfig);
+  const context = useAppSelector((state) => state.gefyra.context);
   const availableWorkloads = useAppSelector((state) => state.gefyra.availableWorkloads);
 
   const command = useAppSelector((state) => state.gefyra.command);
@@ -85,12 +98,26 @@ export function Container() {
   }
 
   function handleImageChange(e, b: DockerImage) {
-    dispatch(setImage(b ? b.name : null));
+    dispatch(setImage(b ? b.name : ''));
   }
 
   useEffect(() => {
     function initNamespaces() {
       setNamespaceInputActive(true);
+      // TODO if not available namespaces - load again
+      if (!availableNamespaces.length) {
+        const ddClient = createDockerDesktopClient();
+        const gefyraClient = new Gefyra(ddClient);
+        const nsRequest = new K8sNamespaceRequest();
+        nsRequest.kubeconfig = kubeconfig;
+        nsRequest.context = context;
+        gefyraClient.exec(nsRequest).then((res) => {
+          const resp = JSON.parse(res);
+          if (resp.response && resp.response.namespaces) {
+            dispatch(setAvailableNamespaces(resp.response.namespaces));
+          }
+        });
+      }
       setSelectNamespaces(
         [{ label: 'Select a namespace', value: 'select' }].concat(
           availableNamespaces.map((n) => ({ label: n, value: n }))
@@ -136,10 +163,9 @@ export function Container() {
           options={images.sort((a, b) => -b.repo[0].localeCompare(a.repo[0]))}
           groupBy={(o) => o.type}
           getOptionLabel={(image: DockerImage) => image.name}
-          renderInput={(params) => <TextField {...params} />}
+          renderInput={(params) => <TextField {...params} label="Select image" />}
           loading={imagesLoading}
           disabled={imagesLoading}
-          inputValue={image}
           sx={{ width: 300 }}
           onChange={handleImageChange}
           noOptionsText="No Images found"
@@ -177,7 +203,10 @@ export function Container() {
       <Grid item xs={11}>
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>Additional Environment Variables</Typography>
+            <Typography>
+              Additional Environment Variables{' '}
+              {environmentVariables.length ? `(${environmentVariables.length})` : ''}
+            </Typography>
           </AccordionSummary>
           <AccordionDetails>
             <EnvironmentVariables />
@@ -187,7 +216,9 @@ export function Container() {
       <Grid item xs={11}>
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>Volume Mounts</Typography>
+            <Typography>
+              Volume Mounts {volumeMounts.length ? `(${volumeMounts.length})` : ''}
+            </Typography>
           </AccordionSummary>
           <AccordionDetails>
             <VolumeMounts></VolumeMounts>

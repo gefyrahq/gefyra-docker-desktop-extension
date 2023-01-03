@@ -35,13 +35,11 @@ const useDockerImages = (namespace: string) => {
         }
       });
       setLoading(false);
-      setImages(images);
-      console.log(images);
-      console.log('blah');
+      setImages((old) => [...old, ...images]);
     });
     const request = new K8sImagesRequest();
     // @ts-ignore
-    request.namespace = namespace;
+    request.namespace = namespace || 'default';
     gefyraClient.exec(request).then((res) => {
       const imageResponse = JSON.parse(res);
       imageResponse.response.containers.map((c) => {
@@ -49,13 +47,12 @@ const useDockerImages = (namespace: string) => {
         image.repo = c.image.split(':')[0];
         image.tag = c.image.split(':')[1];
         image.name = `${image.repo}:${image.tag}`;
-        image.type = 'remote';
+        image.type = 'Kubernetes';
         images.push(image);
       });
-      setImages(images);
-      console.log(images);
+      setImages((old) => [...old, ...images]);
     });
-  }, [namespace]);
+  }, []);
   const value = useMemo(
     () => ({
       images,
