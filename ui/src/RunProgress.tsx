@@ -1,5 +1,5 @@
 import { createDockerDesktopClient } from '@docker/extension-api-client';
-import { Grid } from '@mui/material';
+import { Button, Grid } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { GefyraRunRequest, GefyraStatusRequest, GefyraUpRequest } from 'gefyra/lib/protocol';
 import { Gefyra } from './gefyraClient';
@@ -32,7 +32,7 @@ export function RunProgress() {
 
   const dispatch = useDispatch();
 
-  const [, next] = useNavigation(
+  const [back, next] = useNavigation(
     { resetMode: false, step: 2, view: 'container' },
     { resetMode: false, step: 4, view: 'logs' }
   );
@@ -87,6 +87,7 @@ export function RunProgress() {
       await gefyraClient
         .exec(statusRequest)
         .then(async (res) => {
+          console.log(res);
           const response = JSON.parse(res).response;
           let cluster = response.cluster;
           let client = response.client;
@@ -157,8 +158,20 @@ export function RunProgress() {
   return (
     <>
       <Grid container justifyContent="center">
-        <Grid item xs={11} sx={{ mt: 8, mb: 5 }}>
+        <Grid item xs={11} sx={{ mt: 8 }}>
           <GefyraStatusBar label={runLabel} progress={runProgress} error={runError} />
+        </Grid>
+        <Grid item xs={11} sx={{ mt: 2, mb: 5 }} textAlign="right">
+          {runError && (
+            <Button
+              variant="contained"
+              component="label"
+              color="error"
+              onClick={back}
+              sx={{ marginTop: 1 }}>
+              Cancel
+            </Button>
+          )}
         </Grid>
       </Grid>
     </>
