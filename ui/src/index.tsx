@@ -18,11 +18,6 @@ Sentry.setContext('user', {});
 
 ReactDOM.render(
   <React.StrictMode>
-    {/*
-      If you eject from MUI (which we don't recommend!), you should add
-      the `dockerDesktopTheme` class to your root <html> element to get
-      some minimal Docker theming.
-    */}
     <DockerMuiThemeProvider>
       <CssBaseline />
       <Provider store={store}>

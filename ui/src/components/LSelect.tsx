@@ -8,16 +8,12 @@ export function LSelect(props: SelectProps) {
       labelId={props.labelId}
       id={props.id}
       value={props.loading ? 'loading' : props.value}
-      label={props.label}
       onChange={props.handleChange}
       sx={{ minWidth: 300 }}
       disabled={props.disabled}>
       {props.items.length ? (
         props.items.map((item, index) => (
-          <MenuItem
-            key={item.value}
-            value={item.value}
-            disabled={index === 0 && item.value === 'select'}>
+          <MenuItem key={item.value} value={item.value} disabled={index === 0}>
             {item.label}
           </MenuItem>
         ))

@@ -72,17 +72,20 @@ export function Container() {
 
   const updateEnvFromSelect = (namespaceVal) => {
     const wlrRequest = new K8sWorkloadsRequest();
+    wlrRequest.kubeconfig = kubeconfig;
+    wlrRequest.context = context;
 
     const gefyraClient = new Gefyra(ddClient);
     gefyraClient.exec(wlrRequest).then((res) => {
       const wlr: K8sWorkloadsResponse = JSON.parse(res);
-      if (!envFrom) {
+      const workloads = wlr.response.workloads[namespaceVal];
+      if (!envFrom || !workloads.includes(envFrom)) {
         dispatch(setEnvFrom('select'));
       }
       setEnvFromActive(true);
       setSelectEnvFrom(
-        [{ label: 'Select a workload', value: '' }].concat(
-          wlr.response.workloads[namespaceVal].map((w) => ({ label: w, value: w }))
+        [{ label: 'Select a workload', value: 'select', forceEnable: true }].concat(
+          workloads.map((w) => ({ label: w, value: w }))
         )
       );
     });
@@ -103,8 +106,8 @@ export function Container() {
   }
 
   useEffect(() => {
-    function initNamespaces() {
-      setNamespaceInputActive(true);
+    async function initNamespaces() {
+      setNamespaceInputActive(false);
       // TODO if not available namespaces - load again
       if (!availableNamespaces.length) {
         const ddClient = createDockerDesktopClient();
@@ -112,7 +115,7 @@ export function Container() {
         const nsRequest = new K8sNamespaceRequest();
         nsRequest.kubeconfig = kubeconfig;
         nsRequest.context = context;
-        gefyraClient.exec(nsRequest).then((res) => {
+        await gefyraClient.exec(nsRequest).then((res) => {
           const resp = JSON.parse(res);
           if (resp.response && resp.response.namespaces) {
             dispatch(setAvailableNamespaces(resp.response.namespaces));
@@ -124,6 +127,7 @@ export function Container() {
           availableNamespaces.map((n) => ({ label: n, value: n }))
         )
       );
+      setNamespaceInputActive(true);
       if (!namespace) {
         dispatch(setNamespace('select'));
       }
@@ -197,6 +201,7 @@ export function Container() {
           variant="outlined"
           fullWidth
           value={command}
+          InputLabelProps={{ shrink: false }}
           onInput={handleCommandChange}
         />
       </Grid>
