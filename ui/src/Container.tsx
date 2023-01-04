@@ -91,6 +91,7 @@ export function Container() {
           )
         );
       }
+      setEnvFromActive(true);
     });
   };
 
