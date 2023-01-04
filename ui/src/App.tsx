@@ -30,8 +30,8 @@ export function App() {
   useEffect(() => {
     const initApp = () => {
       if (!kubeconfig) {
-        dispatch(setView('settings'));
-        dispatch(setActiveStep(1));
+        dispatch(setView('mode'));
+        dispatch(setActiveStep(0));
       }
     };
     initApp();
