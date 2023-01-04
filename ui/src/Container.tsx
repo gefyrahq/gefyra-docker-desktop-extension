@@ -75,24 +75,30 @@ export function Container() {
     const wlrRequest = new K8sWorkloadsRequest();
     wlrRequest.kubeconfig = kubeconfig;
     wlrRequest.context = context;
-
     const gefyraClient = new Gefyra(ddClient);
-    gefyraClient.exec(wlrRequest).then((res) => {
-      const wlr: K8sWorkloadsResponse = JSON.parse(res);
-      const workloads = wlr.response.workloads[namespaceVal];
-      if (!envFrom || (workloads && !workloads.includes(envFrom))) {
-        dispatch(setEnvFrom('select'));
-      }
-      if (workloads) {
+    gefyraClient
+      .exec(wlrRequest)
+      .then((res) => {
+        const wlr: K8sWorkloadsResponse = JSON.parse(res);
+        const workloads = wlr?.response?.workloads[namespaceVal] || undefined;
+        if (!envFrom || (workloads && !workloads.includes(envFrom))) {
+          dispatch(setEnvFrom('select'));
+        }
+        if (workloads) {
+          setSelectEnvFrom(
+            [{ label: 'Select a workload', value: 'select' }].concat(
+              workloads.map((w) => ({ label: w, value: w }))
+            )
+          );
+        } else {
+          setSelectEnvFrom([{ label: 'No workloads available', value: 'select' }]);
+          dispatch(setEnvFrom('select'));
+        }
         setEnvFromActive(true);
-        setSelectEnvFrom(
-          [{ label: 'Select a workload', value: 'select', forceEnable: true }].concat(
-            workloads.map((w) => ({ label: w, value: w }))
-          )
-        );
-      }
-      setEnvFromActive(true);
-    });
+      })
+      .catch((err) => {
+        console.debug(err);
+      });
   };
 
   function handleNamespaceChange(e, b): any {
@@ -125,6 +131,8 @@ export function Container() {
             dispatch(setAvailableNamespaces(resp.response.namespaces));
           }
         });
+        // TODO handle error when cluster not available etc
+        // no namespaces available
       }
       setSelectNamespaces(
         [{ label: 'Select a namespace', value: 'select' }].concat(

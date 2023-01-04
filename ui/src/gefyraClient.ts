@@ -17,6 +17,7 @@ class Gefyra extends GefyraBaseClient {
     Sentry.setTag('os', host.platform);
     Sentry.setTag('arch', host.arch);
     Sentry.captureMessage('geyfra-ext action');
+    console.debug(request);
 
     return new Promise((resolve, reject) => {
       this.client.extension.host.cli.exec('gefyra-json', [request.serialize()], {
@@ -30,6 +31,7 @@ class Gefyra extends GefyraBaseClient {
           },
           onError(error: any): void {
             console.error(error);
+            reject(error);
           },
           onClose(exitCode: number): void {
             console.log('onClose with exit code ' + exitCode);

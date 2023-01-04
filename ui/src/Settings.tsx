@@ -110,7 +110,6 @@ export function Settings() {
   async function handleContextChange(e, b) {
     setNextEnabled(false);
     dispatch(setContext(e.target.value));
-    checkNextEnabled();
   }
 
   function checkNextEnabled() {
