@@ -14,7 +14,7 @@ export function Chooser() {
   return (
     <>
       <Grid item xs={12}>
-        <Typography variant="subtitle1">Please select Gefyra&lsquo;s opration mode.</Typography>
+        <Typography variant="subtitle1">Please select Gefyra&lsquo;s operation mode.</Typography>
       </Grid>
       <Grid item xs={6}>
         <Mode
