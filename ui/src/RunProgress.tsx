@@ -63,6 +63,8 @@ export function RunProgress() {
       }
       if (port) {
         upRequest.port = port;
+      } else {
+        upRequest.port = 31820;
       }
 
       const runRequest = new GefyraRunRequest();
