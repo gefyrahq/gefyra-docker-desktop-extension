@@ -1,6 +1,16 @@
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 
-import { Button, Grid, InputLabel, TextField, Typography } from '@mui/material';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Button,
+  Grid,
+  InputLabel,
+  TextField,
+  Typography
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useState, useEffect } from 'react';
 import { K8sContextRequest, K8sContextResponse, K8sNamespaceRequest } from 'gefyra/lib/protocol';
 
@@ -11,6 +21,7 @@ import store, { RootState } from './store';
 import { LSelect } from './components/LSelect';
 import useNavigation from './composable/navigation';
 import { setSnackbar } from './store/ui';
+import { RemoteClusterSettings } from './components/RemoteClusterSettings';
 
 const selectContext = 'Please select a context';
 
@@ -164,6 +175,16 @@ export function Settings() {
           id={'context-input'}
           labelId={'context-select-label'}
           handleChange={handleContextChange}></LSelect>
+      </Grid>
+      <Grid item xs={11}>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography>Remote Cluster Settings</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <RemoteClusterSettings></RemoteClusterSettings>
+          </AccordionDetails>
+        </Accordion>
       </Grid>
       <Grid item xs={12}>
         <Button

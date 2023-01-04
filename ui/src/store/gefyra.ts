@@ -4,6 +4,8 @@ import { EnvironmentVariable, VolumeMount, VolumeMountUpdate } from '../types';
 interface GefyraState {
   kubeconfig: string;
   context: string;
+  host: string;
+  port: number;
   image: string;
   namespace: string;
   availableNamespaces: Array<string>;
@@ -18,6 +20,8 @@ interface GefyraState {
 const initialState: GefyraState = {
   kubeconfig: localStorage.getItem('kubeconfig') || '',
   context: localStorage.getItem('kubectx') || '',
+  host: localStorage.getItem('host') || '',
+  port: parseInt(localStorage.getItem('port')) || null,
   image: localStorage.getItem('runImage') || '',
   namespace: localStorage.getItem('namespace') || '',
   availableNamespaces: [],
@@ -33,6 +37,14 @@ export const gefyraSlice = createSlice({
   name: 'gefyra',
   initialState: initialState,
   reducers: {
+    setHost(state, action: PayloadAction<string>) {
+      state.host = action.payload;
+      localStorage.setItem('host', action.payload);
+    },
+    setPort(state, action: PayloadAction<number>) {
+      state.port = action.payload;
+      localStorage.setItem('port', action.payload.toString());
+    },
     setKubeconfig: (state, action: PayloadAction<string>) => {
       state.kubeconfig = action.payload;
       localStorage.setItem('kubeconfig', action.payload);
@@ -111,7 +123,9 @@ export const {
   setCommand,
   setAvailableNamespaces,
   setAvailableWorkloads,
-  setEnvFrom
+  setEnvFrom,
+  setHost,
+  setPort
 } = gefyraSlice.actions;
 
 export default gefyraSlice.reducer;

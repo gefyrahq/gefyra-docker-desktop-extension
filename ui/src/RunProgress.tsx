@@ -27,6 +27,8 @@ export function RunProgress() {
   const namespace = useAppSelector((state) => state.gefyra.namespace);
   const command = useAppSelector((state) => state.gefyra.command);
   const envFrom = useAppSelector((state) => state.gefyra.envFrom);
+  const host = useAppSelector((state) => state.gefyra.host);
+  const port = useAppSelector((state) => state.gefyra.port);
 
   const dispatch = useDispatch();
 
@@ -56,6 +58,12 @@ export function RunProgress() {
       const upRequest = new GefyraUpRequest();
       upRequest.kubeconfig = kubeconfig;
       upRequest.context = context;
+      if (host) {
+        upRequest.host = host;
+      }
+      if (port) {
+        upRequest.port = port;
+      }
 
       const runRequest = new GefyraRunRequest();
       const containerName = `gefyra-${(Math.random() + 1).toString(36).substring(7)}`;
