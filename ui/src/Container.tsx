@@ -71,6 +71,7 @@ export function Container() {
   };
 
   const updateEnvFromSelect = (namespaceVal) => {
+    setEnvFromActive(false);
     const wlrRequest = new K8sWorkloadsRequest();
     wlrRequest.kubeconfig = kubeconfig;
     wlrRequest.context = context;
