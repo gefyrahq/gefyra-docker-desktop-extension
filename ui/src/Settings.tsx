@@ -15,7 +15,13 @@ import { useState, useEffect } from 'react';
 import { K8sContextRequest, K8sContextResponse, K8sNamespaceRequest } from 'gefyra/lib/protocol';
 
 import { Gefyra } from './gefyraClient';
-import { setContext, setKubeconfig, setAvailableNamespaces } from './store/gefyra';
+import {
+  setContext,
+  setKubeconfig,
+  setAvailableNamespaces,
+  setHost,
+  setPort
+} from './store/gefyra';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import store, { RootState } from './store';
 import { LSelect } from './components/LSelect';
@@ -97,6 +103,8 @@ export function Settings() {
 
   useEffect(() => {
     checkNextEnabled();
+    dispatch(setHost(''));
+    dispatch(setPort(31820));
   }, [kubeconfig, context]);
 
   async function handleContextChange(e, b) {
