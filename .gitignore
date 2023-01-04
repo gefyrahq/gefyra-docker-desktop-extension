@@ -1,4 +1,4 @@
-.DS_Store
+*.DS_Store
 node_modules
 ui/build
 # Created by https://www.toptal.com/developers/gitignore/api/pycharm+all,visualstudiocode
