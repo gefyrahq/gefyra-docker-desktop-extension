@@ -79,15 +79,17 @@ export function Container() {
     gefyraClient.exec(wlrRequest).then((res) => {
       const wlr: K8sWorkloadsResponse = JSON.parse(res);
       const workloads = wlr.response.workloads[namespaceVal];
-      if (!envFrom || !workloads.includes(envFrom)) {
+      if (!envFrom || (workloads && !workloads.includes(envFrom))) {
         dispatch(setEnvFrom('select'));
       }
-      setEnvFromActive(true);
-      setSelectEnvFrom(
-        [{ label: 'Select a workload', value: 'select', forceEnable: true }].concat(
-          workloads.map((w) => ({ label: w, value: w }))
-        )
-      );
+      if (workloads) {
+        setEnvFromActive(true);
+        setSelectEnvFrom(
+          [{ label: 'Select a workload', value: 'select', forceEnable: true }].concat(
+            workloads.map((w) => ({ label: w, value: w }))
+          )
+        );
+      }
     });
   };
 
