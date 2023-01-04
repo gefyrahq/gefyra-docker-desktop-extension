@@ -21,7 +21,7 @@ const initialState: GefyraState = {
   kubeconfig: localStorage.getItem('kubeconfig') || '',
   context: localStorage.getItem('kubectx') || '',
   host: localStorage.getItem('host') || '',
-  port: parseInt(localStorage.getItem('port')) || null,
+  port: parseInt(localStorage.getItem('port')) || 31820,
   image: localStorage.getItem('runImage') || '',
   namespace: localStorage.getItem('namespace') || '',
   availableNamespaces: [],
