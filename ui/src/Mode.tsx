@@ -42,6 +42,7 @@ export function Mode(props: ModeProps) {
     px: 4,
     pt: 3,
     maxWidth: '80%',
+    height: '100%',
     cursor: 'pointer',
     pointerEvents: props.disabled ? 'none' : 'default',
     opacity: props.disabled ? '0.5' : '1'

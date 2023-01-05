@@ -10,8 +10,8 @@
 	<!ENTITY ns_custom "http://ns.adobe.com/GenericCustomNamespace/1.0/">
 	<!ENTITY ns_adobe_xpath "http://ns.adobe.com/XPath/1.0/">
 ]>
-<svg version="1.1" id="Слой_1" xmlnsX="&ns_extend;" xmlnsI="&ns_ai;" xmlnsGraph="&ns_graphs;"
-	 xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 2689.9 2016.6"
+<svg version="1.1" id="Слой_1" xmlnsx="&ns_extend;" xmlnsi="&ns_ai;" xmlnsgraph="&ns_graphs;"
+	 xmlns="http://www.w3.org/2000/svg" xmlnsxlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 2689.9 2016.6"
 	 style="enable-background:new 0 0 2689.9 2016.6;" xml:space="preserve">
 <style type="text/css">
 	.run .Тень{fill:none;}
@@ -173,10 +173,10 @@
 	.run .st149{fill:url(#path37712_1_);}
 </style>
 <metadata>
-	<sfw  xmlns="&ns_sfw;">
+	<!-- <sfw  xmlns="&ns_sfw;">
 		<slices></slices>
 		<sliceSourceBounds  bottomLeftOrigin="true" height="2016.6" width="2689.9" x="-384.8" y="-1262.9"></sliceSourceBounds>
-	</sfw>
+	</sfw> -->
 </metadata>
 <linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="384.7504" y1="753.7389" x2="385.4575" y2="754.446">
 	<stop  offset="0" style="stop-color:#E6E6EB"/>
