@@ -27,7 +27,7 @@ RUN --mount=type=cache,target=/usr/src/app/.npm \
     npm ci
 # install
 COPY ui /ui
-# RUN npm run build
+RUN npm run build
 # ARG RELEASE
 
 # ARG SENTRY_AUTH_TOKEN
