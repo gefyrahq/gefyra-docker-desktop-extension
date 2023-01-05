@@ -2,7 +2,8 @@ IMAGE?=gefyra/docker-desktop-extension
 TAG?=latest
 
 BUILDER=buildx-multi-arch
-GEFYRA_EXT_RELEASE=0.3.7
+
+GEFYRA_EXT_RELEASE=$$(cat ./ui/package.json | jq -r '.dependencies.gefyra' | cut -c2-)
 
 INFO_COLOR = \033[0;36m
 NO_COLOR   = \033[m

@@ -1,0 +1,13 @@
+name: Release Build
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  build:    
+    uses: ./.github/workflows/docker.yaml
+    with:
+      release: true
+    secrets: inherit
+
