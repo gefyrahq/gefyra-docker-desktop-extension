@@ -10,9 +10,16 @@ jobs:
     steps: 
         - uses: actions/checkout@v3
         - uses: actions/setup-node@v3
+        - name: Load cached node_modules
+          id: cached-node-modules
+          uses: actions/cache@v3
+          with:
+            path: ./ui/node_modules/
+            key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./ui/package-lock.json') }}
         - name: Install deps
           working-directory: ./ui
           run: npm install
+          if: steps.cached-node-modules.outputs.cache-hit != 'true'
         - name: Lint UI
           working-directory: ./ui
           run: npm run lint
