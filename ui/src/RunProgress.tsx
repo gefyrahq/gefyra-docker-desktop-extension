@@ -1,7 +1,12 @@
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import { Button, Grid } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { GefyraRunRequest, GefyraStatusRequest, GefyraUpRequest } from 'gefyra/lib/protocol';
+import {
+  GefyraDownRequest,
+  GefyraRunRequest,
+  GefyraStatusRequest,
+  GefyraUpRequest
+} from 'gefyra/lib/protocol';
 import { Gefyra } from './gefyraClient';
 import { GefyraStatusBar } from './components/GefyraStatusBar';
 import { checkCargoReady, checkStowawayReady, gefyraUp } from './utils/gefyra';
@@ -51,10 +56,25 @@ export function RunProgress() {
 
   useEffect(() => {
     async function run() {
-      updateProgress('', 0, false);
+      updateProgress('Checking current state of Gefyra.', 0, false);
+      const statusRequest = new GefyraStatusRequest();
       const gefyraClient = new Gefyra(ddClient);
+      await gefyraClient.exec(statusRequest).then(async (res) => {
+        const response = JSON.parse(res).response;
+        let client = response.client;
+        if (client.kubeconfig !== kubeconfig || client.context !== context) {
+          if (client.kubeconfig !== kubeconfig) {
+            updateProgress('Kubeconfig changed. Restarting Gefyra.', 5);
+          } else {
+            updateProgress('Context changed. Restarting Gefyra.', 5);
+          }
+          // This is done to make sure Cargo is started with the correct settings
+          const downRequest = new GefyraDownRequest();
+          await gefyraClient.exec(downRequest);
+        }
+      });
+      updateProgress('Checking cluster for existing Gefyra installation.', 10);
 
-      setRunLabel('Checking cluster for existing Gefyra installation.');
       const upRequest = new GefyraUpRequest();
       upRequest.kubeconfig = kubeconfig;
       upRequest.context = context;
@@ -74,22 +94,17 @@ export function RunProgress() {
       runRequest.namespace = namespace;
       runRequest.name = containerName;
       if (envFrom && envFrom !== 'select') {
-        console.log(envFrom);
         runRequest.envfrom = envFrom;
       }
       dispatch(setContainerName(containerName));
       runRequest.env = environmentVariables.map(
         (item: EnvironmentVariable) => `${item.label}=${item.value}`
       );
-      // TODO fix volumes - seems typing is wrong
       runRequest.volumes = volumeMounts.map((item) => `${item.host}:${item.container}`);
-
-      const statusRequest = new GefyraStatusRequest();
 
       await gefyraClient
         .exec(statusRequest)
         .then(async (res) => {
-          console.log(res);
           const response = JSON.parse(res).response;
           let cluster = response.cluster;
           let client = response.client;
@@ -97,7 +112,7 @@ export function RunProgress() {
             displayError('Cluster connection not available.');
             return;
           }
-          updateProgress('Cluster connection confirmed.', 5);
+          updateProgress('Cluster connection confirmed.', 15);
           if (!cluster.operator) {
             updateProgress('Gefyra Operator not found. Installing now.');
             const res = await gefyraUp(gefyraClient, upRequest);
@@ -106,18 +121,18 @@ export function RunProgress() {
               return;
             }
           } else {
-            updateProgress('Gefyra Operator confirmed.', 15);
+            updateProgress('Gefyra Operator confirmed.', 20);
           }
-          updateProgress('Waiting for stowaway to become ready.', 15);
+          updateProgress('Waiting for stowaway to become ready.', 25);
           cluster = await checkStowawayReady(gefyraClient, 10).catch((err) => false);
           // cycles stowaway retry
           if (!cluster.stowaway) {
             displayError('Could not confirm Stowaway - fatal error.');
             return;
           }
-          updateProgress('Gefyra Stowaway confirmed.', 25);
+          updateProgress('Gefyra Stowaway confirmed.', 30);
           if (!client.cargo) {
-            updateProgress('Cargo not found - starting Cargo now...', 27);
+            updateProgress('Cargo not found - starting Cargo now...', 35);
             await gefyraUp(gefyraClient, upRequest);
             client = await checkCargoReady(gefyraClient, 10).catch((err) => false);
             if (!client.cargo) {
@@ -125,7 +140,7 @@ export function RunProgress() {
               return;
             }
           }
-          updateProgress('Gefyra Cargo confirmed.', 30);
+          updateProgress('Gefyra Cargo confirmed.', 40);
           if (!client.network) {
             displayError('Gefyra network missing.');
             return;
