@@ -121,7 +121,7 @@ export function Settings() {
       nsRequest.context = context;
       gefyraClient.exec(nsRequest).then((res) => {
         const resp = JSON.parse(res);
-        if (resp.response && resp.response.namespaces) {
+        if (res.status !== 'error' && resp.response && resp.response.namespaces) {
           dispatch(setSnackbar({ text: 'Namespaces have been loaded.', type: 'success' }));
           dispatch(setAvailableNamespaces(resp.response.namespaces));
           setNextEnabled(true);

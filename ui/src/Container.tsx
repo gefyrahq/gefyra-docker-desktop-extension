@@ -33,6 +33,7 @@ import { Gefyra } from './gefyraClient';
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import useDockerImages from './composable/dockerImages';
 import { DockerImage } from './types';
+import { setSnackbar } from './store/ui';
 
 export function Container() {
   const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
@@ -118,7 +119,6 @@ export function Container() {
   useEffect(() => {
     async function initNamespaces() {
       setNamespaceInputActive(false);
-      // TODO if not available namespaces - load again
       if (!availableNamespaces.length) {
         const ddClient = createDockerDesktopClient();
         const gefyraClient = new Gefyra(ddClient);
@@ -127,8 +127,11 @@ export function Container() {
         nsRequest.context = context;
         await gefyraClient.exec(nsRequest).then((res) => {
           const resp = JSON.parse(res);
-          if (resp.response && resp.response.namespaces) {
+          if (resp.status !== 'error' && resp.response && resp.response.namespaces) {
             dispatch(setAvailableNamespaces(resp.response.namespaces));
+          } else {
+            dispatch(setSnackbar({ text: 'Cannot load cluster namespaces.', type: 'error' }));
+            back();
           }
         });
         // TODO handle error when cluster not available etc
