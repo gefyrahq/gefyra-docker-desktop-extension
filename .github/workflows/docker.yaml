@@ -44,7 +44,7 @@ jobs:
           uses: docker/build-push-action@v3
           with:
             build-args: |
-              GEFYRA_EXT_RELEASE=$GEFYRA_EXT_RELEASE
+              GEFYRA_EXT_RELEASE=${{ env.GEFYRA_EXT_RELEASE }}
             platforms: linux/amd64,linux/arm64
             push: ${{ github.event_name != 'pull_request' }}
             tags: ${{ steps.ddg_meta.outputs.tags }}
