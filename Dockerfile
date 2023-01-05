@@ -46,9 +46,11 @@ LABEL org.opencontainers.image.title="gefyra-docker-extension" \
     com.docker.desktop.extension.api.version=">= 0.2.3" \
     com.docker.extension.screenshots="" \
     com.docker.extension.detailed-description="" \
-    com.docker.extension.publisher-url="" \
-    com.docker.extension.additional-urls="" \
-    com.docker.extension.changelog=""
+    com.docker.extension.publisher-url="https://gefyra.dev" \
+    com.docker.extension.additional-urls="[{\"title\":\"Documentation\",\"url\":\"https://gefyra.dev\"}, {\"title\":\"Github\",\"url\":\"https://github.com/gefyrahq/gefyra/\"}]" \
+    com.docker.extension.changelog=""\
+    com.docker.desktop.extension.icon="https://raw.githubusercontent.com/gefyrahq/gefyra-docker-desktop-extension/main/gefyra_icon.svg" \
+    com.docker.extension.categories="cloud-development,kubernetes,testing-tools,container-orchestration"
 
 COPY metadata.json .
 COPY gefyra_icon.svg .
