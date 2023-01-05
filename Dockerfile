@@ -10,7 +10,7 @@ RUN mkdir /windows
 RUN mkdir /darwin
 RUN mkdir /linux
 
-RUN wget -qO- https://api.github.com/repos/gefyrahq/gefyra-ext/releases/tags/${GEFYRA_EXT_RELEASE} | grep browser_download_url | cut -d '"' -f 4 | wget -qi - \
+RUN wget -qO- https://api.github.com/repos/gefyrahq/gefyra-ext/releases/tags/${GEFYRA_EXT_RELEASE} | grep browser_download_url | cut -d '"' -f 4 | wget -i - \
     && unzip gefyra-${GEFYRA_EXT_RELEASE}-windows-x86_64.zip -d /windows \
     && unzip gefyra-${GEFYRA_EXT_RELEASE}-darwin-universal.zip -d /darwin \
     && unzip gefyra-${GEFYRA_EXT_RELEASE}-linux-amd64.zip -d /linux 
