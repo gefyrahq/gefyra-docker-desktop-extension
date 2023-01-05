@@ -44,3 +44,14 @@ Make Chrome devtools available:
 ```bash
 docker extension dev debug gefyra/docker-desktop-extension:latest
 ```
+
+## Bump gefyra-ext
+Just bump the `gefyra` package in the `ui/package.json` file (via `npm`).
+Rebuild the extension - it references the version found in the package file and will download
+the corresponding binary files.
+
+## Release
+
+1. Bump package.json (`npm version`)
+2. Commit + Tag
+3. Release on Github
