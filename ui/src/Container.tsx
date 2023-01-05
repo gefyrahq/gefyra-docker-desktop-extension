@@ -133,8 +133,6 @@ export function Container() {
             back();
           }
         });
-        // TODO handle error when cluster not available etc
-        // no namespaces available
       }
       setSelectNamespaces(
         [{ label: 'Select a namespace', value: 'select' }].concat(
