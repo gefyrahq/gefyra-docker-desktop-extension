@@ -28,16 +28,6 @@ RUN --mount=type=cache,target=/usr/src/app/.npm \
 # install
 COPY ui /ui
 RUN npm run build
-# ARG RELEASE
-
-# ARG SENTRY_AUTH_TOKEN
-#ARG SENTRY_DSN
-#ARG SENTRY_URL
-#ARG SENTRY_ORG
-#ARG SENTRY_PROJECT
-# TODO add Docker secret to add env variables
-# RUN if [[ -z "$RELEASE" ]] ; then echo No release, continuing. ; else npm install @sentry/cli && ./node_modules/.bin/sentry-cli releases new ${RELEASE} && ./node_modules/.bin/sentry-cli releases files ${RELEASE} upload-sourcemaps /ui/build/js && ./node_modules/.bin/sentry-cli releases finalize ${RELEASE} ; fi
-
 
 FROM alpine
 LABEL org.opencontainers.image.title="gefyra-docker-extension" \
