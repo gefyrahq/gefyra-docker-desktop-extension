@@ -17,6 +17,14 @@ itself. It allows leverage Gefyra as a libary and takes JSON strings as an input
 
 The Docker Desktop extension comes with a packed binary ('gefyra-ext') and builds an UI on top of it.
 
+## Installation
+
+Currently the extension is not available on the Docker Marketplace yet. Until then you can install it manually:
+
+```bash
+docker extension install gefyra/docker-desktop-extension:0.1.0
+```
+
 ## Development
 To build make sure to add executable from https://github.com/gefyrahq/gefyra-ext/ to root directory.
 
