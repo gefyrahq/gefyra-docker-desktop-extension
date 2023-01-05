@@ -11,10 +11,20 @@ import store from './store';
 Sentry.init({
   dsn: 'https://11cee47c7bdd4a2a91e211b2119cb8fb@sentry.unikube.io/6',
   release: process.env.REACT_APP_VERSION,
-  environment: process.env.NODE_ENV
+  environment: process.env.NODE_ENV,
+  beforeSend(event) {
+    if (event.user) {
+      delete event.user;
+    }
+    if (event.request) {
+      delete event.request;
+    }
+    Sentry.setTag('user', 'docker-desktop');
+    Sentry.setTag('url', '');
+    Sentry.setContext('user', {});
+    return event;
+  }
 });
-Sentry.setTag('user', 'docker-desktop');
-Sentry.setContext('user', {});
 
 ReactDOM.render(
   <React.StrictMode>
