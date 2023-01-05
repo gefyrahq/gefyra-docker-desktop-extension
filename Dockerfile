@@ -6,16 +6,14 @@ RUN apk add --no-cache wget unzip
 ARG TARGETARCH
 ARG GEFYRA_EXT_RELEASE
 
-RUN wget -qO- https://api.github.com/repos/gefyrahq/gefyra-ext/releases/tags/${GEFYRA_EXT_RELEASE} | grep browser_download_url | cut -d '"' -f 4 | wget -qi -
 RUN mkdir /windows
 RUN mkdir /darwin
 RUN mkdir /linux
-# unzip windows files
-RUN unzip gefyra-${GEFYRA_EXT_RELEASE}-windows-x86_64.zip -d /windows 
-# unzip mac files
-RUN unzip gefyra-${GEFYRA_EXT_RELEASE}-darwin-universal.zip -d /darwin 
-# unzip linux files
-RUN unzip gefyra-${GEFYRA_EXT_RELEASE}-linux-amd64.zip -d /linux 
+
+RUN wget -qO- https://api.github.com/repos/gefyrahq/gefyra-ext/releases/tags/${GEFYRA_EXT_RELEASE} | grep browser_download_url | cut -d '"' -f 4 | wget -qi - \
+    && unzip gefyra-${GEFYRA_EXT_RELEASE}-windows-x86_64.zip -d /windows \
+    && unzip gefyra-${GEFYRA_EXT_RELEASE}-darwin-universal.zip -d /darwin \
+    && unzip gefyra-${GEFYRA_EXT_RELEASE}-linux-amd64.zip -d /linux 
 
 FROM --platform=$BUILDPLATFORM node:17.7-alpine3.14 AS client-builder
 WORKDIR /ui
