@@ -82,7 +82,7 @@ export function Run() {
       })
       .catch((err) => {
         console.log(err);
-        dispatch(setSnackbar({ text: 'Could not stop container. ' + err.stderr, type: 'error' }));
+        ddClient.desktopUI.toast.error('Could not stop container. ' + err.stderr);
         back();
       });
   };

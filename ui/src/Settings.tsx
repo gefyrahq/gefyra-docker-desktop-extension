@@ -126,7 +126,7 @@ export function Settings() {
           dispatch(setAvailableNamespaces(resp.response.namespaces));
           setNextEnabled(true);
         } else {
-          dispatch(setSnackbar({ text: 'Cannot load cluster namespaces.', type: 'error' }));
+          ddClient.desktopUI.toast.error('Cannot load cluster namespaces.');
         }
       });
       // TODO handle namespaces not available

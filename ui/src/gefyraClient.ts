@@ -34,7 +34,7 @@ class Gefyra extends GefyraBaseClient {
             reject(error);
           },
           onClose(exitCode: number): void {
-            console.log('onClose with exit code ' + exitCode);
+            console.debug('onClose with exit code ' + exitCode);
           }
         }
       });

@@ -33,7 +33,6 @@ import { Gefyra } from './gefyraClient';
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import useDockerImages from './composable/dockerImages';
 import { DockerImage } from './types';
-import { setSnackbar } from './store/ui';
 
 export function Container() {
   const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
@@ -130,7 +129,7 @@ export function Container() {
           if (resp.status !== 'error' && resp.response && resp.response.namespaces) {
             dispatch(setAvailableNamespaces(resp.response.namespaces));
           } else {
-            dispatch(setSnackbar({ text: 'Cannot load cluster namespaces.', type: 'error' }));
+            ddClient.desktopUI.toast.error('Cannot load cluster namespaces.');
             back();
           }
         });
