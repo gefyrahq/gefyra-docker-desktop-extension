@@ -36,11 +36,13 @@ jobs:
             tags: |
               type=raw,value=development,enable=${{ inputs.release == false }}
               type=raw,value={{tag}},enable=${{ startsWith(github.ref, 'refs/tags/') }}
+        - name: Write variable to Github Action Envrionment
+          run: echo "GEFYRA_EXT_RELEASE=$(cat ./ui/package.json | jq -r '.dependencies.gefyra' | cut -c2-)" >> $GITHUB_ENV
         - name: Build and push
           uses: docker/build-push-action@v3
           with:
             build-args: |
-              GEFYRA_EXT_RELEASE=$$(cat ./ui/package.json | jq -r '.dependencies.gefyra' | cut -c2-)
+              GEFYRA_EXT_RELEASE=$GEFYRA_EXT_RELEASE
             platforms: linux/amd64,linux/arm64
             push: ${{ github.event_name != 'pull_request' }}
             tags: ${{ steps.ddg_meta.outputs.tags }}
