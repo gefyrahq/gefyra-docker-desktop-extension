@@ -12,7 +12,7 @@ Run a container locally and connect it to a Kubernetes cluster to:
 
  ## How does this extension work?
 
-The extension uses [gefyra-ex](https://github.com/gefyrahq/gefyra-ext) which is basically a wrapper around [Gefyra](https://github.com/gefyrahq/gefyra)
+The extension uses [gefyra-ext](https://github.com/gefyrahq/gefyra-ext) which is basically a wrapper around [Gefyra](https://github.com/gefyrahq/gefyra)
 itself. It allows leverage Gefyra as a libary and takes JSON strings as an input, which makes it easy for JS/TS based programs to use Gefyra. 
 
 The Docker Desktop extension comes with a packed binary ('gefyra-ext') and builds an UI on top of it.
