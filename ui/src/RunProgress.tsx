@@ -98,7 +98,6 @@ export function RunProgress() {
       portMappings.forEach((portMapping: PortMapping) => {
         portMap[Object.keys(portMapping)[0]] = portMapping[Object.keys(portMapping)[0]];
       });
-      console.log(portMap);
       // @ts-ignore
       runRequest.ports = portMap;
       if (envFrom && envFrom !== 'select') {
