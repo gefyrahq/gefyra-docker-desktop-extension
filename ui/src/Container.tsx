@@ -33,6 +33,7 @@ import { Gefyra } from './gefyraClient';
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import useDockerImages from './composable/dockerImages';
 import { DockerImage } from './types';
+import { PortMappings } from './components/PortMappings';
 
 export function Container() {
   const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
@@ -51,6 +52,7 @@ export function Container() {
   const image = useAppSelector((state) => state.gefyra.image);
   const envFrom = useAppSelector((state) => state.gefyra.envFrom);
   const environmentVariables = useAppSelector((state) => state.gefyra.environmentVariables);
+  const portMappings = useAppSelector((state) => state.gefyra.portMappings);
   const volumeMounts = useAppSelector((state) => state.gefyra.volumeMounts);
   const kubeconfig = useAppSelector((state) => state.gefyra.kubeconfig);
   const context = useAppSelector((state) => state.gefyra.context);
@@ -231,6 +233,20 @@ export function Container() {
           </AccordionDetails>
         </Accordion>
       </Grid>
+
+      <Grid item xs={11}>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography>
+              Port Mappings {portMappings.length ? `(${portMappings.length})` : ''}
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <PortMappings></PortMappings>
+          </AccordionDetails>
+        </Accordion>
+      </Grid>
+
       <Grid item xs={11}>
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>

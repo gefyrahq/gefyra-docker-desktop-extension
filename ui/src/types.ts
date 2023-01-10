@@ -19,6 +19,10 @@ export type EnvironmentVariable = {
   value: string;
 };
 
+export type PortMapping = {
+  [key: string]: string;
+};
+
 export type VolumeMount = {
   host: string;
   container: string;
@@ -27,6 +31,11 @@ export type VolumeMount = {
 export type VolumeMountUpdate = {
   index: number;
   volumeMount: VolumeMount;
+};
+
+export type PortMappingUpdate = {
+  index: number;
+  ports: PortMapping;
 };
 
 export type SelectItem = {

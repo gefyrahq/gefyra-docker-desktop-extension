@@ -1,5 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { EnvironmentVariable, VolumeMount, VolumeMountUpdate } from '../types';
+import {
+  EnvironmentVariable,
+  PortMapping,
+  PortMappingUpdate,
+  VolumeMount,
+  VolumeMountUpdate
+} from '../types';
 
 interface GefyraState {
   kubeconfig: string;
@@ -13,7 +19,7 @@ interface GefyraState {
   environmentVariables: Array<EnvironmentVariable>;
   volumeMounts: Array<VolumeMount>;
   command: string;
-  portMappings: { [key: string]: string };
+  portMappings: Array<PortMapping>;
   availableWorkloads: Array<string>;
   envFrom: string;
 }
@@ -30,7 +36,7 @@ const initialState: GefyraState = {
   environmentVariables: [],
   volumeMounts: JSON.parse(localStorage.getItem('volumeMounts')) || [],
   command: JSON.parse(localStorage.getItem('command')) || '',
-  portMappings: JSON.parse(localStorage.getItem('portMappings')) || {},
+  portMappings: JSON.parse(localStorage.getItem('portMappings')) || [],
   availableWorkloads: [],
   envFrom: JSON.parse(localStorage.getItem('envFrom')) || ''
 };
@@ -107,17 +113,16 @@ export const gefyraSlice = createSlice({
       state.envFrom = action.payload;
       localStorage.setItem('envFrom', JSON.stringify(state.envFrom));
     },
-    addPortMapping(state, action: PayloadAction<{ [key: string]: string }>) {
-      state.portMappings = { ...state.portMappings, ...action.payload };
+    addPortMapping(state, action: PayloadAction<PortMapping>) {
+      state.portMappings.push(action.payload);
       localStorage.setItem('portMappings', JSON.stringify(state.portMappings));
     },
-    removePortMapping(state, action: PayloadAction<string>) {
-      delete state.portMappings[action.payload];
+    removePortMapping(state, action: PayloadAction<number>) {
+      state.portMappings = state.portMappings.filter((e, index) => index !== action.payload);
       localStorage.setItem('portMappings', JSON.stringify(state.portMappings));
     },
-    setPortMapping(state, action: PayloadAction<{ [key: string]: string }>) {
-      const key = Object.keys(action.payload)[0];
-      state.portMappings[key] = action.payload[key];
+    setPortMapping(state, action: PayloadAction<PortMappingUpdate>) {
+      state.portMappings[action.payload.index] = action.payload.ports;
       localStorage.setItem('portMappings', JSON.stringify(state.portMappings));
     }
   }

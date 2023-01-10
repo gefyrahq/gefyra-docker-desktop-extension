@@ -10,7 +10,7 @@ import {
 import { Gefyra } from './gefyraClient';
 import { GefyraStatusBar } from './components/GefyraStatusBar';
 import { checkCargoReady, checkStowawayReady, gefyraUp } from './utils/gefyra';
-import { EnvironmentVariable } from './types';
+import { EnvironmentVariable, PortMapping } from './types';
 import { setContainerName } from './store/gefyra';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { RootState } from './store';
@@ -94,8 +94,13 @@ export function RunProgress() {
       runRequest.command = command;
       runRequest.namespace = namespace;
       runRequest.name = containerName;
+      const portMap = {};
+      portMappings.forEach((portMapping: PortMapping) => {
+        portMap[Object.keys(portMapping)[0]] = portMapping[Object.keys(portMapping)[0]];
+      });
+      console.log(portMap);
       // @ts-ignore
-      runRequest.ports = { '5003': '5003' };
+      runRequest.ports = portMap;
       if (envFrom && envFrom !== 'select') {
         runRequest.envfrom = envFrom;
       }
