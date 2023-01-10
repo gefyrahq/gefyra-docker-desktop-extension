@@ -1,8 +1,8 @@
 import { Button, Grid, InputLabel, TextField } from '@mui/material';
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
-import store, { RootState } from './store';
-import { addVolumeMount, setVolumeMount, removeVolumeMount } from './store/gefyra';
+import store, { RootState } from '../store';
+import { addVolumeMount, setVolumeMount, removeVolumeMount } from '../store/gefyra';
 
 export function VolumeMounts() {
   const dispatch = useDispatch();

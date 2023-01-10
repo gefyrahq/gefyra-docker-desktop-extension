@@ -12,8 +12,8 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useState, useEffect } from 'react';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
-import { EnvironmentVariables } from './EnvironmentVariables';
-import { VolumeMounts } from './VolumeMounts';
+import { EnvironmentVariables } from './components/EnvironmentVariables';
+import { VolumeMounts } from './components/VolumeMounts';
 import { RootState } from './store';
 import {
   setNamespace,

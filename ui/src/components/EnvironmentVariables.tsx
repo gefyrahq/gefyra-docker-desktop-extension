@@ -1,8 +1,8 @@
 import { Button, Grid, InputLabel, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { setEnvironmentVariables } from './store/gefyra';
-import { EnvironmentVariable } from './types';
+import { setEnvironmentVariables } from '../store/gefyra';
+import { EnvironmentVariable } from '../types';
 
 export function EnvironmentVariables() {
   const dispatch = useDispatch();

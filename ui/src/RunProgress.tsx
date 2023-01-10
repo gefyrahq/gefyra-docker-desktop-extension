@@ -32,6 +32,7 @@ export function RunProgress() {
   const namespace = useAppSelector((state) => state.gefyra.namespace);
   const command = useAppSelector((state) => state.gefyra.command);
   const envFrom = useAppSelector((state) => state.gefyra.envFrom);
+  const portMappings = useAppSelector((state) => state.gefyra.portMappings);
   const host = useAppSelector((state) => state.gefyra.host);
   const port = useAppSelector((state) => state.gefyra.port);
 
@@ -93,6 +94,8 @@ export function RunProgress() {
       runRequest.command = command;
       runRequest.namespace = namespace;
       runRequest.name = containerName;
+      // @ts-ignore
+      runRequest.ports = { '5003': '5003' };
       if (envFrom && envFrom !== 'select') {
         runRequest.envfrom = envFrom;
       }

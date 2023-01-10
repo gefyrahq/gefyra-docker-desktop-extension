@@ -13,6 +13,7 @@ interface GefyraState {
   environmentVariables: Array<EnvironmentVariable>;
   volumeMounts: Array<VolumeMount>;
   command: string;
+  portMappings: { [key: string]: string };
   availableWorkloads: Array<string>;
   envFrom: string;
 }
@@ -29,6 +30,7 @@ const initialState: GefyraState = {
   environmentVariables: [],
   volumeMounts: JSON.parse(localStorage.getItem('volumeMounts')) || [],
   command: JSON.parse(localStorage.getItem('command')) || '',
+  portMappings: JSON.parse(localStorage.getItem('portMappings')) || {},
   availableWorkloads: [],
   envFrom: JSON.parse(localStorage.getItem('envFrom')) || ''
 };
@@ -104,6 +106,19 @@ export const gefyraSlice = createSlice({
     setEnvFrom: (state, action: PayloadAction<string>) => {
       state.envFrom = action.payload;
       localStorage.setItem('envFrom', JSON.stringify(state.envFrom));
+    },
+    addPortMapping(state, action: PayloadAction<{ [key: string]: string }>) {
+      state.portMappings = { ...state.portMappings, ...action.payload };
+      localStorage.setItem('portMappings', JSON.stringify(state.portMappings));
+    },
+    removePortMapping(state, action: PayloadAction<string>) {
+      delete state.portMappings[action.payload];
+      localStorage.setItem('portMappings', JSON.stringify(state.portMappings));
+    },
+    setPortMapping(state, action: PayloadAction<{ [key: string]: string }>) {
+      const key = Object.keys(action.payload)[0];
+      state.portMappings[key] = action.payload[key];
+      localStorage.setItem('portMappings', JSON.stringify(state.portMappings));
     }
   }
 });
@@ -125,7 +140,10 @@ export const {
   setAvailableWorkloads,
   setEnvFrom,
   setHost,
-  setPort
+  setPort,
+  setPortMapping,
+  addPortMapping,
+  removePortMapping
 } = gefyraSlice.actions;
 
 export default gefyraSlice.reducer;
