@@ -17,6 +17,7 @@ interface UIState {
   snackbarText: string;
   snackbarVisible: boolean;
   snackbarType: AlertColor;
+  trackingId: string;
 }
 
 const initialState: UIState = {
@@ -26,7 +27,8 @@ const initialState: UIState = {
   activeStep: parseInt(localStorage.getItem('activeStep')) || 0,
   snackbarText: '',
   snackbarVisible: false,
-  snackbarType: 'success'
+  snackbarType: 'success',
+  trackingId: ''
 };
 
 export const uiSlice = createSlice({
@@ -59,11 +61,26 @@ export const uiSlice = createSlice({
     },
     closeSnackbar: (state) => {
       state.snackbarVisible = false;
+    },
+    setTrackingId: (state) => {
+      state.trackingId = localStorage.getItem('trackingId') || '';
+      if (!state.trackingId) {
+        state.trackingId = window.crypto.randomUUID();
+        localStorage.setItem('trackingId', state.trackingId);
+      }
     }
   }
 });
 
-export const { setMode, setView, setSteps, resetSteps, setActiveStep, setSnackbar, closeSnackbar } =
-  uiSlice.actions;
+export const {
+  setMode,
+  setView,
+  setSteps,
+  resetSteps,
+  setActiveStep,
+  setSnackbar,
+  closeSnackbar,
+  setTrackingId
+} = uiSlice.actions;
 
 export default uiSlice.reducer;

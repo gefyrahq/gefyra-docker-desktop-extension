@@ -16,6 +16,7 @@ class Gefyra extends GefyraBaseClient {
     Sentry.setTag('action', request.action);
     Sentry.setTag('os', host.platform);
     Sentry.setTag('arch', host.arch);
+    Sentry.setTag('uuid', window.localStorage.getItem('trackingId'));
     Sentry.captureMessage('geyfra-ext action');
     console.debug(request);
 

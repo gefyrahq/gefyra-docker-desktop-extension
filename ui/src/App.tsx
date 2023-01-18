@@ -10,7 +10,7 @@ import { Settings } from './Settings';
 import { Container } from './Container';
 import { Run } from './Run';
 import { RootState } from './store';
-import { closeSnackbar, setActiveStep, setView } from './store/ui';
+import { closeSnackbar, setActiveStep, setTrackingId, setView } from './store/ui';
 import { RunProgress } from './RunProgress';
 
 export function App() {
@@ -32,6 +32,7 @@ export function App() {
       if (!kubeconfig) {
         dispatch(setView('mode'));
         dispatch(setActiveStep(0));
+        dispatch(setTrackingId());
       }
     };
     initApp();
