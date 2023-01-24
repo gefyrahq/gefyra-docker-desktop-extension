@@ -28,7 +28,7 @@ COPY ui /ui
 RUN npm run build
 
 FROM alpine
-LABEL org.opencontainers.image.title="gefyra-docker-extension" \
+LABEL org.opencontainers.image.title="gefyra-docker-desktop" \
     org.opencontainers.image.description="Gefyra's Docker extension to bridge running containers into Kubernetes clusters." \
     org.opencontainers.image.vendor="Blueshoe GmbH" \
     com.docker.desktop.extension.api.version=">= 0.2.3" \
@@ -38,7 +38,7 @@ LABEL org.opencontainers.image.title="gefyra-docker-extension" \
     com.docker.extension.additional-urls="[{\"title\":\"Documentation\",\"url\":\"https://gefyra.dev\"}, {\"title\":\"Github\",\"url\":\"https://github.com/gefyrahq/gefyra/\"}]" \
     com.docker.extension.changelog=""\
     com.docker.desktop.extension.icon="https://raw.githubusercontent.com/gefyrahq/gefyra-docker-desktop-extension/main/gefyra_icon.svg" \
-    com.docker.extension.categories="cloud-development,kubernetes,testing-tools,container-orchestration"
+    com.docker.extension.categories="cloud-development,kubernetes"
 
 COPY metadata.json .
 COPY gefyra_icon.svg .
