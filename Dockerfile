@@ -32,8 +32,8 @@ LABEL org.opencontainers.image.title="Gefyra" \
     org.opencontainers.image.description="Gefyra's Docker extension to bridge running containers into Kubernetes clusters." \
     org.opencontainers.image.vendor="Blueshoe GmbH" \
     com.docker.desktop.extension.api.version=">= 0.2.3" \
-    com.docker.extension.screenshots="" \
-    com.docker.extension.detailed-description="" \
+    com.docker.extension.screenshots="[{'alt':'Gefyra Intro Screen', 'url':'https://gefyra.dev/assets/images/extension/mode.png'}, {'alt':'Gefyra Cluster Settings', 'url':'https://gefyra.dev/assets/images/extension/cluster.png'}, {'alt':'Loading bar for running container', 'url':'https://gefyra.dev/assets/images/extension/load.png'}, {'alt':'Gefyra Container Logs', 'url':'https://gefyra.dev/assets/images/extension/logs.png'}]" \
+    com.docker.extension.detailed-description="<h1>Gefyra: Blazingly-fast, rock-solid, local application development with Kubernetes.</h1><p>Connect your local containers to any Kubernetes cluster.</p><p>Gefyra aims to ease the burdens of K8s based development for developers. Run a container locally and connect it to a Kubernetes cluster to:</p><ul><li>talk to other services</li><li>let other services talk to your local container</li><li>debug</li><li>aster iterations - no build/push/deploy/repeat</li></ul>" \
     com.docker.extension.publisher-url="https://gefyra.dev" \
     com.docker.extension.additional-urls="[{\"title\":\"Documentation\",\"url\":\"https://gefyra.dev\"}, {\"title\":\"Github\",\"url\":\"https://github.com/gefyrahq/gefyra/\"}]" \
     com.docker.extension.changelog=""\
