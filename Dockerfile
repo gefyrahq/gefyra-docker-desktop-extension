@@ -28,7 +28,7 @@ COPY ui /ui
 RUN npm run build
 
 FROM alpine
-LABEL org.opencontainers.image.title="gefyra-docker-desktop" \
+LABEL org.opencontainers.image.title="Gefyra" \
     org.opencontainers.image.description="Gefyra's Docker extension to bridge running containers into Kubernetes clusters." \
     org.opencontainers.image.vendor="Blueshoe GmbH" \
     com.docker.desktop.extension.api.version=">= 0.2.3" \
