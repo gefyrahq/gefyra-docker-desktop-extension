@@ -102,9 +102,41 @@ export function Settings() {
 
   useEffect(() => {
     checkNextEnabled();
-    dispatch(setHost(''));
+    if (context === 'docker-desktop') {
+      getDockerDesktopHost().then((res) => {
+        dispatch(setHost(res));
+      });
+    } else {
+      dispatch(setHost(''));
+    }
     dispatch(setPort(31820));
   }, [kubeconfig, context]);
+
+  async function getDockerDesktopHost(): Promise<string> {
+    const res = await ddClient.docker.cli.exec('version', [
+      '-f',
+      "'{{ json .Server.Platform.Name }}'"
+    ]);
+    const ddVersion = res.stdout;
+    return new Promise((resolve, reject) => {
+      // get semantic version of docker desktop from "Docker Desktop 4.16.2 (95914)" via regex
+      const versionRegex = /Docker Desktop (\d+\.\d+\.\d+) \(\d+\)/;
+      const match = ddVersion.match(versionRegex);
+      if (match && match.length > 1) {
+        const version = match[1];
+        const versionParts = version.split('.');
+        const major = versionParts[0];
+        const minor = versionParts[1];
+        if (major === '4' && minor === '16') {
+          console.debug(
+            "Detected Docker Desktop version 4.16.x, using 'kubernetes.docker.internal'"
+          );
+          resolve('kubernetes.docker.internal');
+        }
+      }
+      resolve('');
+    });
+  }
 
   async function handleContextChange(e, b) {
     setNextEnabled(false);
