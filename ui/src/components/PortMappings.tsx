@@ -1,4 +1,4 @@
-import { Button, Grid, InputLabel, TextField } from '@mui/material';
+import { Button, Grid, TextField } from '@mui/material';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { removePortMapping, addPortMapping, setPortMapping } from '../store/gefyra';
@@ -36,13 +36,11 @@ export function PortMappings() {
           <Grid item xs={12} key={index}>
             <Grid container spacing={4}>
               <Grid item xs={5}>
-                <InputLabel sx={{ mb: 1 }} id="host-label">
-                  Host
-                </InputLabel>
                 <TextField
                   id={'hostLabel' + index}
                   variant="outlined"
                   fullWidth
+                  label="Host"
                   size="small"
                   value={Object.keys(ports)[0]}
                   onChange={(e) => {
@@ -51,13 +49,11 @@ export function PortMappings() {
                 />
               </Grid>
               <Grid item xs={5}>
-                <InputLabel sx={{ mb: 1 }} id="container-label">
-                  Container
-                </InputLabel>
                 <TextField
                   id={'containerValueValue' + index}
                   variant="outlined"
                   fullWidth
+                  label="Container"
                   size="small"
                   value={ports[Object.keys(ports)[0]]}
                   onChange={(e) => {
@@ -69,7 +65,6 @@ export function PortMappings() {
                 <Button
                   variant="contained"
                   color="error"
-                  sx={{ mt: 4 }}
                   onClick={() => dispatch(removePortMapping(index))}>
                   X
                 </Button>
@@ -80,7 +75,7 @@ export function PortMappings() {
           ''
         )
       )}
-      <Grid item xs={12}>
+      <Grid item xs={12} sx={{ mt: 3 }}>
         <Button variant="contained" component="label" color="primary" onClick={add}>
           + Port Mapping
         </Button>

@@ -42,7 +42,7 @@ export function App() {
     <>
       <TopBar />
       <Paper variant="outlined" sx={{ p: 4, mt: 2 }}>
-        <Grid container spacing={2}>
+        <Grid container spacing={3}>
           <Progress />
           {view === 'mode' && <Chooser />}
           {view === 'settings' && <Settings />}

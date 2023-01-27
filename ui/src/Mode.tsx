@@ -45,14 +45,35 @@ export function Mode(props: ModeProps) {
     height: '100%',
     cursor: 'pointer',
     pointerEvents: props.disabled ? 'none' : 'default',
-    opacity: props.disabled ? '0.5' : '1'
+    opacity: props.disabled ? '0.5' : '1',
+    'z-index': 1
+  };
+
+  const soonStyle = {
+    // rotate by 45 degrees on the card
+    transform: 'rotate(45deg)',
+    // move the text down by 50% of its height
+    position: 'absolute',
+    top: '40%',
+    opacity: 1,
+    'z-index': 1000,
+    // move the text left by 50% of its width
+    left: '20%',
+    color: 'red',
+    // hide the text overflow
+    overflow: 'hidden'
   };
 
   return (
     <>
+      {props.disabled && (
+        <Typography sx={soonStyle} gutterBottom variant="h1" component="div">
+          Coming soon
+        </Typography>
+      )}
       <Card sx={styles} onClick={activateMode}>
         <props.image />
-        <CardContent>
+        <CardContent sx={{ position: 'relative' }}>
           <Typography gutterBottom variant="h5" component="div">
             {props.headline}
           </Typography>

@@ -25,12 +25,16 @@ export function Chooser() {
           mode="run"
         />
       </Grid>
-      <Grid item xs={6} onClick={() => alert('Bridge is not available yet.')}>
+      <Grid
+        sx={{ position: 'relative' }}
+        item
+        xs={6}
+        onClick={() => alert('Bridge is not available yet.')}>
         <Mode
           image={BridgeSVG}
           imageAlt="Bridge container in Kubernetes"
-          headline="Bridge Container in Kubernetes"
-          caption="Bridge a local container into an existing workload of a Kubernetes cluster."
+          headline="Bridge Container to Kubernetes will be available soon!"
+          caption=""
           mode="bridge"
           disabled
         />

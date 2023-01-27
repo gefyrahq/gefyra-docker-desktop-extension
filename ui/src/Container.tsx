@@ -5,7 +5,6 @@ import {
   Autocomplete,
   Button,
   Grid,
-  InputLabel,
   TextField,
   Typography
 } from '@mui/material';
@@ -158,9 +157,6 @@ export function Container() {
         <Typography variant="subtitle1">Configure your container.</Typography>
       </Grid>
       <Grid item xs={5}>
-        <InputLabel sx={{ mb: 1 }} id="namespace-select-label">
-          Namespace
-        </InputLabel>
         <LSelect
           labelId="namespace-select-label"
           id="namespace-select"
@@ -172,29 +168,8 @@ export function Container() {
           items={selectNamespaces}
         />
       </Grid>
-      <Grid item xs={7}>
-        <InputLabel sx={{ mb: 1 }} id="image-select-label">
-          Image
-        </InputLabel>
-        <Autocomplete
-          id="grouped-images"
-          options={images.sort((a, b) => -b.repo[0].localeCompare(a.repo[0]))}
-          groupBy={(o) => o.type}
-          getOptionLabel={(image: DockerImage) => image.name}
-          renderInput={(params) => <TextField {...params} />}
-          loading={imagesLoading}
-          disabled={imagesLoading}
-          sx={{ width: 300 }}
-          value={{ name: image }}
-          onChange={handleImageChange}
-          noOptionsText="No Images found"
-        />
-      </Grid>
 
-      <Grid item xs={5}>
-        <InputLabel sx={{ mb: 1 }} id="envFrom-select-label">
-          Copy environment from
-        </InputLabel>
+      <Grid item xs={6}>
         <LSelect
           labelId="envFrom-select-label"
           id="envFrom-select"
@@ -206,13 +181,27 @@ export function Container() {
           items={selectEnvFrom}
         />
       </Grid>
+
+      <Grid item xs={5}>
+        <Autocomplete
+          id="grouped-images"
+          options={images.sort((a, b) => -b.repo[0].localeCompare(a.repo[0]))}
+          groupBy={(o) => o.type}
+          getOptionLabel={(image: DockerImage) => image.name}
+          renderInput={(params) => <TextField {...params} label="Image" />}
+          loading={imagesLoading}
+          disabled={imagesLoading}
+          sx={{ width: '100%' }}
+          value={{ name: image }}
+          onChange={handleImageChange}
+          noOptionsText="No Images found"
+        />
+      </Grid>
       <Grid item xs={6}>
-        <InputLabel sx={{ mb: 1 }} id="command-label">
-          Command (Overwrite)
-        </InputLabel>
         <TextField
           id="command"
           variant="outlined"
+          label="Command (Overwrite)"
           fullWidth
           value={command}
           InputLabelProps={{ shrink: false }}

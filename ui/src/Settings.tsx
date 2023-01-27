@@ -5,8 +5,8 @@ import {
   AccordionDetails,
   AccordionSummary,
   Button,
+  FormControl,
   Grid,
-  InputLabel,
   TextField,
   Typography
 } from '@mui/material';
@@ -82,7 +82,6 @@ export function Settings() {
   }
 
   async function handleKubeConfigChange(e) {
-    dispatch(setKubeconfig(''));
     dispatch(setContext(''));
     const result = await ddClient.desktopUI.dialog.showOpenDialog({
       filters: [
@@ -146,33 +145,28 @@ export function Settings() {
       <Grid item xs={12} alignItems="center">
         <Typography variant="subtitle1">Please set Kubernetes configuration.</Typography>
       </Grid>
-      <Grid item xs={5}>
-        <InputLabel sx={{ mb: 1 }} id="kubeconfig-label">
-          Kubeconfig
-        </InputLabel>
-        <TextField
-          id="kubeconfig"
-          variant="outlined"
-          fullWidth
-          InputProps={{ readOnly: true }}
-          value={kubeconfig}
-          onClick={handleKubeConfigChange}
-        />
-      </Grid>
-      <Grid item xs={2}>
+      <Grid item xs={6}>
+        <FormControl fullWidth>
+          <TextField
+            id="kubeconfig"
+            variant="outlined"
+            label="Kubeconfig"
+            fullWidth
+            InputProps={{ readOnly: true }}
+            value={kubeconfig}
+            onClick={handleKubeConfigChange}
+          />
+        </FormControl>
         <Button
           variant="contained"
           component="label"
           color="primary"
-          onClick={handleKubeConfigChange}
-          sx={{ marginTop: '37px', ml: -1 }}>
+          sx={{ mt: 1 }}
+          onClick={handleKubeConfigChange}>
           Choose Kubeconfig
         </Button>
       </Grid>
-      <Grid item xs={4}>
-        <InputLabel sx={{ mb: 1 }} id="context-select-label">
-          Context
-        </InputLabel>
+      <Grid item xs={5}>
         <LSelect
           disabled={contextLoading}
           loading={contextLoading}

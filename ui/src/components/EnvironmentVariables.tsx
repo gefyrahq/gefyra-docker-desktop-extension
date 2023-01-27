@@ -1,4 +1,4 @@
-import { Button, Grid, InputLabel, TextField } from '@mui/material';
+import { Button, Grid, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setEnvironmentVariables } from '../store/gefyra';
@@ -44,13 +44,11 @@ export function EnvironmentVariables() {
           <Grid item xs={12} key={index}>
             <Grid container spacing={4}>
               <Grid item xs={5}>
-                <InputLabel sx={{ mb: 1 }} id="variable-label">
-                  Name
-                </InputLabel>
                 <TextField
                   id={'variableLabel' + index}
                   variant="outlined"
                   fullWidth
+                  label="Name"
                   size="small"
                   value={v.label}
                   onChange={(e) => {
@@ -59,13 +57,11 @@ export function EnvironmentVariables() {
                 />
               </Grid>
               <Grid item xs={5}>
-                <InputLabel sx={{ mb: 1 }} id="value-label">
-                  Value
-                </InputLabel>
                 <TextField
                   id={'variableValue' + index}
                   variant="outlined"
                   fullWidth
+                  label="Value"
                   size="small"
                   value={v.value}
                   onChange={(e) => {
@@ -77,7 +73,6 @@ export function EnvironmentVariables() {
                 <Button
                   variant="contained"
                   color="error"
-                  sx={{ mt: 4 }}
                   onClick={() => setVariables(variables.filter((v, i) => i !== index))}>
                   X
                 </Button>
@@ -88,7 +83,7 @@ export function EnvironmentVariables() {
           ''
         )
       )}
-      <Grid item xs={12}>
+      <Grid item xs={12} sx={{ mt: 3 }}>
         <Button variant="contained" component="label" color="primary" onClick={addVariable}>
           + Environment Variable
         </Button>

@@ -1,4 +1,4 @@
-import { Button, Grid, InputLabel, TextField } from '@mui/material';
+import { Button, Grid, TextField } from '@mui/material';
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import store, { RootState } from '../store';
@@ -56,26 +56,22 @@ export function VolumeMounts() {
           v ? (
             <Grid container spacing={4} key={index}>
               <Grid item xs={5}>
-                <InputLabel sx={{ mb: 1 }} id="variable-label">
-                  Host Path
-                </InputLabel>
                 <TextField
                   id="host"
                   variant="outlined"
                   fullWidth
+                  label="Host Path"
                   InputProps={{ readOnly: true }}
                   onClick={(e) => handleHostVolumeMountChange(e, index, 'host')}
                   value={store.getState().gefyra.volumeMounts[index].host}
                 />
               </Grid>
               <Grid item xs={5}>
-                <InputLabel sx={{ mb: 1 }} id="variable-label">
-                  Container Path
-                </InputLabel>
                 <TextField
                   id="container"
                   variant="outlined"
                   fullWidth
+                  label="Container Path"
                   InputProps={{ readOnly: false }}
                   onChange={(e) => handleHostVolumeMountChange(e, index, 'container')}
                   value={store.getState().gefyra.volumeMounts[index].container}
@@ -85,7 +81,6 @@ export function VolumeMounts() {
                 <Button
                   variant="contained"
                   color="error"
-                  sx={{ mt: 5 }}
                   onClick={() => dispatch(removeVolumeMount(index))}>
                   X
                 </Button>
@@ -96,7 +91,7 @@ export function VolumeMounts() {
           )
         )}
       </Grid>
-      <Grid item xs={12}>
+      <Grid item xs={12} sx={{ mt: 3 }}>
         <Button
           variant="contained"
           component="label"
