@@ -1,4 +1,5 @@
 import { Card, CardContent, Typography } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { FunctionComponent } from 'react';
 import { useDispatch } from 'react-redux';
 import { setMode, setView, setSteps, setActiveStep } from './store/ui';
@@ -37,6 +38,7 @@ export function Mode(props: ModeProps) {
     dispatch(setSteps(steps[props.mode]));
     dispatch(setActiveStep(1));
   }
+  const theme = useTheme();
 
   const styles = {
     px: 4,
@@ -59,7 +61,7 @@ export function Mode(props: ModeProps) {
     'z-index': 1000,
     // move the text left by 50% of its width
     left: '20%',
-    color: 'red',
+    color: theme.palette.error.main,
     // hide the text overflow
     overflow: 'hidden'
   };
