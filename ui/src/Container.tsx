@@ -204,7 +204,6 @@ export function Container() {
           label="Command (Overwrite)"
           fullWidth
           value={command}
-          InputLabelProps={{ shrink: false }}
           onInput={handleCommandChange}
         />
       </Grid>
