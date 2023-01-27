@@ -1,7 +1,7 @@
 import { DockerDesktopClient } from '@docker/extension-api-client-types/dist/v1';
 import { GefyraBaseClient } from 'gefyra/lib/base';
 import { GefyraRequest } from 'gefyra/lib/protocol';
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '@sentry/react';
 
 class Gefyra extends GefyraBaseClient {
   client: DockerDesktopClient;

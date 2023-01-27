@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/browser';
+import * as Sentry from '@sentry/react';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,6 +12,11 @@ Sentry.init({
   dsn: 'https://11cee47c7bdd4a2a91e211b2119cb8fb@sentry.unikube.io/6',
   release: pjson.version,
   environment: process.env.NODE_ENV,
+  integrations: (integrations) => {
+    return integrations.filter((integration) => {
+      return integration.name !== 'Dedupe';
+    });
+  },
   beforeSend(event) {
     if (event.user) {
       delete event.user;
