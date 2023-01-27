@@ -8,6 +8,8 @@ import useNavigation from './composable/navigation';
 import { ContainerLogs } from './components/ContainerLogs';
 import { setSnackbar } from './store/ui';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import { GefyraDownRequest } from 'gefyra/lib/protocol';
+import { Gefyra } from './gefyraClient';
 
 const copyShellText = 'Copy Shell Command';
 
@@ -76,7 +78,10 @@ export function Run() {
   const stopContainer = () => {
     ddClient.docker.cli
       .exec('stop', [containerName])
-      .then(() => {
+      .then(async () => {
+        const gefyraClient = new Gefyra(ddClient);
+        const downRequest = new GefyraDownRequest();
+        await gefyraClient.exec(downRequest);
         dispatch(setSnackbar({ text: 'Container stopped. ', type: 'success' }));
         back();
       })
