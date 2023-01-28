@@ -144,22 +144,26 @@ export function Settings() {
   }
 
   function checkNextEnabled() {
-    if (kubeconfig && context) {
+    if (kubeconfig && context && context !== selectContext) {
       dispatch(setSnackbar({ text: 'Checking available namespaces.', type: 'info' }));
-
       const nsRequest = new K8sNamespaceRequest();
       nsRequest.kubeconfig = kubeconfig;
       nsRequest.context = context;
-      gefyraClient.exec(nsRequest).then((res) => {
-        const resp = JSON.parse(res);
-        if (res.status !== 'error' && resp.response && resp.response.namespaces) {
-          dispatch(setSnackbar({ text: 'Namespaces have been loaded.', type: 'success' }));
-          dispatch(setAvailableNamespaces(resp.response.namespaces));
-          setNextEnabled(true);
-        } else {
+      gefyraClient
+        .exec(nsRequest)
+        .then((res) => {
+          const resp = JSON.parse(res);
+          if (res.status !== 'error' && resp.response && resp.response.namespaces) {
+            dispatch(setSnackbar({ text: 'Namespaces have been loaded.', type: 'success' }));
+            dispatch(setAvailableNamespaces(resp.response.namespaces));
+            setNextEnabled(true);
+          } else {
+            ddClient.desktopUI.toast.error('Cannot load cluster namespaces.');
+          }
+        })
+        .catch((err) => {
           ddClient.desktopUI.toast.error('Cannot load cluster namespaces.');
-        }
-      });
+        });
       // TODO handle namespaces not available
     } else {
       setNextEnabled(false);
