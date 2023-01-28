@@ -127,7 +127,7 @@ export function Settings() {
         const versionParts = version.split('.');
         const major = versionParts[0];
         const minor = versionParts[1];
-        if (major === '4' && minor === '16') {
+        if (parseInt(major) >= 4 && parseInt(minor) >= 16) {
           console.debug(
             "Detected Docker Desktop version 4.16.x, using 'kubernetes.docker.internal'"
           );
