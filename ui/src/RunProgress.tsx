@@ -15,6 +15,7 @@ import { setContainerName } from './store/gefyra';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { RootState } from './store';
 import useNavigation from './composable/navigation';
+import { resetSteps, setMode, setView } from './store/ui';
 
 export function RunProgress() {
   const ddClient = createDockerDesktopClient();
@@ -56,6 +57,9 @@ export function RunProgress() {
   }
 
   async function goToContainerLogs(id) {
+    dispatch(setMode(''));
+    dispatch(setView('home'));
+    dispatch(resetSteps());
     try {
       await ddClient.desktopUI.navigate.viewContainerLogs(id);
     } catch (e) {
@@ -190,18 +194,25 @@ export function RunProgress() {
           updateProgress('Gefyra Cargo connection confirmed.', 60);
 
           updateProgress('Starting local container.', 70);
-          const runResult = await gefyraClient.exec(runRequest).then(async (res) => {
-            const result = JSON.parse(res);
-            return result.status === 'success';
-          });
+          const runResult = await gefyraClient
+            .exec(runRequest)
+            .then(async (res) => {
+              const result = JSON.parse(res);
+              return result.status === 'success';
+            })
+            .catch((err) => {
+              return false;
+            });
           if (!runResult) {
             displayError('Could not run container');
             return;
           }
           updateProgress('Container is running!', 100);
-          getContainerId(containerName).then((id) => {
-            goToContainerLogs(id);
-          });
+          setTimeout(() => {
+            getContainerId(containerName).then((id) => {
+              goToContainerLogs(id);
+            });
+          }, 50000);
         })
         .catch((err) => {
           console.log(err);

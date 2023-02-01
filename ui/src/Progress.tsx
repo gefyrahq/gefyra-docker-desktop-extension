@@ -9,16 +9,12 @@ export function Progress() {
   function handleStepClick(index) {
     if (index === 0) {
       dispatch(setMode(''));
-      dispatch(setView('mode'));
+      dispatch(setView('settings'));
       dispatch(resetSteps());
     }
     if (index === 1) {
-      dispatch(setView('settings'));
-      dispatch(setActiveStep(1));
-    }
-    if (index === 2) {
       dispatch(setView('container'));
-      dispatch(setActiveStep(2));
+      dispatch(setActiveStep(1));
     }
   }
 

@@ -41,7 +41,7 @@ export function Settings() {
   const [nextEnabled, setNextEnabled] = useState<boolean>(false);
 
   const [back, next] = useNavigation(
-    { resetMode: true, step: 0, view: 'mode' },
+    { resetMode: true, step: 0, view: 'home' },
     { resetMode: false, step: 2, view: 'container' }
   );
 
