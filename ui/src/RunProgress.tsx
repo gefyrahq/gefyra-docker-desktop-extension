@@ -197,8 +197,7 @@ export function RunProgress() {
           const runResult = await gefyraClient
             .exec(runRequest)
             .then(async (res) => {
-              const result = JSON.parse(res);
-              return result.status === 'success';
+              return res.response.status === 'success';
             })
             .catch((err) => {
               return false;
