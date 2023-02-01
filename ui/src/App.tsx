@@ -48,7 +48,6 @@ export function App() {
           {view === 'settings' && <Settings />}
           {view === 'container' && kubeconfig && <Container />}
           {view === 'run' && kubeconfig && <RunProgress />}
-          {view === 'logs' && <Run />}
         </Grid>
       </Paper>
       <Snackbar open={snackbarVisible} autoHideDuration={6000} onClose={hideSnackbar}>

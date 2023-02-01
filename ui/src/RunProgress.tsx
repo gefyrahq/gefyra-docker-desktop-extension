@@ -38,7 +38,7 @@ export function RunProgress() {
 
   const dispatch = useDispatch();
 
-  const [back, next] = useNavigation(
+  const [back] = useNavigation(
     { resetMode: false, step: 2, view: 'container' },
     { resetMode: false, step: 4, view: 'logs' }
   );
@@ -53,6 +53,36 @@ export function RunProgress() {
 
   function displayError(msg: string) {
     updateProgress(msg, null, true);
+  }
+
+  async function goToContainerLogs(id) {
+    try {
+      await ddClient.desktopUI.navigate.viewContainerLogs(id);
+    } catch (e) {
+      console.error(e);
+      ddClient.desktopUI.toast.error(`Failed to navigate to logs for container "${id}".`);
+    }
+  }
+
+  function getContainerId(containerName: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      // Pass in filter to only get containers with the name we want
+      ddClient.docker
+        .listContainers({
+          all: true,
+          filters: JSON.stringify({ name: [containerName] })
+        })
+        .then((containers: Array<any>) => {
+          if (containers.length > 1) {
+            reject('Multiple containers with same name found.');
+          }
+          if (containers.length === 1) {
+            resolve(containers[0].Id);
+          } else {
+            reject('Container not found');
+          }
+        });
+    });
   }
 
   useEffect(() => {
@@ -162,7 +192,6 @@ export function RunProgress() {
           updateProgress('Starting local container.', 70);
           const runResult = await gefyraClient.exec(runRequest).then(async (res) => {
             const result = JSON.parse(res);
-            console.log(result);
             return result.status === 'success';
           });
           if (!runResult) {
@@ -170,7 +199,9 @@ export function RunProgress() {
             return;
           }
           updateProgress('Container is running!', 100);
-          next();
+          getContainerId(containerName).then((id) => {
+            goToContainerLogs(id);
+          });
         })
         .catch((err) => {
           console.log(err);
