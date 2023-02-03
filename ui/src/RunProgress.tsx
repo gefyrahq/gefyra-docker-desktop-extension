@@ -40,8 +40,8 @@ export function RunProgress() {
   const dispatch = useDispatch();
 
   const [back] = useNavigation(
-    { resetMode: false, step: 2, view: 'container' },
-    { resetMode: false, step: 4, view: 'logs' }
+    { resetMode: true, step: 0, view: 'settings' },
+    { resetMode: true, step: 0, view: 'settings' }
   );
 
   function updateProgress(msg: string, progress?: number, error: boolean = false) {

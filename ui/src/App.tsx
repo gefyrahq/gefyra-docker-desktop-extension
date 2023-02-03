@@ -6,8 +6,8 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { TopBar } from './TopBar';
 import { Home } from './Home';
 import { Progress } from './Progress';
-import { Settings } from './Settings';
-import { Container } from './Container';
+import { KubernetesSettings } from './KubernetesSettings';
+import { ContainerSettings } from './ContainerSettings';
 import { RootState } from './store';
 import { closeSnackbar, setActiveStep, setTrackingId, setView } from './store/ui';
 import { RunProgress } from './RunProgress';
@@ -46,8 +46,8 @@ export function App() {
         ) : (
           <Grid container spacing={3}>
             <Progress />
-            {view === 'settings' && <Settings />}
-            {view === 'container' && kubeconfig && <Container />}
+            {view === 'settings' && <KubernetesSettings />}
+            {view === 'container' && kubeconfig && <ContainerSettings />}
             {view === 'run' && kubeconfig && <RunProgress />}
           </Grid>
         )}

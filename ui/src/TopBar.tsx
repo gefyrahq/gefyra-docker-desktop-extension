@@ -1,7 +1,7 @@
 import { ReactComponent as LogoLight } from './assets/gefyra_horizontal.svg';
 import { ReactComponent as LogoDark } from './assets/gefyra_horizontal_dark.svg';
 import { createDockerDesktopClient } from '@docker/extension-api-client';
-import { Button, Grid, Typography, useMediaQuery } from '@mui/material';
+import { Grid, Link, Typography, useMediaQuery } from '@mui/material';
 
 export function TopBar() {
   const docker = createDockerDesktopClient();
@@ -22,13 +22,19 @@ export function TopBar() {
           <LogoLight width="200" height="60" />
         )}
       </Grid>
-      <Grid item xs={4} textAlign="right" alignSelf={'flex-end'}>
-        <Button sx={{ marginRight: 2 }} variant="contained" onClick={githubExtensionLink}>
-          Report an Issue
-        </Button>
-        <Button variant="contained" onClick={githubLink}>
-          Github
-        </Button>
+      <Grid item xs={4} sx={{ pt: 1 }} textAlign="right" alignSelf={'flex-end'}>
+        <div>
+          Star us on{' '}
+          <Link href="#" onClick={githubLink}>
+            Github
+          </Link>
+        </div>
+        <div>
+          Feel free to report any{' '}
+          <Link href="#" onClick={githubExtensionLink}>
+            issues
+          </Link>
+        </div>
       </Grid>
       <Grid item xs={12} sx={{ marginTop: 1 }}>
         <Typography variant="body1" fontWeight={600}>

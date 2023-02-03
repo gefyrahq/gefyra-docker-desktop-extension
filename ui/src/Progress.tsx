@@ -28,7 +28,7 @@ export function Progress() {
       <Grid item xs={12}>
         <Stepper activeStep={activeStep} alternativeLabel>
           {steps.map((step, index) => (
-            <Step key={step.label}>
+            <Step key={step.label} completed={index < activeStep}>
               {index < activeStep ? (
                 <StepButton onClick={() => handleStepClick(index)}>{step.label}</StepButton>
               ) : (
