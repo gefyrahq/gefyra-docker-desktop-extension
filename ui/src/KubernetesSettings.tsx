@@ -31,7 +31,7 @@ import { RemoteClusterSettings } from './components/RemoteClusterSettings';
 
 const selectContext = 'Please select a context';
 
-export function Settings() {
+export function KubernetesSettings() {
   const dispatch = useDispatch();
 
   const ddClient = createDockerDesktopClient();
@@ -41,8 +41,8 @@ export function Settings() {
   const [nextEnabled, setNextEnabled] = useState<boolean>(false);
 
   const [back, next] = useNavigation(
-    { resetMode: true, step: 0, view: 'mode' },
-    { resetMode: false, step: 2, view: 'container' }
+    { resetMode: true, step: 0, view: 'home' },
+    { resetMode: false, step: 1, view: 'container' }
   );
 
   const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
@@ -129,7 +129,7 @@ export function Settings() {
         const minor = versionParts[1];
         if (parseInt(major) >= 4 && parseInt(minor) >= 16) {
           console.debug(
-            "Detected Docker Desktop version 4.16.x, using 'kubernetes.docker.internal'"
+            "Detected Docker Desktop version >= 4.16.x, using 'kubernetes.docker.internal'"
           );
           resolve('kubernetes.docker.internal');
         }
@@ -179,7 +179,7 @@ export function Settings() {
   return (
     <>
       <Grid item xs={12} alignItems="center">
-        <Typography variant="subtitle1">Please set Kubernetes configuration.</Typography>
+        <Typography variant="subtitle1">Set Kubernetes Settings</Typography>
       </Grid>
       <Grid item xs={6}>
         <FormControl fullWidth>
@@ -227,7 +227,7 @@ export function Settings() {
         <Button
           variant="contained"
           component="label"
-          color="primary"
+          color="secondary"
           onClick={back}
           sx={{ marginTop: 1 }}>
           Back

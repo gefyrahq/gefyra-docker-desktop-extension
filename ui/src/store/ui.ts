@@ -2,11 +2,9 @@ import { AlertColor } from '@mui/material';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 const initialSteps = [
-  { label: 'Choose Mode' },
   { label: 'Kubernetes Settings' },
   { label: 'Container Settings' },
-  { label: 'Start Gefyra' },
-  { label: 'Logs' }
+  { label: 'Start Container' }
 ];
 
 interface UIState {
@@ -22,7 +20,7 @@ interface UIState {
 
 const initialState: UIState = {
   mode: localStorage.getItem('mode') || '',
-  view: localStorage.getItem('view') || 'mode',
+  view: localStorage.getItem('view') || 'home',
   steps: initialSteps,
   activeStep: parseInt(localStorage.getItem('activeStep')) || 0,
   snackbarText: '',

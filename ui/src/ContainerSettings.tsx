@@ -34,7 +34,7 @@ import useDockerImages from './composable/dockerImages';
 import { DockerImage } from './types';
 import { PortMappings } from './components/PortMappings';
 
-export function Container() {
+export function ContainerSettings() {
   const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
   const ddClient = createDockerDesktopClient();
 
@@ -63,8 +63,8 @@ export function Container() {
   const dispatch = useDispatch();
 
   const [back, next] = useNavigation(
-    { resetMode: false, step: 1, view: 'settings' },
-    { resetMode: false, step: 3, view: 'run' }
+    { resetMode: false, step: 0, view: 'settings' },
+    { resetMode: false, step: 2, view: 'run' }
   );
 
   const handleCommandChange = (e) => {
@@ -154,7 +154,7 @@ export function Container() {
   return (
     <>
       <Grid item xs={12} alignItems="center">
-        <Typography variant="subtitle1">Configure your container.</Typography>
+        <Typography variant="subtitle1">Set Container Settings</Typography>
       </Grid>
       <Grid item xs={5}>
         <LSelect
@@ -252,7 +252,7 @@ export function Container() {
         <Button
           variant="contained"
           component="label"
-          color="primary"
+          color="secondary"
           onClick={back}
           sx={{ marginTop: 1 }}>
           Back

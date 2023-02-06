@@ -9,16 +9,12 @@ export function Progress() {
   function handleStepClick(index) {
     if (index === 0) {
       dispatch(setMode(''));
-      dispatch(setView('mode'));
+      dispatch(setView('settings'));
       dispatch(resetSteps());
     }
     if (index === 1) {
-      dispatch(setView('settings'));
-      dispatch(setActiveStep(1));
-    }
-    if (index === 2) {
       dispatch(setView('container'));
-      dispatch(setActiveStep(2));
+      dispatch(setActiveStep(1));
     }
   }
 
@@ -32,7 +28,7 @@ export function Progress() {
       <Grid item xs={12}>
         <Stepper activeStep={activeStep} alternativeLabel>
           {steps.map((step, index) => (
-            <Step key={step.label}>
+            <Step key={step.label} completed={index < activeStep}>
               {index < activeStep ? (
                 <StepButton onClick={() => handleStepClick(index)}>{step.label}</StepButton>
               ) : (

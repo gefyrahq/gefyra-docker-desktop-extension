@@ -4,11 +4,10 @@ import Grid from '@mui/material/Grid';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
 import { TopBar } from './TopBar';
-import { Chooser } from './Chooser';
+import { Home } from './Home';
 import { Progress } from './Progress';
-import { Settings } from './Settings';
-import { Container } from './Container';
-import { Run } from './Run';
+import { KubernetesSettings } from './KubernetesSettings';
+import { ContainerSettings } from './ContainerSettings';
 import { RootState } from './store';
 import { closeSnackbar, setActiveStep, setTrackingId, setView } from './store/ui';
 import { RunProgress } from './RunProgress';
@@ -30,7 +29,7 @@ export function App() {
   useEffect(() => {
     const initApp = () => {
       if (!kubeconfig) {
-        dispatch(setView('mode'));
+        dispatch(setView('home'));
         dispatch(setActiveStep(0));
         dispatch(setTrackingId());
       }
@@ -42,14 +41,16 @@ export function App() {
     <>
       <TopBar />
       <Paper variant="outlined" sx={{ p: 4, mt: 2 }}>
-        <Grid container spacing={3}>
-          <Progress />
-          {view === 'mode' && <Chooser />}
-          {view === 'settings' && <Settings />}
-          {view === 'container' && kubeconfig && <Container />}
-          {view === 'run' && kubeconfig && <RunProgress />}
-          {view === 'logs' && <Run />}
-        </Grid>
+        {view === 'home' ? (
+          <Home />
+        ) : (
+          <Grid container spacing={3}>
+            <Progress />
+            {view === 'settings' && <KubernetesSettings />}
+            {view === 'container' && kubeconfig && <ContainerSettings />}
+            {view === 'run' && kubeconfig && <RunProgress />}
+          </Grid>
+        )}
       </Paper>
       <Snackbar open={snackbarVisible} autoHideDuration={6000} onClose={hideSnackbar}>
         <Alert severity={snackbarType} sx={{ width: '100%' }} onClose={hideSnackbar}>

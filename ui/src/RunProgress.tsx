@@ -15,6 +15,7 @@ import { setContainerName } from './store/gefyra';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { RootState } from './store';
 import useNavigation from './composable/navigation';
+import { resetSteps, setMode, setView } from './store/ui';
 
 export function RunProgress() {
   const ddClient = createDockerDesktopClient();
@@ -38,9 +39,9 @@ export function RunProgress() {
 
   const dispatch = useDispatch();
 
-  const [back, next] = useNavigation(
-    { resetMode: false, step: 2, view: 'container' },
-    { resetMode: false, step: 4, view: 'logs' }
+  const [back] = useNavigation(
+    { resetMode: true, step: 0, view: 'settings' },
+    { resetMode: true, step: 0, view: 'settings' }
   );
 
   function updateProgress(msg: string, progress?: number, error: boolean = false) {
@@ -53,6 +54,39 @@ export function RunProgress() {
 
   function displayError(msg: string) {
     updateProgress(msg, null, true);
+  }
+
+  async function goToContainerLogs(id) {
+    dispatch(setMode(''));
+    dispatch(setView('home'));
+    dispatch(resetSteps());
+    try {
+      await ddClient.desktopUI.navigate.viewContainerLogs(id);
+    } catch (e) {
+      console.error(e);
+      ddClient.desktopUI.toast.error(`Failed to navigate to logs for container "${id}".`);
+    }
+  }
+
+  function getContainerId(containerName: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      // Pass in filter to only get containers with the name we want
+      ddClient.docker
+        .listContainers({
+          all: true,
+          filters: JSON.stringify({ name: [containerName] })
+        })
+        .then((containers: Array<any>) => {
+          if (containers.length > 1) {
+            reject('Multiple containers with same name found.');
+          }
+          if (containers.length === 1) {
+            resolve(containers[0].Id);
+          } else {
+            reject('Container not found');
+          }
+        });
+    });
   }
 
   useEffect(() => {
@@ -160,17 +194,24 @@ export function RunProgress() {
           updateProgress('Gefyra Cargo connection confirmed.', 60);
 
           updateProgress('Starting local container.', 70);
-          const runResult = await gefyraClient.exec(runRequest).then(async (res) => {
-            const result = JSON.parse(res);
-            console.log(result);
-            return result.status === 'success';
-          });
+          const runResult = await gefyraClient
+            .exec(runRequest)
+            .then(async (res) => {
+              return res.response.status === 'success';
+            })
+            .catch((err) => {
+              return false;
+            });
           if (!runResult) {
             displayError('Could not run container');
             return;
           }
           updateProgress('Container is running!', 100);
-          next();
+          setTimeout(() => {
+            getContainerId(containerName).then((id) => {
+              goToContainerLogs(id);
+            });
+          }, 50000);
         })
         .catch((err) => {
           console.log(err);
