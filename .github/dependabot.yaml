@@ -11,3 +11,9 @@ updates:
       - "SteinRobert"
     schedule:
       interval: "daily"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    assignees:
+      - "SteinRobert"
+    schedule:
+      interval: "daily"
