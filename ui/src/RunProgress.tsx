@@ -196,22 +196,25 @@ export function RunProgress() {
           updateProgress('Starting local container.', 70);
           const runResult = await gefyraClient
             .exec(runRequest)
-            .then(async (res) => {
-              return res.response.status === 'success';
+            .then((res) => {
+              const r = JSON.parse(res);
+              if (r.status === 'error') {
+                displayError(`Error: ${r.reason}`);
+                return false;
+              }
+              return r.status === 'success';
             })
             .catch((err) => {
+              displayError(`Could not run container - reason unknown (${err}).`);
               return false;
             });
           if (!runResult) {
-            displayError('Could not run container');
             return;
           }
           updateProgress('Container is running!', 100);
-          setTimeout(() => {
-            getContainerId(containerName).then((id) => {
-              goToContainerLogs(id);
-            });
-          }, 50000);
+          getContainerId(containerName).then((id) => {
+            goToContainerLogs(id);
+          });
         })
         .catch((err) => {
           console.log(err);

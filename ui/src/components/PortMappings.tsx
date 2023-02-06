@@ -33,7 +33,7 @@ export function PortMappings() {
     <>
       {portMappings.map((ports, index) =>
         ports ? (
-          <Grid item xs={12} key={index}>
+          <Grid item xs={12} key={index} sx={{ mb: 2 }}>
             <Grid container spacing={4}>
               <Grid item xs={5}>
                 <TextField

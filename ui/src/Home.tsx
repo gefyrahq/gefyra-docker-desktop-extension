@@ -70,7 +70,14 @@ export function Home() {
         >
       ) => {
         return params.value.map((port: any) => {
-          return `${port.IP}:${port.PublicPort} -> ${port.PrivatePort}/${port.Type}`;
+          return (
+            <div key={port.PrivatePort} style={{ display: 'block', flex: '0' }}>
+              {port.IP && port.IP !== '0.0.0.0' ? port.IP + ':' : ''}
+              {port.PublicPort ? port.PublicPort : ''}
+              {port.PublicPort ? '->' : ''}
+              {port.PrivatePort}/{port.Type}{' '}
+            </div>
+          );
         });
       }
     },

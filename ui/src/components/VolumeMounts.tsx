@@ -54,7 +54,7 @@ export function VolumeMounts() {
       <Grid item xs={12}>
         {volumeMounts.map((v, index) =>
           v ? (
-            <Grid container spacing={4} key={index}>
+            <Grid container spacing={4} key={index} sx={{ mb: 2 }}>
               <Grid item xs={5}>
                 <TextField
                   id="host"
