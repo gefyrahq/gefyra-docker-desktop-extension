@@ -152,7 +152,6 @@ export function KubernetesSettings() {
       const nsRequest = new K8sNamespaceRequest();
       nsRequest.kubeconfig = kubeconfig;
       nsRequest.context = context;
-      console.log(123);
       gefyraClient
         .exec(nsRequest)
         .then((res) => {

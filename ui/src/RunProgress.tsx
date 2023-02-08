@@ -19,11 +19,14 @@ import { notFresh, resetSteps, setMode, setView } from './store/ui';
 
 export function RunProgress() {
   const ddClient = createDockerDesktopClient();
+  const gefyraClient = new Gefyra(ddClient);
   const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
+  let stopRunning = false;
 
   const [runLabel, setRunLabel] = useState('');
   const [runProgress, setRunProgress] = useState(0);
   const [runError, setRunError] = useState(false);
+  const [cancelEnabled, setCancelEnabled] = useState(false);
 
   const appJustStarted = useAppSelector((state) => state.ui.fresh);
   const environmentVariables = useAppSelector((state) => state.gefyra.environmentVariables);
@@ -40,9 +43,9 @@ export function RunProgress() {
 
   const dispatch = useDispatch();
 
-  const [back] = useNavigation(
+  const [back, next] = useNavigation(
     { resetMode: true, step: 0, view: 'settings' },
-    { resetMode: true, step: 0, view: 'settings' }
+    { resetMode: false, step: 2, view: 'stop' }
   );
 
   function updateProgress(msg: string, progress?: number, error: boolean = false) {
@@ -58,6 +61,9 @@ export function RunProgress() {
   }
 
   async function goToContainerLogs(id) {
+    if (stopRunning) {
+      return;
+    }
     dispatch(setMode(''));
     dispatch(setView('home'));
     dispatch(resetSteps());
@@ -90,11 +96,18 @@ export function RunProgress() {
     });
   }
 
+  async function cancelRun() {
+    stopRunning = true;
+    gefyraClient.cancel();
+    next();
+  }
+
   useEffect(() => {
     async function run() {
       updateProgress('Checking current state of Gefyra.', 0, false);
       const statusRequest = new GefyraStatusRequest();
-      const gefyraClient = new Gefyra(ddClient);
+
+      setCancelEnabled(true);
       await gefyraClient.exec(statusRequest).then(async (res) => {
         const response = JSON.parse(res).response;
         let client = response.client;
@@ -109,6 +122,9 @@ export function RunProgress() {
           await gefyraClient.exec(downRequest);
         }
       });
+      if (stopRunning) {
+        return;
+      }
       updateProgress('Checking cluster for existing Gefyra installation.', 10);
 
       const upRequest = new GefyraUpRequest();
@@ -157,6 +173,9 @@ export function RunProgress() {
           updateProgress('Cluster connection confirmed.', 15);
           if (!cluster.operator) {
             updateProgress('Gefyra Operator not found. Installing now.');
+            if (stopRunning) {
+              return;
+            }
             const res = await gefyraUp(gefyraClient, upRequest);
             if (!res) {
               displayError('Could not install Gefyra');
@@ -195,6 +214,9 @@ export function RunProgress() {
           updateProgress('Gefyra Cargo connection confirmed.', 60);
 
           updateProgress('Starting local container.', 70);
+          if (stopRunning) {
+            return;
+          }
           const runResult = await gefyraClient
             .exec(runRequest)
             .then((res) => {
@@ -212,12 +234,18 @@ export function RunProgress() {
           if (!runResult) {
             return;
           }
+          if (stopRunning) {
+            return;
+          }
           updateProgress('Container is running!', 100);
           getContainerId(containerName).then((id) => {
+            if (stopRunning) {
+              return;
+            }
             goToContainerLogs(id);
           });
         })
-        .catch((err) => {
+        .catch(async (err) => {
           console.log(err);
         });
     }
@@ -227,6 +255,9 @@ export function RunProgress() {
       dispatch(notFresh());
       back();
     }
+    return () => {
+      gefyraClient.cancel();
+    };
   }, []);
 
   return (
@@ -235,6 +266,19 @@ export function RunProgress() {
         <Grid item xs={11} sx={{ mt: 8 }}>
           <GefyraStatusBar label={runLabel} progress={runProgress} error={runError} />
         </Grid>
+        {!runError && (
+          <Grid item xs={11} sx={{ mt: 2, mb: 5 }} textAlign="right">
+            <Button
+              variant="contained"
+              component="label"
+              color="secondary"
+              onClick={cancelRun}
+              disabled={!cancelEnabled}
+              sx={{ marginTop: 1 }}>
+              Cancel
+            </Button>
+          </Grid>
+        )}
         <Grid item xs={11} sx={{ mt: 2, mb: 5 }} textAlign="right">
           {runError && (
             <Button

@@ -1,14 +1,22 @@
-import { DockerDesktopClient } from '@docker/extension-api-client-types/dist/v1';
+import { DockerDesktopClient, ExecProcess } from '@docker/extension-api-client-types/dist/v1';
 import { GefyraBaseClient } from 'gefyra/lib/base';
 import { GefyraRequest } from 'gefyra/lib/protocol';
 import * as Sentry from '@sentry/react';
 
 class Gefyra extends GefyraBaseClient {
   client: DockerDesktopClient;
+  process: ExecProcess;
 
   constructor(dockerClient: DockerDesktopClient) {
     super();
     this.client = dockerClient;
+    this.process = null;
+  }
+
+  cancel(): void {
+    if (this.process) {
+      this.process.close();
+    }
   }
 
   async exec(request: GefyraRequest): Promise<any> {
@@ -21,7 +29,7 @@ class Gefyra extends GefyraBaseClient {
     console.debug(request);
 
     return new Promise((resolve, reject) => {
-      this.client.extension.host.cli.exec('gefyra-json', [request.serialize()], {
+      this.process = this.client.extension.host.cli.exec('gefyra-json', [request.serialize()], {
         stream: {
           onOutput(data): void {
             if (data.stdout) {

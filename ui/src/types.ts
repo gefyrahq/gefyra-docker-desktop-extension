@@ -115,7 +115,7 @@ export const statusMap = {
 };
 
 export type GefyraStatusBarProps = {
-  error: boolean;
+  error?: boolean;
   label: string;
   progress: number;
 };

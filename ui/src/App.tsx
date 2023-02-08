@@ -11,6 +11,7 @@ import { ContainerSettings } from './ContainerSettings';
 import { RootState } from './store';
 import { closeSnackbar, notFresh, setActiveStep, setTrackingId, setView } from './store/ui';
 import { RunProgress } from './RunProgress';
+import { Stop } from './Stop';
 
 export function App() {
   const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
@@ -55,6 +56,7 @@ export function App() {
             {view === 'settings' && <KubernetesSettings />}
             {view === 'container' && kubeconfig && <ContainerSettings />}
             {view === 'run' && kubeconfig && <RunProgress />}
+            {view === 'stop' && kubeconfig && <Stop />}
           </Grid>
         )}
       </Paper>
