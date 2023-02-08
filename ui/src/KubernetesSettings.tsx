@@ -101,15 +101,17 @@ export function KubernetesSettings() {
   }
 
   useEffect(() => {
-    checkNextEnabled();
-    if (context === 'docker-desktop') {
-      getDockerDesktopHost().then((res) => {
-        dispatch(setHost(res));
-      });
-    } else {
-      dispatch(setHost(''));
+    if (kubeconfig && context) {
+      checkNextEnabled();
+      if (context === 'docker-desktop') {
+        getDockerDesktopHost().then((res) => {
+          dispatch(setHost(res));
+        });
+      } else {
+        dispatch(setHost(''));
+      }
+      dispatch(setPort(31820));
     }
-    dispatch(setPort(31820));
   }, [kubeconfig, context]);
 
   async function getDockerDesktopHost(): Promise<string> {
@@ -150,9 +152,11 @@ export function KubernetesSettings() {
       const nsRequest = new K8sNamespaceRequest();
       nsRequest.kubeconfig = kubeconfig;
       nsRequest.context = context;
+      console.log(123);
       gefyraClient
         .exec(nsRequest)
         .then((res) => {
+          console.log(res);
           const resp = JSON.parse(res);
           if (res.status !== 'error' && resp.response && resp.response.namespaces) {
             dispatch(setSnackbar({ text: 'Namespaces have been loaded.', type: 'success' }));
