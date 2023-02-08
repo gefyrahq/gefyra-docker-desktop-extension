@@ -144,6 +144,7 @@ export function KubernetesSettings() {
   }
 
   function checkNextEnabled() {
+    const namespaceError = 'Cannot load cluster namespaces. Is the cluster running?';
     if (kubeconfig && context && context !== selectContext) {
       dispatch(setSnackbar({ text: 'Checking available namespaces.', type: 'info' }));
       const nsRequest = new K8sNamespaceRequest();
@@ -158,11 +159,11 @@ export function KubernetesSettings() {
             dispatch(setAvailableNamespaces(resp.response.namespaces));
             setNextEnabled(true);
           } else {
-            ddClient.desktopUI.toast.error('Cannot load cluster namespaces.');
+            ddClient.desktopUI.toast.error(namespaceError);
           }
         })
         .catch((err) => {
-          ddClient.desktopUI.toast.error('Cannot load cluster namespaces.');
+          ddClient.desktopUI.toast.error(namespaceError);
         });
       // TODO handle namespaces not available
     } else {
