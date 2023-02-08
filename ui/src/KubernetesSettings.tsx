@@ -27,7 +27,7 @@ import store, { RootState } from './store';
 import { LSelect } from './components/LSelect';
 import useNavigation from './composable/navigation';
 import { setSnackbar } from './store/ui';
-import { RemoteClusterSettings } from './components/RemoteClusterSettings';
+import { AdvancedClusterSettings } from './components/AdvancedClusterSettings';
 
 const selectContext = 'Please select a context';
 
@@ -216,10 +216,10 @@ export function KubernetesSettings() {
       <Grid item xs={11}>
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography>Remote Cluster Settings</Typography>
+            <Typography>Advanced Cluster Settings</Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <RemoteClusterSettings></RemoteClusterSettings>
+            <AdvancedClusterSettings></AdvancedClusterSettings>
           </AccordionDetails>
         </Accordion>
       </Grid>

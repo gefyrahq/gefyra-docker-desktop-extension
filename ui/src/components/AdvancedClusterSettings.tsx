@@ -3,7 +3,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { setHost, setPort } from '../store/gefyra';
 
-export function RemoteClusterSettings() {
+export function AdvancedClusterSettings() {
   const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
   const dispatch = useDispatch();
   const host = useAppSelector((state) => state.gefyra.host);
