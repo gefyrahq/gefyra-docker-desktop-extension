@@ -9,7 +9,7 @@ import { Progress } from './Progress';
 import { KubernetesSettings } from './KubernetesSettings';
 import { ContainerSettings } from './ContainerSettings';
 import { RootState } from './store';
-import { closeSnackbar, setActiveStep, setTrackingId, setView } from './store/ui';
+import { closeSnackbar, notFresh, setActiveStep, setTrackingId, setView } from './store/ui';
 import { RunProgress } from './RunProgress';
 
 export function App() {
@@ -36,6 +36,12 @@ export function App() {
     };
     initApp();
   }, [kubeconfig, dispatch]);
+
+  useEffect(() => {
+    if (view !== 'run') {
+      dispatch(notFresh());
+    }
+  }, []);
 
   return (
     <>

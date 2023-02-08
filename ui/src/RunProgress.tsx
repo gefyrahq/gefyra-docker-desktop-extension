@@ -15,7 +15,7 @@ import { setContainerName } from './store/gefyra';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { RootState } from './store';
 import useNavigation from './composable/navigation';
-import { resetSteps, setMode, setView } from './store/ui';
+import { notFresh, resetSteps, setMode, setView } from './store/ui';
 
 export function RunProgress() {
   const ddClient = createDockerDesktopClient();
@@ -25,6 +25,7 @@ export function RunProgress() {
   const [runProgress, setRunProgress] = useState(0);
   const [runError, setRunError] = useState(false);
 
+  const appJustStarted = useAppSelector((state) => state.ui.fresh);
   const environmentVariables = useAppSelector((state) => state.gefyra.environmentVariables);
   const kubeconfig = useAppSelector((state) => state.gefyra.kubeconfig);
   const context = useAppSelector((state) => state.gefyra.context);
@@ -220,7 +221,12 @@ export function RunProgress() {
           console.log(err);
         });
     }
-    run();
+    if (!appJustStarted) {
+      run();
+    } else {
+      dispatch(notFresh());
+      back();
+    }
   }, []);
 
   return (

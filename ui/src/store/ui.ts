@@ -16,6 +16,7 @@ interface UIState {
   snackbarVisible: boolean;
   snackbarType: AlertColor;
   trackingId: string;
+  fresh: boolean; // Indicates the app just started
 }
 
 const initialState: UIState = {
@@ -26,13 +27,17 @@ const initialState: UIState = {
   snackbarText: '',
   snackbarVisible: false,
   snackbarType: 'success',
-  trackingId: ''
+  trackingId: '',
+  fresh: true
 };
 
 export const uiSlice = createSlice({
   name: 'ui',
   initialState: initialState,
   reducers: {
+    notFresh: (state) => {
+      state.fresh = false;
+    },
     setMode: (state, action) => {
       state.mode = action.payload;
       localStorage.setItem('mode', action.payload);
@@ -78,7 +83,8 @@ export const {
   setActiveStep,
   setSnackbar,
   closeSnackbar,
-  setTrackingId
+  setTrackingId,
+  notFresh
 } = uiSlice.actions;
 
 export default uiSlice.reducer;
