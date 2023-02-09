@@ -1,10 +1,11 @@
-# Gefyra Docker Desktop Extension
-
 <div align="center">
+    <img src="https://github.com/gefyrahq/gefyra/raw/main/docs/static/img/logo.png" alt="Gefyra Logo"/>
+    <h3 align="center">Gefyra Docker Desktop Extension</h3>
+    <p align="center">
+        Connect your local containers to any Kubernetes cluster.
+    </p>
     <img src="https://github.com/gefyrahq/gefyra-docker-desktop-extension/raw/main/assets/screenshot.png" alt="Screenshot Gefyra Docker Desktop Extension"/>
 </div>
-
-**Connect your local containers to any Kubernetes cluster.**
 
 Gefyra aims to ease the burdens of K8s based development for developers.
 Run a container locally and connect it to a Kubernetes cluster to:
