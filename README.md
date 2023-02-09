@@ -1,7 +1,7 @@
 # Gefyra Docker Desktop Extension
 
 <div align="center">
-    <img src="https://github.com/gefyrahq/gefyra-docker-desktop-extensionraw/main/assets/screenshot.png" alt="Screenshot Gefyra Docker Desktop Extension"/>
+    <img src="https://github.com/gefyrahq/gefyra-docker-desktop-extension/raw/main/assets/screenshot.png" alt="Screenshot Gefyra Docker Desktop Extension"/>
 </div>
 
 **Connect your local containers to any Kubernetes cluster.**
