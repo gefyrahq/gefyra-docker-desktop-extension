@@ -33,7 +33,7 @@ export function Stop() {
       setRunProgress(20);
       const downRequest = new GefyraDownRequest();
       await gefyraClient.exec(downRequest);
-      setRunLabel('Gefyra hass been stopped');
+      setRunLabel('Gefyra has been stopped');
       setRunProgress(100);
       setBackEnabled(true);
     }
