@@ -7,7 +7,7 @@
     <img src="https://github.com/gefyrahq/gefyra-docker-desktop-extension/raw/main/assets/screenshot.png" alt="Screenshot Gefyra Docker Desktop Extension"/>
 </div>
 
-[![Discord](https://img.shields.io/discord/1075721959108784198?label=DISCORD&style=for-the-badge)](https://discord.gg/zFQBT8bnYX)
+[![Discord](https://img.shields.io/badge/Discord-%235865F2.svg?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/zFQBT8bnYX)
 
 Gefyra aims to ease the burdens of K8s based development for developers.
 Run a container locally and connect it to a Kubernetes cluster to:
