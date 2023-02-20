@@ -24,7 +24,9 @@ The Docker Desktop extension comes with a packed binary ('gefyra-ext') and build
 
 ## Installation
 
-Currently the extension is not available on the Docker Marketplace yet. Until then you can install it manually:
+Gefyra is available on the Docker Desktop extension [marketplace](https://hub.docker.com/extensions/gefyra/docker-desktop-extension).
+
+You can also install via command line:
 
 ```bash
 docker extension install gefyra/docker-desktop-extension:1.1.0
