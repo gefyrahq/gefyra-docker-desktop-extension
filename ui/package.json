@@ -44,7 +44,7 @@
   "devDependencies": {
     "@docker/extension-api-client-types": "^0.3.4",
     "@types/jest": "^29.4.0",
-    "@types/node": "^17.0.45",
+    "@types/node": "^18.15.2",
     "@types/react-dom": "^17.0.18",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
