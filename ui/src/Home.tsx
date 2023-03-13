@@ -70,7 +70,7 @@ export function Home() {
           Array<{ PrivatPort: Number; PublicPort: Number; Type: string }>
         >
       ) => {
-        return params.value.map((port: any) => {
+        return params.value?.map((port: any) => {
           return (
             <div key={port.PrivatePort} style={{ display: 'block', flex: '0' }}>
               {port.IP && port.IP !== '0.0.0.0' ? port.IP + ':' : ''}
@@ -93,9 +93,9 @@ export function Home() {
           all: true,
           filters: filters
         })
-        .then((containers: Array<any>) => {
+        .then((containers: any) => {
           if (!showCargp) {
-            containers = containers.filter((container) => {
+            containers = containers.filter((container: {Names: string[]}) => {
               return !container.Names.includes('/gefyra-cargo');
             });
           }
@@ -105,13 +105,13 @@ export function Home() {
   }
 
   useEffect(() => {
-    getContainers().then((containers: Array<any>) => {
+    getContainers().then((containers: any) => {
       setContainers(containers);
     });
   }, [showCargp]);
 
   useEffect(() => {
-    getContainers().then((containers: Array<any>) => {
+    getContainers().then((containers: any) => {
       setContainers(containers);
     });
   }, []);

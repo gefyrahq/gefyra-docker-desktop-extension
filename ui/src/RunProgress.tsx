@@ -83,7 +83,7 @@ export function RunProgress() {
           all: true,
           filters: JSON.stringify({ name: [containerName] })
         })
-        .then((containers: Array<any>) => {
+        .then((containers: any) => {
           if (containers.length > 1) {
             reject('Multiple containers with same name found.');
           }

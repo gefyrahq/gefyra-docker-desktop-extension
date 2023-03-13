@@ -1,9 +1,9 @@
 export type DockerImage = {
-  repo?: string;
+  repo: string;
   tag?: string;
   id?: string;
   created?: number;
-  type?: string;
+  type: string;
   name: string;
 };
 

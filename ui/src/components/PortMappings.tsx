@@ -10,14 +10,14 @@ export function PortMappings() {
 
   const portMappings = useAppSelector((state) => state.gefyra.portMappings);
 
-  const add = (e) => {
+  const add = () => {
     dispatch(addPortMapping({ '': '' }));
   };
 
-  const handleChange = (i, t, value) => {
+  const handleChange = (i: number, t: 'host' | 'container', value: string) => {
     portMappings.forEach((v: PortMapping, index) => {
       if (i === index) {
-        const res = {};
+        const res: {[key: string]: string} = {};
         if (t === 'host') {
           res[value] = v[Object.keys(v)[0]];
         } else {
