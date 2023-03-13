@@ -1,6 +1,6 @@
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import { Button, FormControlLabel, FormGroup, Grid, Link, Switch } from '@mui/material';
-import { DataGrid, GridRenderCellParams } from '@mui/x-data-grid';
+import { DataGrid, GridRenderCellParams, GridRowParams } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { resetSteps, setMode, setView } from './store/ui';
@@ -11,7 +11,7 @@ export function Home() {
   const ddClient = createDockerDesktopClient();
   const dispatch = useDispatch();
 
-  function gettingStartedLink(e) {
+  function gettingStartedLink() {
     ddClient.host.openExternal('https://gefyra.dev/docker-desktop-extension/');
   }
 
@@ -19,11 +19,12 @@ export function Home() {
     return row.Id;
   }
 
-  function openContainer(row) {
-    ddClient.desktopUI.navigate.viewContainerLogs(row.id);
+  function openContainer(params: GridRowParams) {
+    const id = params.id as string;
+    ddClient.desktopUI.navigate.viewContainerLogs(id);
   }
 
-  function handleChangeHideCargo(event) {
+  function handleChangeHideCargo(event: React.ChangeEvent<HTMLInputElement>) {
     setShowCargo(event.target.checked);
   }
 

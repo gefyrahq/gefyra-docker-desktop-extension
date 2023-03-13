@@ -5,6 +5,7 @@ import {
   Autocomplete,
   Button,
   Grid,
+  SelectChangeEvent,
   TextField,
   Typography
 } from '@mui/material';
@@ -71,7 +72,7 @@ export function ContainerSettings() {
     dispatch(setCommand(e.target.value));
   };
 
-  const updateEnvFromSelect = (namespaceVal) => {
+  const updateEnvFromSelect = (namespaceVal: string) => {
     setEnvFromActive(false);
     const wlrRequest = new K8sWorkloadsRequest();
     wlrRequest.kubeconfig = kubeconfig;
@@ -102,17 +103,17 @@ export function ContainerSettings() {
       });
   };
 
-  function handleNamespaceChange(e, b): any {
+  function handleNamespaceChange(e: SelectChangeEvent<string>, b: object): any {
     const namespaceVal = e.target.value;
     dispatch(setNamespace(namespaceVal));
     updateEnvFromSelect(namespaceVal);
   }
 
-  function handleEnvFromChange(e, b): any {
+  function handleEnvFromChange(e: SelectChangeEvent<string>, b: object): any {
     dispatch(setEnvFrom(e.target.value));
   }
 
-  function handleImageChange(e, b: DockerImage) {
+  function handleImageChange(e: SelectChangeEvent<string>, b: DockerImage) {
     dispatch(setImage(b ? b.name : ''));
   }
 

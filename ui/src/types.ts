@@ -4,7 +4,7 @@ export type DockerImage = {
   id?: string;
   created?: number;
   type?: string;
-  name?: string;
+  name: string;
 };
 
 export type GefyraStatus = {

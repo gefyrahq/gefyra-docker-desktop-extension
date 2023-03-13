@@ -28,17 +28,17 @@ const initialState: GefyraState = {
   kubeconfig: localStorage.getItem('kubeconfig') || '',
   context: localStorage.getItem('kubectx') || '',
   host: localStorage.getItem('host') || '',
-  port: parseInt(localStorage.getItem('port')) || 31820,
+  port: parseInt(localStorage.getItem('port') || '31820'),
   image: localStorage.getItem('runImage') || '',
   namespace: localStorage.getItem('namespace') || '',
   availableNamespaces: [],
   containerName: localStorage.getItem('containerName') || '',
   environmentVariables: [],
-  volumeMounts: JSON.parse(localStorage.getItem('volumeMounts')) || [],
-  command: JSON.parse(localStorage.getItem('command')) || '',
-  portMappings: JSON.parse(localStorage.getItem('portMappings')) || [],
+  volumeMounts: JSON.parse(localStorage.getItem('volumeMounts') || '[]'),
+  command: JSON.parse(localStorage.getItem('command') || ''),
+  portMappings: JSON.parse(localStorage.getItem('portMappings') || '[]'),
   availableWorkloads: [],
-  envFrom: JSON.parse(localStorage.getItem('envFrom')) || ''
+  envFrom: JSON.parse(localStorage.getItem('envFrom') || '') 
 };
 
 export const gefyraSlice = createSlice({

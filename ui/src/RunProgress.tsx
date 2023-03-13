@@ -57,10 +57,10 @@ export function RunProgress() {
   }
 
   function displayError(msg: string) {
-    updateProgress(msg, null, true);
+    updateProgress(msg, undefined, true);
   }
 
-  async function goToContainerLogs(id) {
+  async function goToContainerLogs(id: string) {
     if (stopRunning) {
       return;
     }
@@ -145,7 +145,7 @@ export function RunProgress() {
       runRequest.command = command;
       runRequest.namespace = namespace;
       runRequest.name = containerName;
-      const portMap = {};
+      const portMap: {[key: string]: string} = {};
       portMappings.forEach((portMapping: PortMapping) => {
         portMap[Object.keys(portMapping)[0]] = portMapping[Object.keys(portMapping)[0]];
       });

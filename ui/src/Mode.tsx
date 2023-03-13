@@ -9,7 +9,7 @@ type ModeProps = {
   imageAlt: string;
   headline: string;
   caption: string;
-  mode: string;
+  mode: 'run' | 'bridge';
   disabled?: boolean;
 };
 

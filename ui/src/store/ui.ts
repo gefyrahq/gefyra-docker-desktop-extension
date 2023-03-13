@@ -23,7 +23,7 @@ const initialState: UIState = {
   mode: localStorage.getItem('mode') || '',
   view: localStorage.getItem('view') || 'home',
   steps: initialSteps,
-  activeStep: parseInt(localStorage.getItem('activeStep')) || 0,
+  activeStep: parseInt(localStorage.getItem('activeStep') || '0') || 0,
   snackbarText: '',
   snackbarVisible: false,
   snackbarType: 'success',

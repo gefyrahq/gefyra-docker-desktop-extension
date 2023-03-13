@@ -6,7 +6,7 @@ import { resetSteps, setActiveStep, setMode, setView } from './store/ui';
 export function Progress() {
   const dispatch = useDispatch();
 
-  function handleStepClick(index) {
+  function handleStepClick(index: number) {
     if (index === 0) {
       dispatch(setMode(''));
       dispatch(setView('settings'));

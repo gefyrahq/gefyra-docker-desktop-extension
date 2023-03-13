@@ -7,7 +7,7 @@ import { EnvironmentVariable } from '../types';
 export function EnvironmentVariables() {
   const dispatch = useDispatch();
   const [variables, setVariables] = useState(
-    JSON.parse(localStorage.getItem('environmentVariables')) || []
+    JSON.parse(localStorage.getItem('environmentVariables') || '') || []
   );
 
   useEffect(() => {
@@ -15,13 +15,13 @@ export function EnvironmentVariables() {
   }, [variables, dispatch]);
 
   function addVariable() {
-    setVariables((old) => {
+    setVariables((old: object) => {
       return [...old, { label: '', value: '' }];
     });
   }
 
-  const handleChange = (i, t, value) => {
-    const newEnvironment = variables.map((v: EnvironmentVariable, index) => {
+  const handleChange = (i: number, t: 'label' | 'value', value: string) => {
+    const newEnvironment = variables.map((v: EnvironmentVariable, index: number) => {
       if (index === i) {
         const n = { label: '', value: '' };
         n[t] = value;
@@ -39,7 +39,7 @@ export function EnvironmentVariables() {
 
   return (
     <>
-      {variables.map((v, index) =>
+      {variables.map((v: EnvironmentVariable, index: number) =>
         v ? (
           <Grid item xs={12} key={index}>
             <Grid container spacing={4}>
