@@ -38,7 +38,7 @@ const initialState: GefyraState = {
   command: JSON.parse(localStorage.getItem('command') || ''),
   portMappings: JSON.parse(localStorage.getItem('portMappings') || '[]'),
   availableWorkloads: [],
-  envFrom: JSON.parse(localStorage.getItem('envFrom') || '') 
+  envFrom: JSON.parse(localStorage.getItem('envFrom') || '')
 };
 
 export const gefyraSlice = createSlice({

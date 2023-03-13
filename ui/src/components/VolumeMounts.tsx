@@ -17,7 +17,11 @@ export function VolumeMounts() {
     console.log('handleAddVolumeMount');
   }
 
-  async function handleHostVolumeMountChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | null, index: number, mode: 'host' | 'container') {
+  async function handleHostVolumeMountChange(
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | null,
+    index: number,
+    mode: 'host' | 'container'
+  ) {
     if (mode === 'host') {
       const result = await ddClient.desktopUI.dialog.showOpenDialog({
         properties: ['openDirectory', 'openFile']

@@ -40,8 +40,10 @@ export function ContainerSettings() {
   const ddClient = createDockerDesktopClient();
 
   const [namespaceInputActive, setNamespaceInputActive] = useState(false);
-  const [selectNamespaces, setSelectNamespaces] = useState([] as {label: string, value: string}[]);
-  const [selectEnvFrom, setSelectEnvFrom] = useState([] as {label: string, value: string}[]);
+  const [selectNamespaces, setSelectNamespaces] = useState(
+    [] as { label: string; value: string }[]
+  );
+  const [selectEnvFrom, setSelectEnvFrom] = useState([] as { label: string; value: string }[]);
   const [envFromActive, setEnvFromActive] = useState(false);
 
   const namespace = useAppSelector((state) => state.gefyra.namespace);
@@ -84,7 +86,7 @@ export function ContainerSettings() {
         const wlr: K8sWorkloadsResponse = JSON.parse(res);
         // TODO fix in gefyra-json package
         // @ts-ignore
-        const workloads = wlr?.response?.workloads[namespaceVal] as string[] || undefined;
+        const workloads = (wlr?.response?.workloads[namespaceVal] as string[]) || undefined;
         if (!envFrom || (workloads && !workloads.includes(envFrom))) {
           dispatch(setEnvFrom('select'));
         }

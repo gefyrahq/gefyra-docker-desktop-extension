@@ -36,7 +36,9 @@ export function KubernetesSettings() {
 
   const ddClient = createDockerDesktopClient();
 
-  const [availableContexts, setAvailableContexts] = useState<{ label: string, value: string }[]>([]);
+  const [availableContexts, setAvailableContexts] = useState<{ label: string; value: string }[]>(
+    []
+  );
   const [contextLoading, setContextLoading] = useState<boolean>(false);
   const [nextEnabled, setNextEnabled] = useState<boolean>(false);
 
@@ -54,13 +56,13 @@ export function KubernetesSettings() {
 
   function loadContexts() {
     setContextLoading(true);
-    let contextRequest = new K8sContextRequest();
+    const contextRequest = new K8sContextRequest();
     contextRequest.kubeconfig = store.getState().gefyra.kubeconfig;
 
     gefyraClient
       .exec(contextRequest)
       .then((res) => {
-        let parsed: K8sContextResponse = JSON.parse(res);
+        const parsed: K8sContextResponse = JSON.parse(res);
         const contexts = parsed.response.contexts;
         const contextItems = contexts.map((c) => {
           return { label: c, value: c };

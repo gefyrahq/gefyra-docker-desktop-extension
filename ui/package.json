@@ -12,6 +12,7 @@
     "@mui/x-data-grid": "^5.17.23",
     "@reduxjs/toolkit": "^1.8.6",
     "@sentry/react": "^7.36.0",
+    "@typescript-eslint/eslint-plugin": "^5.55.0",
     "ansi-to-react": "^6.1.6",
     "cra-template": "1.2.0",
     "gefyra": "^0.4.3",
@@ -22,23 +23,38 @@
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
-    "lint": "eslint .",
+    "serve": "vite preview",
+    "lint": "eslint ./src --ext .jsx,.js,.ts,.tsx --quiet --fix",
     "lint:fix": "eslint --fix",
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
   },
   "eslintConfig": {
     "extends": [
-      "react-app",
-      "react-app/jest",
       "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
       "plugin:prettier/recommended",
       "plugin:react/recommended"
     ],
+    "parserOptions": {
+      "sourceType": "module",
+      "ecmaVersion": 2020,
+      "ecmaFeatures": {
+        "jsx": true
+      }
+    },
+    "settings": {
+      "react": {
+        "version": "detect"
+      }
+    },
     "rules": {
-      "react/react-in-jsx-scope": "off"
+      "react/react-in-jsx-scope": "off",
+      "@typescript-eslint/ban-ts-comment": "off"
+
     }
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.19.1",
     "@docker/extension-api-client-types": "^0.3.4",
     "@types/jest": "^29.4.0",
     "@types/node": "^17.0.45",
@@ -46,6 +62,7 @@
     "@vitejs/plugin-react": "^3.1.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react": "^7.32.2",
     "prettier": "^2.8.4",
     "typescript": "^4.6.4",
     "vite": "^4.1.4",

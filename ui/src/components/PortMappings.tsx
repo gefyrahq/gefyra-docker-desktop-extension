@@ -17,7 +17,7 @@ export function PortMappings() {
   const handleChange = (i: number, t: 'host' | 'container', value: string) => {
     portMappings.forEach((v: PortMapping, index) => {
       if (i === index) {
-        const res: {[key: string]: string} = {};
+        const res: { [key: string]: string } = {};
         if (t === 'host') {
           res[value] = v[Object.keys(v)[0]];
         } else {

@@ -67,7 +67,7 @@ export function Home() {
       headerName: 'Ports',
       renderCell: (
         params: GridRenderCellParams<
-          Array<{ PrivatPort: Number; PublicPort: Number; Type: string }>
+          Array<{ PrivatPort: number; PublicPort: number; Type: string }>
         >
       ) => {
         return params.value?.map((port: any) => {
@@ -87,7 +87,7 @@ export function Home() {
 
   function getContainers(): Promise<any> {
     return new Promise((resolve, reject) => {
-      let filters = '{"label":["created_by.gefyra.dev=true"], "status": ["running"]}';
+      const filters = '{"label":["created_by.gefyra.dev=true"], "status": ["running"]}';
       ddClient.docker
         .listContainers({
           all: true,
@@ -95,7 +95,7 @@ export function Home() {
         })
         .then((containers: any) => {
           if (!showCargp) {
-            containers = containers.filter((container: {Names: string[]}) => {
+            containers = containers.filter((container: { Names: string[] }) => {
               return !container.Names.includes('/gefyra-cargo');
             });
           }

@@ -73,7 +73,11 @@ export function EnvironmentVariables() {
                 <Button
                   variant="contained"
                   color="error"
-                  onClick={() => setVariables(variables.filter((v: EnvironmentVariable, i: number) => i !== index))}>
+                  onClick={() =>
+                    setVariables(
+                      variables.filter((v: EnvironmentVariable, i: number) => i !== index)
+                    )
+                  }>
                   X
                 </Button>
               </Grid>

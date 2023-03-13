@@ -3,7 +3,7 @@ import { Gefyra } from '../gefyraClient';
 
 export const checkStowawayReady = async (
   gefyraClient: Gefyra,
-  times: number = 1,
+  times = 1,
   resolver: ((value: unknown) => void) | undefined = undefined,
   rejecter: ((value: unknown) => void) | undefined = undefined
 ) => {
@@ -35,7 +35,7 @@ export const checkStowawayReady = async (
 
 export const checkCargoReady = async (
   gefyraClient: Gefyra,
-  times: number = 1,
+  times = 1,
   resolver: ((value: unknown) => void) | undefined = undefined,
   rejecter: ((value: unknown) => void) | undefined = undefined
 ) => {

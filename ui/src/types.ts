@@ -52,7 +52,7 @@ export type SelectProps = {
   id: string;
   labelId: string;
   loadingText?: string;
-  handleChange: (e: any, b: any) => {};
+  handleChange: (e: any, b: any) => void;
 };
 
 export type ContainerLogsProps = {
@@ -73,8 +73,8 @@ export type AutocompleteProps = {
   id: string;
   loadingText?: string;
   getOptionLabel: (option: unknown) => string;
-  handleChange: (e: any, b: any) => {};
-  renderInput: (e: any, b: any) => {};
+  handleChange: (e: any, b: any) => void;
+  renderInput: (e: any, b: any) => void;
 };
 
 export type GefyraRoute = {
