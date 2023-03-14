@@ -7,7 +7,7 @@ import { EnvironmentVariable } from '../types';
 export function EnvironmentVariables() {
   const dispatch = useDispatch();
   const [variables, setVariables] = useState(
-    JSON.parse(localStorage.getItem('environmentVariables') || '') || []
+    JSON.parse(localStorage.getItem('environmentVariables') || '[]') || []
   );
 
   useEffect(() => {
