@@ -117,7 +117,7 @@ export function KubernetesSettings() {
   async function getDockerDesktopHost(): Promise<string> {
     const res = await ddClient.docker.cli.exec('version', [
       '-f',
-      "'{{ json .Server.Platform.Name }}'"
+      '"{{ json .Server.Platform.Name }}"'
     ]);
     const ddVersion = res.stdout;
     return new Promise((resolve, reject) => {
