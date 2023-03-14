@@ -14,7 +14,7 @@
     "@sentry/react": "^7.36.0",
     "ansi-to-react": "^6.1.6",
     "cra-template": "1.2.0",
-    "gefyra": "^0.4.3",
+    "gefyra": "^0.5.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-redux": "^8.0.5",
