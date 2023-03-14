@@ -24,7 +24,7 @@
     "start": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview",
-    "lint": "eslint ./src --ext .jsx,.js,.ts,.tsx --quiet --fix",
+    "lint": "eslint ./src --ext .jsx,.js,.ts,.tsx --quiet --fix && tsc",
     "lint:fix": "eslint --fix",
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
   },
