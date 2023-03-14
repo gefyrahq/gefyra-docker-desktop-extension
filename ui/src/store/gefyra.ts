@@ -35,10 +35,10 @@ const initialState: GefyraState = {
   containerName: localStorage.getItem('containerName') || '',
   environmentVariables: [],
   volumeMounts: JSON.parse(localStorage.getItem('volumeMounts') || '[]'),
-  command: JSON.parse(localStorage.getItem('command') || ''),
+  command: JSON.parse(localStorage.getItem('command') || 'null') || '',
   portMappings: JSON.parse(localStorage.getItem('portMappings') || '[]'),
   availableWorkloads: [],
-  envFrom: JSON.parse(localStorage.getItem('envFrom') || '')
+  envFrom: JSON.parse(localStorage.getItem('envFrom') || 'null') || ''
 };
 
 export const gefyraSlice = createSlice({
