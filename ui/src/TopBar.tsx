@@ -6,11 +6,11 @@ import { Grid, Link, Typography, useMediaQuery } from '@mui/material';
 export function TopBar() {
   const docker = createDockerDesktopClient();
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  function githubLink(e) {
+  function githubLink() {
     docker.host.openExternal('https://github.com/gefyrahq/gefyra');
   }
 
-  function githubExtensionLink(e) {
+  function githubExtensionLink() {
     docker.host.openExternal('https://github.com/gefyrahq/gefyra-docker-desktop-extension/issues');
   }
   return (

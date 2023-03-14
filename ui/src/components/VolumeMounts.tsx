@@ -17,7 +17,11 @@ export function VolumeMounts() {
     console.log('handleAddVolumeMount');
   }
 
-  async function handleHostVolumeMountChange(e, index, mode) {
+  async function handleHostVolumeMountChange(
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | null,
+    index: number,
+    mode: 'host' | 'container'
+  ) {
     if (mode === 'host') {
       const result = await ddClient.desktopUI.dialog.showOpenDialog({
         properties: ['openDirectory', 'openFile']
@@ -37,6 +41,7 @@ export function VolumeMounts() {
         }
       }
     } else {
+      if (!e) return;
       dispatch(
         setVolumeMount({
           volumeMount: {
@@ -62,7 +67,7 @@ export function VolumeMounts() {
                   fullWidth
                   label="Host Path"
                   InputProps={{ readOnly: true }}
-                  onClick={(e) => handleHostVolumeMountChange(e, index, 'host')}
+                  onClick={(e) => handleHostVolumeMountChange(null, index, 'host')}
                   value={store.getState().gefyra.volumeMounts[index].host}
                 />
               </Grid>

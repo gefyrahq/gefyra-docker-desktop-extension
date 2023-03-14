@@ -9,11 +9,11 @@ export function AdvancedClusterSettings() {
   const host = useAppSelector((state) => state.gefyra.host);
   const port = useAppSelector((state) => state.gefyra.port);
 
-  const handleHostChange = (e) => {
+  const handleHostChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(setHost(e.target.value));
   };
-  const handlePortChange = (e) => {
-    dispatch(setPort(e.target.value));
+  const handlePortChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setPort(parseInt(e.target.value)));
   };
 
   return (

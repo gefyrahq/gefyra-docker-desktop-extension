@@ -1,6 +1,6 @@
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import { Button, FormControlLabel, FormGroup, Grid, Link, Switch } from '@mui/material';
-import { DataGrid, GridRenderCellParams } from '@mui/x-data-grid';
+import { DataGrid, GridRenderCellParams, GridRowParams } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { resetSteps, setMode, setView } from './store/ui';
@@ -11,7 +11,7 @@ export function Home() {
   const ddClient = createDockerDesktopClient();
   const dispatch = useDispatch();
 
-  function gettingStartedLink(e) {
+  function gettingStartedLink() {
     ddClient.host.openExternal('https://gefyra.dev/docker-desktop-extension/');
   }
 
@@ -19,11 +19,12 @@ export function Home() {
     return row.Id;
   }
 
-  function openContainer(row) {
-    ddClient.desktopUI.navigate.viewContainerLogs(row.id);
+  function openContainer(params: GridRowParams) {
+    const id = params.id as string;
+    ddClient.desktopUI.navigate.viewContainerLogs(id);
   }
 
-  function handleChangeHideCargo(event) {
+  function handleChangeHideCargo(event: React.ChangeEvent<HTMLInputElement>) {
     setShowCargo(event.target.checked);
   }
 
@@ -66,10 +67,10 @@ export function Home() {
       headerName: 'Ports',
       renderCell: (
         params: GridRenderCellParams<
-          Array<{ PrivatPort: Number; PublicPort: Number; Type: string }>
+          Array<{ PrivatPort: number; PublicPort: number; Type: string }>
         >
       ) => {
-        return params.value.map((port: any) => {
+        return params.value?.map((port: any) => {
           return (
             <div key={port.PrivatePort} style={{ display: 'block', flex: '0' }}>
               {port.IP && port.IP !== '0.0.0.0' ? port.IP + ':' : ''}
@@ -86,15 +87,15 @@ export function Home() {
 
   function getContainers(): Promise<any> {
     return new Promise((resolve, reject) => {
-      let filters = '{"label":["created_by.gefyra.dev=true"], "status": ["running"]}';
+      const filters = '{"label":["created_by.gefyra.dev=true"], "status": ["running"]}';
       ddClient.docker
         .listContainers({
           all: true,
           filters: filters
         })
-        .then((containers: Array<any>) => {
+        .then((containers: any) => {
           if (!showCargp) {
-            containers = containers.filter((container) => {
+            containers = containers.filter((container: { Names: string[] }) => {
               return !container.Names.includes('/gefyra-cargo');
             });
           }
@@ -104,13 +105,13 @@ export function Home() {
   }
 
   useEffect(() => {
-    getContainers().then((containers: Array<any>) => {
+    getContainers().then((containers: any) => {
       setContainers(containers);
     });
   }, [showCargp]);
 
   useEffect(() => {
-    getContainers().then((containers: Array<any>) => {
+    getContainers().then((containers: any) => {
       setContainers(containers);
     });
   }, []);

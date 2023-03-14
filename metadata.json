@@ -4,7 +4,7 @@
     "dashboard-tab": {
       "title": "Gefyra",
       "src": "index.html",
-      "root": "ui"
+      "root": "build"
     }
   },
   "host": {

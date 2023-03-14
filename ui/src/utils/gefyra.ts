@@ -3,17 +3,17 @@ import { Gefyra } from '../gefyraClient';
 
 export const checkStowawayReady = async (
   gefyraClient: Gefyra,
-  times: number = 1,
-  resolver = null,
-  rejecter = null
+  times = 1,
+  resolver: ((value: unknown) => void) | undefined = undefined,
+  rejecter: ((value: unknown) => void) | undefined = undefined
 ) => {
   /*
    * Check whether Stowaway is ready and available.
    * `times` determines how often the check is repeated before failing.
    */
   const statusRequest = new GefyraStatusRequest();
-  if (times === 0) {
-    rejecter();
+  if (times === 0 && rejecter) {
+    rejecter(null);
     return;
   }
   return new Promise((resolve, reject) => {
@@ -35,17 +35,17 @@ export const checkStowawayReady = async (
 
 export const checkCargoReady = async (
   gefyraClient: Gefyra,
-  times: number = 1,
-  resolver = null,
-  rejecter = null
+  times = 1,
+  resolver: ((value: unknown) => void) | undefined = undefined,
+  rejecter: ((value: unknown) => void) | undefined = undefined
 ) => {
   /*
    * Check whether Stowaway is ready and available.
    * `times` determines how often the check is repeated before failing.
    */
   const statusRequest = new GefyraStatusRequest();
-  if (times === 0) {
-    rejecter();
+  if (times === 0 && rejecter) {
+    rejecter(null);
     return;
   }
   return new Promise((resolve, reject) => {

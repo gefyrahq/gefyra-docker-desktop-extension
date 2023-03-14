@@ -7,7 +7,7 @@ import { DockerMuiThemeProvider } from '@docker/docker-mui-theme';
 import { App } from './App';
 import { Provider } from 'react-redux';
 import store from './store';
-const pjson = require('../package.json');
+import pjson from '../package.json';
 Sentry.init({
   dsn: 'https://11cee47c7bdd4a2a91e211b2119cb8fb@sentry.unikube.io/6',
   release: pjson.version,

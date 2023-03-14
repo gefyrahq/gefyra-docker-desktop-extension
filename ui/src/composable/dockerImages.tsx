@@ -14,10 +14,10 @@ const useDockerImages = (namespace: string) => {
     ddClient.docker.listImages().then((res: any) => {
       setLoading(true);
       if (!res) return;
-      const images = [];
-      const names = [];
-      res.map((i) => {
-        const image: DockerImage = {};
+      const images: DockerImage[] = [];
+      const names: string[] = [];
+      res.map((i: any) => {
+        const image = {} as DockerImage;
         if (i.RepoTags) {
           image.repo = i.RepoTags[0].split(':')[0];
           image.tag = i.RepoTags[0].split(':')[1];
@@ -42,8 +42,8 @@ const useDockerImages = (namespace: string) => {
     request.namespace = namespace || 'default';
     gefyraClient.exec(request).then((res) => {
       const imageResponse = JSON.parse(res);
-      imageResponse.response.containers.map((c) => {
-        const image: DockerImage = {};
+      imageResponse.response.containers.map((c: { image: string }) => {
+        const image = {} as DockerImage;
         image.repo = c.image.split(':')[0];
         image.tag = c.image.split(':')[1];
         image.name = `${image.repo}:${image.tag}`;

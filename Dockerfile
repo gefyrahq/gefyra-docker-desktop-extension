@@ -47,8 +47,7 @@ RUN mkdir /windows
 RUN mkdir /darwin
 RUN mkdir /linux
 
-COPY --from=client-builder /ui/build ui
-COPY --from=client-builder /ui/public ui/public
+COPY --from=client-builder /ui/build /build
 COPY --from=dl /windows/dist/ /windows
 COPY --from=dl /darwin/gefyra-json /darwin
 COPY --from=dl /linux/gefyra-json /linux

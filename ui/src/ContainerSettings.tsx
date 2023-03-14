@@ -5,6 +5,7 @@ import {
   Autocomplete,
   Button,
   Grid,
+  SelectChangeEvent,
   TextField,
   Typography
 } from '@mui/material';
@@ -39,8 +40,10 @@ export function ContainerSettings() {
   const ddClient = createDockerDesktopClient();
 
   const [namespaceInputActive, setNamespaceInputActive] = useState(false);
-  const [selectNamespaces, setSelectNamespaces] = useState([]);
-  const [selectEnvFrom, setSelectEnvFrom] = useState([]);
+  const [selectNamespaces, setSelectNamespaces] = useState(
+    [] as { label: string; value: string }[]
+  );
+  const [selectEnvFrom, setSelectEnvFrom] = useState([] as { label: string; value: string }[]);
   const [envFromActive, setEnvFromActive] = useState(false);
 
   const namespace = useAppSelector((state) => state.gefyra.namespace);
@@ -67,11 +70,11 @@ export function ContainerSettings() {
     { resetMode: false, step: 2, view: 'run' }
   );
 
-  const handleCommandChange = (e) => {
+  const handleCommandChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     dispatch(setCommand(e.target.value));
   };
 
-  const updateEnvFromSelect = (namespaceVal) => {
+  const updateEnvFromSelect = (namespaceVal: string) => {
     setEnvFromActive(false);
     const wlrRequest = new K8sWorkloadsRequest();
     wlrRequest.kubeconfig = kubeconfig;
@@ -81,7 +84,9 @@ export function ContainerSettings() {
       .exec(wlrRequest)
       .then((res) => {
         const wlr: K8sWorkloadsResponse = JSON.parse(res);
-        const workloads = wlr?.response?.workloads[namespaceVal] || undefined;
+        // TODO fix in gefyra-json package
+        // @ts-ignore
+        const workloads = (wlr?.response?.workloads[namespaceVal] as string[]) || undefined;
         if (!envFrom || (workloads && !workloads.includes(envFrom))) {
           dispatch(setEnvFrom('select'));
         }
@@ -102,17 +107,17 @@ export function ContainerSettings() {
       });
   };
 
-  function handleNamespaceChange(e, b): any {
+  function handleNamespaceChange(e: SelectChangeEvent<string>, b: object): any {
     const namespaceVal = e.target.value;
     dispatch(setNamespace(namespaceVal));
     updateEnvFromSelect(namespaceVal);
   }
 
-  function handleEnvFromChange(e, b): any {
+  function handleEnvFromChange(e: SelectChangeEvent<string>, b: object): any {
     dispatch(setEnvFrom(e.target.value));
   }
 
-  function handleImageChange(e, b: DockerImage) {
+  function handleImageChange(e: React.SyntheticEvent<Element, Event>, b: DockerImage | null) {
     dispatch(setImage(b ? b.name : ''));
   }
 
@@ -192,7 +197,7 @@ export function ContainerSettings() {
           loading={imagesLoading}
           disabled={imagesLoading}
           sx={{ width: '100%' }}
-          value={{ name: image }}
+          value={{ name: image, type: 'image', repo: '' }}
           onChange={handleImageChange}
           noOptionsText="No Images found"
         />

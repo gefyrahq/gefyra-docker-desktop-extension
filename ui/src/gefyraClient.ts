@@ -5,7 +5,7 @@ import * as Sentry from '@sentry/react';
 
 class Gefyra extends GefyraBaseClient {
   client: DockerDesktopClient;
-  process: ExecProcess;
+  process: ExecProcess | null;
 
   constructor(dockerClient: DockerDesktopClient) {
     super();
@@ -29,7 +29,8 @@ class Gefyra extends GefyraBaseClient {
     console.debug(request);
 
     return new Promise((resolve, reject) => {
-      this.process = this.client.extension.host.cli.exec('gefyra-json', [request.serialize()], {
+      if (!this.client?.extension?.host) return;
+      this.process = this.client?.extension?.host.cli.exec('gefyra-json', [request.serialize()], {
         stream: {
           onOutput(data): void {
             if (data.stdout) {

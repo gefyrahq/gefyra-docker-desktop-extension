@@ -48,7 +48,7 @@ export function RunProgress() {
     { resetMode: false, step: 2, view: 'stop' }
   );
 
-  function updateProgress(msg: string, progress?: number, error: boolean = false) {
+  function updateProgress(msg: string, progress?: number, error = false) {
     setRunLabel(msg);
     if (progress) {
       setRunProgress(progress);
@@ -57,10 +57,10 @@ export function RunProgress() {
   }
 
   function displayError(msg: string) {
-    updateProgress(msg, null, true);
+    updateProgress(msg, undefined, true);
   }
 
-  async function goToContainerLogs(id) {
+  async function goToContainerLogs(id: string) {
     if (stopRunning) {
       return;
     }
@@ -83,7 +83,7 @@ export function RunProgress() {
           all: true,
           filters: JSON.stringify({ name: [containerName] })
         })
-        .then((containers: Array<any>) => {
+        .then((containers: any) => {
           if (containers.length > 1) {
             reject('Multiple containers with same name found.');
           }
@@ -110,7 +110,7 @@ export function RunProgress() {
       setCancelEnabled(true);
       await gefyraClient.exec(statusRequest).then(async (res) => {
         const response = JSON.parse(res).response;
-        let client = response.client;
+        const client = response.client;
         if (client.kubeconfig !== kubeconfig || client.context !== context) {
           if (client.kubeconfig !== kubeconfig) {
             updateProgress('Kubeconfig changed. Restarting Gefyra.', 5);
@@ -145,7 +145,7 @@ export function RunProgress() {
       runRequest.command = command;
       runRequest.namespace = namespace;
       runRequest.name = containerName;
-      const portMap = {};
+      const portMap: { [key: string]: string } = {};
       portMappings.forEach((portMapping: PortMapping) => {
         portMap[Object.keys(portMapping)[0]] = portMapping[Object.keys(portMapping)[0]];
       });
