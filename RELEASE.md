@@ -2,7 +2,7 @@
 
 To release a new version of the extension, follow these steps:
 
-1. Bump package.json (`npm version|minor|major`)
+1. Bump package.json (`npm version patch|minor|major`)
 2. Commit + Tag
 3. Push to GitHub
 4. Create a new release on GitHub
