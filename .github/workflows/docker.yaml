@@ -36,6 +36,7 @@ jobs:
               latest=false
             tags: |
               type=raw,value=development,enable=${{ inputs.release == false }}
+              type=raw,value=latest,enable=${{ inputs.release == true }}
               type=raw,value={{tag}},enable=${{ startsWith(github.ref, 'refs/tags/') }}
         - name: Write variable to Github Action Envrionment
           run: echo "GEFYRA_EXT_RELEASE=$(cat package.json | jq -r '.dependencies.gefyra' | cut -c2-)" >> $GITHUB_ENV
