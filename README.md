@@ -31,7 +31,7 @@ Gefyra is available on the Docker Desktop extension [marketplace](https://hub.do
 You can also install via command line:
 
 ```bash
-docker extension install gefyra/docker-desktop-extension:1.1.1
+docker extension install gefyra/docker-desktop-extension:1.1.3
 ```
 
 ## Development
