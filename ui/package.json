@@ -11,7 +11,7 @@
     "@mui/material": "^5.11.13",
     "@mui/x-data-grid": "^5.17.23",
     "@reduxjs/toolkit": "^1.9.3",
-    "@sentry/react": "^7.44.0",
+    "@sentry/react": "^7.44.1",
     "@typescript-eslint/eslint-plugin": "^5.55.0",
     "cra-template": "1.2.0",
     "gefyra": "^0.5.1",
