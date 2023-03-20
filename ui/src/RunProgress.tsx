@@ -145,9 +145,9 @@ export function RunProgress() {
       runRequest.command = command;
       runRequest.namespace = namespace;
       runRequest.name = containerName;
-      const portMap: { [key: string]: string } = {};
+      const portMap: { [container: string]: string } = {};
       portMappings.forEach((portMapping: PortMapping) => {
-        portMap[Object.keys(portMapping)[0]] = portMapping[Object.keys(portMapping)[0]];
+        portMap[portMapping[Object.keys(portMapping)[0]]] = Object.keys(portMapping)[0];
       });
       runRequest.ports = portMap;
       if (envFrom && envFrom !== 'select') {

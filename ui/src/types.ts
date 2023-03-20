@@ -20,7 +20,7 @@ export type EnvironmentVariable = {
 };
 
 export type PortMapping = {
-  [key: string]: string;
+  [host: string]: string;
 };
 
 export type VolumeMount = {
