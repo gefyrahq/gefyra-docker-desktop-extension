@@ -10,7 +10,7 @@
     "@mui/icons-material": "^5.11.11",
     "@mui/material": "^5.11.13",
     "@mui/x-data-grid": "^5.17.23",
-    "@reduxjs/toolkit": "^1.8.6",
+    "@reduxjs/toolkit": "^1.9.3",
     "@sentry/react": "^7.44.0",
     "@typescript-eslint/eslint-plugin": "^5.55.0",
     "cra-template": "1.2.0",
