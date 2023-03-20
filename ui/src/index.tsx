@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/react';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import * as ReactDOMClient from 'react-dom/client';
 import CssBaseline from '@mui/material/CssBaseline';
 import { DockerMuiThemeProvider } from '@docker/docker-mui-theme';
 
@@ -30,15 +30,19 @@ Sentry.init({
     return event;
   }
 });
+const rootEle = document.getElementById('root');
 
-ReactDOM.render(
-  <React.StrictMode>
-    <DockerMuiThemeProvider>
-      <CssBaseline />
-      <Provider store={store}>
-        <App />
-      </Provider>
-    </DockerMuiThemeProvider>
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+if (rootEle) {
+  const root = ReactDOMClient.createRoot(rootEle);
+
+  root.render(
+    <React.StrictMode>
+      <DockerMuiThemeProvider>
+        <CssBaseline />
+        <Provider store={store}>
+          <App />
+        </Provider>
+      </DockerMuiThemeProvider>
+    </React.StrictMode>
+  );
+}
