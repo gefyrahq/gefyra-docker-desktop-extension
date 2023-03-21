@@ -1,5 +1,6 @@
 import { createDockerDesktopClient } from '@docker/extension-api-client';
-import { Button, FormControlLabel, FormGroup, Grid, Link, Switch } from '@mui/material';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import { Button, FormControlLabel, FormGroup, Grid, Link, Switch, Tooltip } from '@mui/material';
 import { DataGrid, GridRenderCellParams, GridRowParams } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -7,7 +8,8 @@ import { resetSteps, setMode, setView } from './store/ui';
 
 export function Home() {
   const [containers, setContainers] = useState([]);
-  const [showCargp, setShowCargo] = useState(false);
+  const [containersLoading, setContainersLoading] = useState(false);
+  const [showCargo, setShowCargo] = useState(false);
   const ddClient = createDockerDesktopClient();
   const dispatch = useDispatch();
 
@@ -86,6 +88,7 @@ export function Home() {
   ];
 
   function getContainers(): Promise<any> {
+    setContainersLoading(true);
     return new Promise((resolve, reject) => {
       const filters = '{"label":["created_by.gefyra.dev=true"], "status": ["running"]}';
       ddClient.docker
@@ -94,11 +97,12 @@ export function Home() {
           filters: filters
         })
         .then((containers: any) => {
-          if (!showCargp) {
+          if (!showCargo) {
             containers = containers.filter((container: { Names: string[] }) => {
               return !container.Names.includes('/gefyra-cargo');
             });
           }
+          setContainersLoading(false);
           resolve(containers);
         });
     });
@@ -108,7 +112,7 @@ export function Home() {
     getContainers().then((containers: any) => {
       setContainers(containers);
     });
-  }, [showCargp]);
+  }, [showCargo]);
 
   useEffect(() => {
     getContainers().then((containers: any) => {
@@ -147,14 +151,27 @@ export function Home() {
       </Grid>
 
       <Grid item xs={12} container>
-        <Grid item xs={12} container>
+        <Grid item xs={6} container>
           <FormGroup>
             <FormControlLabel
               control={<Switch onChange={handleChangeHideCargo} />}
               label="Display Gefyra Cargo Containers"
-              value={showCargp}
+              value={showCargo}
             />
           </FormGroup>
+        </Grid>
+
+        <Grid item xs={6} container justifyContent="flex-end">
+          <Tooltip title="Refresh container list">
+            <Button
+              variant="contained"
+              component="label"
+              color="primary"
+              onClick={getContainers}
+              disabled={containersLoading}>
+              <RefreshIcon />
+            </Button>
+          </Tooltip>
         </Grid>
         <DataGrid
           rows={containers}
