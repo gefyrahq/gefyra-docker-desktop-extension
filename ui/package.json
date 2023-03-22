@@ -9,7 +9,7 @@
     "@emotion/styled": "^11.10.6",
     "@mui/icons-material": "^5.11.11",
     "@mui/material": "^5.11.14",
-    "@mui/x-data-grid": "^5.17.23",
+    "@mui/x-data-grid": "^6.0.2",
     "@reduxjs/toolkit": "^1.9.3",
     "@sentry/react": "^7.44.2",
     "@typescript-eslint/eslint-plugin": "^5.56.0",
