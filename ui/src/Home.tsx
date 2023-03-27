@@ -1,6 +1,7 @@
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { Button, FormControlLabel, FormGroup, Grid, Link, Switch, Tooltip } from '@mui/material';
+import SyncAltIcon from '@mui/icons-material/SyncAlt';
+import { Button, FormControlLabel, FormGroup, Grid, IconButton, Link, Switch, Tooltip } from '@mui/material';
 import { DataGrid, GridRenderCellParams, GridRowParams } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -29,6 +30,10 @@ export function Home() {
   function handleChangeHideCargo(event: React.ChangeEvent<HTMLInputElement>) {
     setShowCargo(event.target.checked);
   }
+
+  function bridgeContainer(names: string[]) {
+    console.log(names);
+  };
 
   function configureRun() {
     dispatch(setMode('run'));
@@ -84,7 +89,29 @@ export function Home() {
         });
       }
     },
-    { flex: 1, field: 'Status', headerName: 'Status' }
+    { flex: 1, field: 'Status', headerName: 'Status' },
+    {
+      flex: 1, field: 'Bridge', headerName: 'Bridge', type: 'actions',
+      renderCell: (
+        params: GridRenderCellParams
+      ) => {
+        if (!params.row.Names.includes('/gefyra-cargo')) {
+          return (
+            <Tooltip title="Bridge container">
+              <IconButton
+                component="label"
+                color="primary"
+                onClick={() => bridgeContainer(params.row.Names)}
+                size="small">
+                <SyncAltIcon fontSize='small' />
+              </IconButton>
+            </Tooltip>
+          )
+        } else {
+          return '';
+        }
+      }
+    }
   ];
 
   function getContainers(): Promise<any> {

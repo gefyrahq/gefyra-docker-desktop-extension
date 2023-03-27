@@ -114,6 +114,11 @@ export const statusMap = {
   }
 };
 
+export type GefyraBridge = {
+  name: string;
+  container: string;
+}
+
 export type GefyraStatusBarProps = {
   error?: boolean;
   label: string;

@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
   EnvironmentVariable,
+  GefyraBridge,
   PortMapping,
   PortMappingUpdate,
   VolumeMount,
@@ -22,6 +23,7 @@ interface GefyraState {
   portMappings: Array<PortMapping>;
   availableWorkloads: Array<string>;
   envFrom: string;
+  activeBridges: Array<GefyraBridge>;
 }
 
 const initialState: GefyraState = {
@@ -38,7 +40,8 @@ const initialState: GefyraState = {
   command: JSON.parse(localStorage.getItem('command') || 'null') || '',
   portMappings: JSON.parse(localStorage.getItem('portMappings') || '[]'),
   availableWorkloads: [],
-  envFrom: JSON.parse(localStorage.getItem('envFrom') || 'null') || ''
+  envFrom: JSON.parse(localStorage.getItem('envFrom') || 'null') || '',
+  activeBridges: []
 };
 
 export const gefyraSlice = createSlice({
@@ -124,6 +127,9 @@ export const gefyraSlice = createSlice({
     setPortMapping(state, action: PayloadAction<PortMappingUpdate>) {
       state.portMappings[action.payload.index] = action.payload.ports;
       localStorage.setItem('portMappings', JSON.stringify(state.portMappings));
+    },
+    setActiveBridges(state, action: PayloadAction<Array<GefyraBridge>>) {
+      state.activeBridges = action.payload;
     }
   }
 });
@@ -148,7 +154,8 @@ export const {
   setPort,
   setPortMapping,
   addPortMapping,
-  removePortMapping
+  removePortMapping,
+  setActiveBridges
 } = gefyraSlice.actions;
 
 export default gefyraSlice.reducer;
