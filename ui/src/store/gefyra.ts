@@ -24,6 +24,9 @@ interface GefyraState {
   availableWorkloads: Array<string>;
   envFrom: string;
   activeBridges: Array<GefyraBridge>;
+  target: string;
+  timeout: string;
+  bridgeContainer: string;
 }
 
 const initialState: GefyraState = {
@@ -41,7 +44,10 @@ const initialState: GefyraState = {
   portMappings: JSON.parse(localStorage.getItem('portMappings') || '[]'),
   availableWorkloads: [],
   envFrom: JSON.parse(localStorage.getItem('envFrom') || 'null') || '',
-  activeBridges: []
+  activeBridges: [],
+  target: localStorage.getItem('target') || '',
+  timeout: localStorage.getItem('timeout') || '',
+  bridgeContainer: localStorage.getItem('bridgeContainer') || '',
 };
 
 export const gefyraSlice = createSlice({
@@ -130,6 +136,18 @@ export const gefyraSlice = createSlice({
     },
     setActiveBridges(state, action: PayloadAction<Array<GefyraBridge>>) {
       state.activeBridges = action.payload;
+    },
+    setTarget(state, action: PayloadAction<string>) {
+      state.target = action.payload;
+      localStorage.setItem('target', action.payload);
+    },
+    setBridgeTimeout(state, action: PayloadAction<string>) {
+      state.timeout = action.payload;
+      localStorage.setItem('timeout', action.payload);
+    },
+    setBridgeContainer(state, action: PayloadAction<string>) {
+      state.bridgeContainer = action.payload;
+      localStorage.setItem('bridgeContainer', action.payload);
     }
   }
 });
@@ -155,7 +173,10 @@ export const {
   setPortMapping,
   addPortMapping,
   removePortMapping,
-  setActiveBridges
+  setActiveBridges,
+  setBridgeTimeout,
+  setTarget,
+  setBridgeContainer
 } = gefyraSlice.actions;
 
 export default gefyraSlice.reducer;

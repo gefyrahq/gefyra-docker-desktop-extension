@@ -34,6 +34,7 @@ import { createDockerDesktopClient } from '@docker/extension-api-client';
 import useDockerImages from './composable/dockerImages';
 import { DockerImage } from './types';
 import { PortMappings } from './components/PortMappings';
+import getWorkloads from './composable/workloads';
 
 export function ContainerSettings() {
   const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
@@ -77,35 +78,22 @@ export function ContainerSettings() {
   const updateEnvFromSelect = (namespaceVal: string) => {
     setEnvFromActive(false);
     setSelectEnvFrom([]);
-    const wlrRequest = new K8sWorkloadsRequest();
-    wlrRequest.kubeconfig = kubeconfig;
-    wlrRequest.context = context;
-    const gefyraClient = new Gefyra(ddClient);
-    gefyraClient
-      .exec(wlrRequest)
-      .then((res) => {
-        const wlr: K8sWorkloadsResponse = JSON.parse(res);
-        // TODO fix in gefyra-json package
-        // @ts-ignore
-        const workloads = (wlr?.response?.workloads[namespaceVal] as string[]) || undefined;
-        if (!envFrom || (workloads && !workloads.includes(envFrom))) {
-          dispatch(setEnvFrom('select'));
-        }
-        if (workloads) {
-          setSelectEnvFrom(
-            [{ label: 'Select a workload', value: 'select' }].concat(
-              workloads.map((w) => ({ label: w, value: w }))
-            )
-          );
-        } else {
-          setSelectEnvFrom([{ label: 'No workloads available', value: 'select' }]);
-          dispatch(setEnvFrom('select'));
-        }
-        setEnvFromActive(true);
-      })
-      .catch((err) => {
-        console.debug(err);
-      });
+    getWorkloads(namespaceVal).then((workloads) => {
+      if (!envFrom || (workloads && !workloads.includes(envFrom))) {
+        dispatch(setEnvFrom('select'));
+      }
+      if (workloads) {
+        setSelectEnvFrom(
+          [{ label: 'Select a workload', value: 'select' }].concat(
+            workloads.map((w) => ({ label: w, value: w }))
+          )
+        );
+      } else {
+        setSelectEnvFrom([{ label: 'No workloads available', value: 'select' }]);
+        dispatch(setEnvFrom('select'));
+      }
+      setEnvFromActive(true);
+    });
   };
 
   function handleNamespaceChange(e: SelectChangeEvent<string>, b: object): any {

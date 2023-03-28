@@ -12,6 +12,7 @@ import { RootState } from './store';
 import { closeSnackbar, notFresh, setActiveStep, setTrackingId, setView } from './store/ui';
 import { RunProgress } from './RunProgress';
 import { Stop } from './Stop';
+import { BridgeSettings } from './BridgeSettings';
 
 export function App() {
   const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
@@ -19,6 +20,7 @@ export function App() {
 
   const view = useAppSelector((state) => state.ui.view);
   const kubeconfig = useAppSelector((state) => state.gefyra.kubeconfig);
+  const bridgeContainer = useAppSelector((state) => state.gefyra.bridgeContainer);
   const snackbarVisible = useAppSelector((state) => state.ui.snackbarVisible);
   const snackbarText = useAppSelector((state) => state.ui.snackbarText);
   const snackbarType = useAppSelector((state) => state.ui.snackbarType);
@@ -48,8 +50,11 @@ export function App() {
     <>
       <TopBar />
       <Paper variant="outlined" sx={{ p: 4, mt: 2 }}>
-        {view === 'home' ? (
-          <Home />
+        {['home', 'bridge'].includes(view) ? (
+          <Grid container spacing={3}>
+            {view === 'home' && <Home />}
+            {view === 'bridge' && bridgeContainer && <BridgeSettings />}
+          </Grid>
         ) : (
           <Grid container spacing={3}>
             <Progress />

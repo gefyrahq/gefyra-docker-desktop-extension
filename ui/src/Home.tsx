@@ -5,6 +5,7 @@ import { Button, FormControlLabel, FormGroup, Grid, IconButton, Link, Switch, To
 import { DataGrid, GridRenderCellParams, GridRowParams } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { setBridgeContainer } from './store/gefyra';
 import { resetSteps, setMode, setView } from './store/ui';
 
 export function Home() {
@@ -32,7 +33,8 @@ export function Home() {
   }
 
   function bridgeContainer(names: string[]) {
-    console.log(names);
+    dispatch(setBridgeContainer(names[0].substring(1, names[0].length)));
+    dispatch(setView('bridge'));
   };
 
   function configureRun() {
@@ -164,15 +166,7 @@ export function Home() {
             color="primary"
             sx={{ marginTop: 1 }}
             onClick={configureRun}>
-            Run Container
-          </Button>
-          <Button
-            variant="contained"
-            component="label"
-            color="primary"
-            sx={{ marginTop: 1, marginLeft: 2 }}
-            disabled>
-            Bridge Container
+            Run New Container
           </Button>
         </div>
       </Grid>
