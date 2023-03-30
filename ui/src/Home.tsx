@@ -156,17 +156,19 @@ export function Home() {
             />
           </FormGroup>
         </Grid>
-        <DataGrid
-          rows={containers}
-          columns={columns}
-          pageSize={5}
-          autoHeight={true}
-          checkboxSelection={false}
-          getRowId={getRowId}
-          disableSelectionOnClick={true}
-          onRowClick={openContainer}
-          localeText={{ noRowsLabel: 'No containers found' }}
-        />
+        <div style={{ width: '100%' }}>
+          <DataGrid
+            rows={containers}
+            columns={columns}
+            autoHeight={true}
+            hideFooterPagination={true}
+            checkboxSelection={false}
+            getRowId={getRowId}
+            disableRowSelectionOnClick={true}
+            onRowClick={openContainer}
+            localeText={{ noRowsLabel: 'No containers found' }}
+          />
+        </div>
       </Grid>
 
       <Grid item xs={12} container></Grid>
