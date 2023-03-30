@@ -25,7 +25,12 @@ RUN --mount=type=cache,target=/usr/src/app/.npm \
     npm ci
 # install
 COPY ui /ui
-RUN npm run build
+
+ARG SENTRY_ORG
+ARG SENTRY_PROJECT
+ARG SENTRY_URL
+ARG PRODUCTION_BUILD=false
+RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN npm run build
 
 FROM alpine
 LABEL org.opencontainers.image.title="Gefyra" \

@@ -44,8 +44,14 @@ jobs:
         - name: Build and push
           uses: docker/build-push-action@v4
           with:
+            secrets: |
+              "SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}"
             build-args: |
               GEFYRA_EXT_RELEASE=${{ env.GEFYRA_EXT_RELEASE }}
+              SENTRY_ORG=${{ secrets.SENTRY_ORG }}
+              SENTRY_URL=${{ secrets.SENTRY_URL }}
+              SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT }}
+              PRODUCTION_BUILD=${{ inputs.release }}
             platforms: linux/amd64,linux/arm64
             push: ${{ github.event_name != 'pull_request' }}
             tags: ${{ steps.ddg_meta.outputs.tags }}
