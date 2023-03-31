@@ -120,6 +120,7 @@ export function ContainerSettings() {
 
   function handleImageChange(e: React.SyntheticEvent<Element, Event>, b: DockerImage | null) {
     dispatch(setImage(b ? b.name : ''));
+    console.log(images);
   }
 
   useEffect(() => {
@@ -191,7 +192,7 @@ export function ContainerSettings() {
       <Grid item xs={5}>
         <Autocomplete
           id="grouped-images"
-          options={images.sort((a, b) => -b.repo[0].localeCompare(a.repo[0]))}
+          options={images}
           groupBy={(o) => o.type}
           getOptionLabel={(image: DockerImage) => image.name}
           renderInput={(params) => <TextField {...params} label="Image" />}

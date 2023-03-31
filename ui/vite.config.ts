@@ -6,7 +6,7 @@ import { sentryVitePlugin } from "@sentry/vite-plugin";
 import svgrPlugin from 'vite-plugin-svgr';
 import pjson from './package.json';
 
-const SENTRY_AUTH_TOKEN = fs.readFileSync('/run/secrets/SENTRY_AUTH_TOKEN', 'utf8');
+const SENTRY_AUTH_TOKEN = process.env.PRODUCTION_BUILD === 'true' ? fs.readFileSync('/run/secrets/SENTRY_AUTH_TOKEN', 'utf8') : '';
 
 // https://vitejs.dev/config/
 export default defineConfig({
