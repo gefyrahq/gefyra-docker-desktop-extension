@@ -5,7 +5,8 @@ import { Gefyra } from '../gefyraClient';
 import { DockerImage } from '../types';
 
 const useDockerImages = (namespace: string) => {
-  const [images, setImages] = useState<DockerImage[]>([]);
+  const [localImages, setLocalImages] = useState<DockerImage[]>([]);
+  const [kubernetesImages, setKubernetesImages] = useState<DockerImage[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -14,7 +15,7 @@ const useDockerImages = (namespace: string) => {
     ddClient.docker.listImages().then((res: any) => {
       setLoading(true);
       if (!res) return;
-      const images: DockerImage[] = [];
+      const resultImages: DockerImage[] = [];
       const names: string[] = [];
       res.map((i: any) => {
         const image = {} as DockerImage;
@@ -31,34 +32,46 @@ const useDockerImages = (namespace: string) => {
           names.push(image.name);
           image.id = i.Id;
           image.type = 'local';
-          images.push(image);
+          resultImages.push(image);
         }
       });
       setLoading(false);
-      setImages((old) => [...old, ...images]);
+      setLocalImages(resultImages);
     });
     const request = new K8sImagesRequest();
     // @ts-ignore
     request.namespace = namespace || 'default';
     gefyraClient.exec(request).then((res) => {
+      const resultImages = [] as DockerImage[];
       const imageResponse = JSON.parse(res);
       imageResponse.response.containers.map((c: { image: string }) => {
         const image = {} as DockerImage;
         image.repo = c.image.split(':')[0];
-        image.tag = c.image.split(':')[1];
-        image.name = `${image.repo}:${image.tag}`;
+        image.tag = c.image.split(':')[1] || '';
+        image.name = image.tag ? `${image.repo}:${image.tag}` : image.repo;
         image.type = 'Kubernetes';
-        images.push(image);
+        resultImages.push(image);
       });
-      setImages((old) => [...old, ...images]);
+      setKubernetesImages(resultImages);
     });
   }, []);
   const value = useMemo(
-    () => ({
-      images,
-      loading
-    }),
-    [images, loading]
+    () => {
+      const images = [...localImages, ...kubernetesImages];
+      // sort images by type then by name
+      images.sort((a, b) => {
+        if (a.type < b.type) return 1;
+        if (a.type > b.type) return -1;
+        if (a.name < b.name) return -1;
+        if (a.name > b.name) return 1;
+        return 0;
+      });
+      return {
+        images,
+        loading
+      }
+    },
+    [localImages, kubernetesImages, loading]
   );
 
   return value;
