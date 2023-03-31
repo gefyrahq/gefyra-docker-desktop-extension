@@ -78,3 +78,7 @@ export const gefyraUp = async (gefyraClient: Gefyra, upRequest: GefyraUpRequest)
     });
   return res;
 };
+
+export const getBridgeName = (containerName: string) => {
+  return `${containerName}-bridge`;
+}

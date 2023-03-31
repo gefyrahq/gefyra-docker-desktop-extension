@@ -1,15 +1,19 @@
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import SyncAltIcon from '@mui/icons-material/SyncAlt';
+import StopCircleIcon from '@mui/icons-material/StopCircle';
 import { Button, FormControlLabel, FormGroup, Grid, IconButton, Link, Switch, Tooltip } from '@mui/material';
 import { DataGrid, GridRenderCellParams, GridRowParams } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setBridgeContainer } from './store/gefyra';
 import { resetSteps, setMode, setView } from './store/ui';
+import { Gefyra } from './gefyraClient';
+import { getBridgeName } from './utils/gefyra';
 
 export function Home() {
   const [containers, setContainers] = useState([]);
+  const [bridges, setBridges] = useState([]);
   const [containersLoading, setContainersLoading] = useState(false);
   const [showCargo, setShowCargo] = useState(false);
   const ddClient = createDockerDesktopClient();
@@ -32,10 +36,12 @@ export function Home() {
     setShowCargo(event.target.checked);
   }
 
-  function bridgeContainer(names: string[]) {
-    dispatch(setBridgeContainer(names[0].substring(1, names[0].length)));
+  function bridgeContainer(containerName: string) {
+    dispatch(setBridgeContainer(getBridgeName(containerName)));
     dispatch(setView('bridge'));
   };
+
+  function unbridgeContainer(bridgeName: string): void {}
 
   function configureRun() {
     dispatch(setMode('run'));
@@ -97,117 +103,148 @@ export function Home() {
       renderCell: (
         params: GridRenderCellParams
       ) => {
+        const names = params.row.Names;
+        const containerName = names[0].substring(1, names[0].length);
+        const containerBridgeName = getBridgeName(containerName);
         if (!params.row.Names.includes('/gefyra-cargo')) {
+          if (bridges.filter(bridge => containerBridgeName === bridge).length) {
+            return (
+              <Tooltip title="Unbridge container">
+                <IconButton
+                  component="label"
+                  color="primary"
+                  onClick={() => unbridgeContainer(containerBridgeName)}
+                  size="small">
+                  <StopCircleIcon fontSize='small' />
+                </IconButton>
+              </Tooltip>
+            )
+        } else {
           return (
             <Tooltip title="Bridge container">
               <IconButton
                 component="label"
                 color="primary"
-                onClick={() => bridgeContainer(params.row.Names)}
+                onClick={() => bridgeContainer(containerName)}
                 size="small">
                 <SyncAltIcon fontSize='small' />
               </IconButton>
             </Tooltip>
           )
-        } else {
-          return '';
         }
+      } else {
+        return '';
       }
+    }
     }
   ];
 
-  function getContainers(): Promise<any> {
-    setContainersLoading(true);
-    return new Promise((resolve, reject) => {
-      const filters = '{"label":["created_by.gefyra.dev=true"], "status": ["running"]}';
-      ddClient.docker
-        .listContainers({
-          all: true,
-          filters: filters
-        })
-        .then((containers: any) => {
-          if (!showCargo) {
-            containers = containers.filter((container: { Names: string[] }) => {
-              return !container.Names.includes('/gefyra-cargo');
-            });
-          }
-          setContainersLoading(false);
-          resolve(containers);
-        });
+function getBridges(): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const ddClient = createDockerDesktopClient();
+    const gefyraClient = new Gefyra(ddClient);
+    const listRequest = new GefyraListRequest();
+    gefyraClient.exec(listRequest).then((response: GefyraListResponse) => {
+      resolve(response.bridges);
     });
-  }
+  });
+}
 
-  useEffect(() => {
-    getContainers().then((containers: any) => {
-      setContainers(containers);
-    });
-  }, [showCargo]);
+function getContainers(): Promise<any> {
+  setContainersLoading(true);
+  return new Promise((resolve, reject) => {
+    const filters = '{"label":["created_by.gefyra.dev=true"], "status": ["running"]}';
+    ddClient.docker
+      .listContainers({
+        all: true,
+        filters: filters
+      })
+      .then((containers: any) => {
+        if (!showCargo) {
+          containers = containers.filter((container: { Names: string[] }) => {
+            return !container.Names.includes('/gefyra-cargo');
+          });
+        }
+        setContainersLoading(false);
+        resolve(containers);
+      });
+  });
+}
 
-  useEffect(() => {
-    getContainers().then((containers: any) => {
-      setContainers(containers);
-    });
-  }, []);
+useEffect(() => {
+  getContainers().then((containers: any) => {
+    setContainers(containers);
+  });
+}, [showCargo]);
 
-  return (
-    <>
-      <Grid item xs={12} sx={{ marginBottom: 3 }} container justifyContent={'space-between'}>
-        <div>
-          New to Gefyra? Check out the{' '}
-          <Link href="#" onClick={gettingStartedLink}>
-            Docker Desktop Gefyra Guide
-          </Link>
-          !
-        </div>
-        <div>
+useEffect(() => {
+  getContainers().then((containers: any) => {
+    setContainers(containers);
+  });
+  getBridges().then((bridges: any) => {
+    setBridges(bridges);
+  });
+}, []);
+
+return (
+  <>
+    <Grid item xs={12} sx={{ marginBottom: 3 }} container justifyContent={'space-between'}>
+      <div>
+        New to Gefyra? Check out the{' '}
+        <Link href="#" onClick={gettingStartedLink}>
+          Docker Desktop Gefyra Guide
+        </Link>
+        !
+      </div>
+      <div>
+        <Button
+          variant="contained"
+          component="label"
+          color="primary"
+          sx={{ marginTop: 1 }}
+          onClick={configureRun}>
+          Run New Container
+        </Button>
+      </div>
+    </Grid>
+
+    <Grid item xs={12} container>
+      <Grid item xs={6} container>
+        <FormGroup>
+          <FormControlLabel
+            control={<Switch onChange={handleChangeHideCargo} />}
+            label="Display Gefyra Cargo Containers"
+            value={showCargo}
+          />
+        </FormGroup>
+      </Grid>
+
+      <Grid item xs={6} container justifyContent="flex-end">
+        <Tooltip title="Refresh container list">
           <Button
             variant="contained"
             component="label"
             color="primary"
-            sx={{ marginTop: 1 }}
-            onClick={configureRun}>
-            Run New Container
+            onClick={getContainers}
+            disabled={containersLoading}>
+            <RefreshIcon />
           </Button>
-        </div>
+        </Tooltip>
       </Grid>
+      <DataGrid
+        rows={containers}
+        columns={columns}
+        pageSize={5}
+        autoHeight={true}
+        checkboxSelection={false}
+        getRowId={getRowId}
+        disableSelectionOnClick={true}
+        onRowClick={openContainer}
+        localeText={{ noRowsLabel: 'No containers found' }}
+      />
+    </Grid>
 
-      <Grid item xs={12} container>
-        <Grid item xs={6} container>
-          <FormGroup>
-            <FormControlLabel
-              control={<Switch onChange={handleChangeHideCargo} />}
-              label="Display Gefyra Cargo Containers"
-              value={showCargo}
-            />
-          </FormGroup>
-        </Grid>
-
-        <Grid item xs={6} container justifyContent="flex-end">
-          <Tooltip title="Refresh container list">
-            <Button
-              variant="contained"
-              component="label"
-              color="primary"
-              onClick={getContainers}
-              disabled={containersLoading}>
-              <RefreshIcon />
-            </Button>
-          </Tooltip>
-        </Grid>
-        <DataGrid
-          rows={containers}
-          columns={columns}
-          pageSize={5}
-          autoHeight={true}
-          checkboxSelection={false}
-          getRowId={getRowId}
-          disableSelectionOnClick={true}
-          onRowClick={openContainer}
-          localeText={{ noRowsLabel: 'No containers found' }}
-        />
-      </Grid>
-
-      <Grid item xs={12} container></Grid>
-    </>
-  );
+    <Grid item xs={12} container></Grid>
+  </>
+);
 }
