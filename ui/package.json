@@ -1,6 +1,6 @@
 {
   "name": "gefyra-docker-desktop-extension",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "private": true,
   "dependencies": {
     "@docker/docker-mui-theme": "^0.0.9",
