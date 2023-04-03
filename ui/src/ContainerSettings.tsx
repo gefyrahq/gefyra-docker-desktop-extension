@@ -119,8 +119,7 @@ export function ContainerSettings() {
         const nsRequest = new K8sNamespaceRequest();
         nsRequest.kubeconfig = kubeconfig;
         nsRequest.context = context;
-        await gefyraClient.exec(nsRequest).then((res) => {
-          const resp = JSON.parse(res);
+        await gefyraClient.k8sNamespaces(nsRequest).then((resp) => {
           if (resp.status !== 'error' && resp.response && resp.response.namespaces) {
             dispatch(setAvailableNamespaces(resp.response.namespaces));
           } else {

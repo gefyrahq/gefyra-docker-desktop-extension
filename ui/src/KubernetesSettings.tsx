@@ -12,7 +12,13 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useState, useEffect } from 'react';
-import { K8sContextRequest, K8sContextResponse, K8sDefaultKubeconfigRequest, K8sDefaultKubeconfigResponse, K8sNamespaceRequest } from 'gefyra/lib/protocol';
+import {
+  K8sContextRequest,
+  K8sContextResponse,
+  K8sDefaultKubeconfigRequest,
+  K8sDefaultKubeconfigResponse,
+  K8sNamespaceRequest
+} from 'gefyra/lib/protocol';
 
 import { Gefyra } from './gefyraClient';
 import {
@@ -177,8 +183,7 @@ export function KubernetesSettings() {
   }
 
   function setDefaultKubeconfig() {
-    const kubeConfigRequest = new K8sDefaultKubeconfigRequest();
-    gefyraClient.exec(kubeConfigRequest).then((res: K8sDefaultKubeconfigResponse) => {
+    gefyraClient.k8sDefaultKubeconfig().then((res: K8sDefaultKubeconfigResponse) => {
       dispatch(setKubeconfig(res.response.kubeconfig));
     });
   }

@@ -71,22 +71,21 @@ export function BridgeSettings() {
   }
 
   function bridge() {
-    const bridgeRequest = new GefyraBridgeRequest()
+    const bridgeRequest = new GefyraBridgeRequest();
     bridgeRequest.namespace = namespace;
     bridgeRequest.target = target;
     const portMap: { [container: string]: string } = {};
-      portMappings.forEach((portMapping: PortMapping) => {
-        portMap[portMapping[Object.keys(portMapping)[0]]] = Object.keys(portMapping)[0];
-      });
+    portMappings.forEach((portMapping: PortMapping) => {
+      portMap[portMapping[Object.keys(portMapping)[0]]] = Object.keys(portMapping)[0];
+    });
     bridgeRequest.ports = portMap;
     bridgeRequest.name = bridgeContainer;
     bridgeRequest.timeout = 5000;
     const ddClient = createDockerDesktopClient();
     const gefyraClient = new Gefyra(ddClient);
-    gefyraClient.exec(bridgeRequest).then((response) => {
+    gefyraClient.bridge(bridgeRequest).then((response) => {
       console.log(response);
     });
-
   }
 
   useEffect(() => {
@@ -96,77 +95,78 @@ export function BridgeSettings() {
         setTarget('select');
         setTargetActive(true);
         return;
-
-      };
+      }
       setSelectTarget(
-        [{ label: 'Select a workload', value: 'select' }].concat(workloads.map((w) => {
-          return { label: w, value: w };
-        }))
+        [{ label: 'Select a workload', value: 'select' }].concat(
+          workloads.map((w) => {
+            return { label: w, value: w };
+          })
+        )
       );
-    setTargetActive(true);
-  });
-}, []);
+      setTargetActive(true);
+    });
+  }, []);
 
-return (
-  <>
-    <Grid item xs={12} alignItems="center">
-      <Typography variant="subtitle1">Bridge Settings for {bridgeContainer}</Typography>
-    </Grid>
-    <Grid item xs={6}>
-      <LSelect
-        labelId="target-select-label"
-        id="target-select"
-        value={target}
-        label="Target"
-        handleChange={handleTargetChange}
-        disabled={!targetActive}
-        loading={!targetActive}
-        items={selectTarget}
-      />
-    </Grid>
+  return (
+    <>
+      <Grid item xs={12} alignItems="center">
+        <Typography variant="subtitle1">Bridge Settings for {bridgeContainer}</Typography>
+      </Grid>
+      <Grid item xs={6}>
+        <LSelect
+          labelId="target-select-label"
+          id="target-select"
+          value={target}
+          label="Target"
+          handleChange={handleTargetChange}
+          disabled={!targetActive}
+          loading={!targetActive}
+          items={selectTarget}
+        />
+      </Grid>
 
-    <Grid item xs={5}>
-      <TextField
-        id="timeout"
-        variant="outlined"
-        label="Timeout"
-        fullWidth
-        value={timeout}
-        onInput={handleTimeoutChange}
-      />
-    </Grid>
+      <Grid item xs={5}>
+        <TextField
+          id="timeout"
+          variant="outlined"
+          label="Timeout"
+          fullWidth
+          value={timeout}
+          onInput={handleTimeoutChange}
+        />
+      </Grid>
 
-    <Grid item xs={11}>
-      <Accordion>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>
-            Port Mappings {portMappings.length ? `(${portMappings.length})` : ''}
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <PortMappings></PortMappings>
-        </AccordionDetails>
-      </Accordion>
-    </Grid>
+      <Grid item xs={11}>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography>
+              Port Mappings {portMappings.length ? `(${portMappings.length})` : ''}
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <PortMappings></PortMappings>
+          </AccordionDetails>
+        </Accordion>
+      </Grid>
 
-    <Grid item xs={12}>
-      <Button
-        variant="contained"
-        component="label"
-        color="secondary"
-        onClick={back}
-        sx={{ marginTop: 1 }}>
-        Cancel
-      </Button>
-      <Button
-        variant="contained"
-        component="label"
-        color="primary"
-        onClick={bridge}
-        sx={{ marginTop: 1, ml: 2 }}>
-        Bridge
-      </Button>
-    </Grid>
-  </>
-);
+      <Grid item xs={12}>
+        <Button
+          variant="contained"
+          component="label"
+          color="secondary"
+          onClick={back}
+          sx={{ marginTop: 1 }}>
+          Cancel
+        </Button>
+        <Button
+          variant="contained"
+          component="label"
+          color="primary"
+          onClick={bridge}
+          sx={{ marginTop: 1, ml: 2 }}>
+          Bridge
+        </Button>
+      </Grid>
+    </>
+  );
 }

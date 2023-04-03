@@ -47,7 +47,7 @@ const initialState: GefyraState = {
   activeBridges: [],
   target: localStorage.getItem('target') || '',
   timeout: localStorage.getItem('timeout') || '',
-  bridgeContainer: localStorage.getItem('bridgeContainer') || '',
+  bridgeContainer: localStorage.getItem('bridgeContainer') || ''
 };
 
 export const gefyraSlice = createSlice({

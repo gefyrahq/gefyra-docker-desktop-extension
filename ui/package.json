@@ -14,7 +14,7 @@
     "@sentry/react": "^7.44.2",
     "@typescript-eslint/eslint-plugin": "^5.56.0",
     "cra-template": "1.2.0",
-    "gefyra": "^0.6.1",
+    "gefyra": "^0.7.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^8.0.5"
