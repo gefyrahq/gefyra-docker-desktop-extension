@@ -55,6 +55,10 @@ export type SelectProps = {
   handleChange: (e: any, b: any) => void;
 };
 
+export type PortMappingsProps = {
+  loading?: boolean;
+}
+
 export type ContainerLogsProps = {
   container: string;
   height: number;

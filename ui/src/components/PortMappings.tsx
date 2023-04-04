@@ -2,9 +2,9 @@ import { Button, Grid, TextField } from '@mui/material';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { removePortMapping, addPortMapping, setPortMapping } from '../store/gefyra';
-import { PortMapping } from '../types';
+import { PortMapping, PortMappingsProps } from '../types';
 
-export function PortMappings() {
+export function PortMappings(props: PortMappingsProps) {
   const dispatch = useDispatch();
   const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
@@ -43,6 +43,7 @@ export function PortMappings() {
                   label="Host"
                   size="small"
                   value={Object.keys(ports)[0]}
+                  disabled={props.loading}
                   onChange={(e) => {
                     handleChange(index, 'host', e.target.value);
                   }}
@@ -56,6 +57,7 @@ export function PortMappings() {
                   label="Container"
                   size="small"
                   value={ports[Object.keys(ports)[0]]}
+                  disabled={props.loading}
                   onChange={(e) => {
                     handleChange(index, 'container', e.target.value);
                   }}
@@ -65,6 +67,7 @@ export function PortMappings() {
                 <Button
                   variant="contained"
                   color="error"
+                  disabled={props.loading}
                   onClick={() => dispatch(removePortMapping(index))}>
                   X
                 </Button>
@@ -76,7 +79,7 @@ export function PortMappings() {
         )
       )}
       <Grid item xs={12} sx={{ mt: 3 }}>
-        <Button variant="contained" component="label" color="primary" onClick={add}>
+        <Button variant="contained" component="label" color="primary" onClick={add} disabled={props.loading}>
           + Port Mapping
         </Button>
       </Grid>

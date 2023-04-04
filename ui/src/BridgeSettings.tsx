@@ -27,6 +27,7 @@ import { createDockerDesktopClient } from '@docker/extension-api-client';
 import { PortMapping } from './types';
 import { PortMappings } from './components/PortMappings';
 import getWorkloads from './composable/workloads';
+import { setSnackbar } from './store/ui';
 
 export function BridgeSettings() {
   const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
@@ -34,6 +35,8 @@ export function BridgeSettings() {
 
   const [selectTarget, setSelectTarget] = useState([] as { label: string; value: string }[]);
   const [targetActive, setTargetActive] = useState(false);
+
+  const [bridgeProcessing, setBridgeProcessing] = useState(false);
 
   const namespace = useAppSelector((state) => state.gefyra.bridgeNamespace);
   const bridgeContainer = useAppSelector((state) => state.gefyra.bridgeContainer);
@@ -59,6 +62,7 @@ export function BridgeSettings() {
   }
 
   function bridge() {
+    setBridgeProcessing(true);
     const bridgeRequest = new GefyraBridgeRequest();
     bridgeRequest.namespace = namespace;
     bridgeRequest.target = target;
@@ -74,6 +78,9 @@ export function BridgeSettings() {
     console.log(bridgeRequest);
     gefyraClient.bridge(bridgeRequest).then((response) => {
       console.log(response);
+      dispatch(setSnackbar({ text: `Bridge for ${target} has been established.`, type: 'success' }));
+      setBridgeProcessing(false);
+      back();
     });
   }
 
@@ -108,7 +115,7 @@ export function BridgeSettings() {
           value={target}
           label="Target"
           handleChange={handleTargetChange}
-          disabled={!targetActive}
+          disabled={!targetActive || bridgeProcessing}
           loading={!targetActive}
           items={selectTarget}
         />
@@ -120,20 +127,21 @@ export function BridgeSettings() {
           variant="outlined"
           label="Timeout"
           fullWidth
+          disabled={bridgeProcessing}
           value={timeout}
           onInput={handleTimeoutChange}
         />
       </Grid>
 
       <Grid item xs={11}>
-        <Accordion>
+        <Accordion disabled={bridgeProcessing}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography>
               Port Mappings {portMappings.length ? `(${portMappings.length})` : ''}
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <PortMappings></PortMappings>
+            <PortMappings loading={bridgeProcessing}></PortMappings>
           </AccordionDetails>
         </Accordion>
       </Grid>
@@ -151,6 +159,7 @@ export function BridgeSettings() {
           variant="contained"
           component="label"
           color="primary"
+          disabled={bridgeProcessing}
           onClick={bridge}
           sx={{ marginTop: 1, ml: 2 }}>
           Bridge

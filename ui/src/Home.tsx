@@ -17,7 +17,7 @@ import { DataGrid, GridRenderCellParams, GridRowParams } from '@mui/x-data-grid'
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setBridgeContainer, setBridgeNamespace } from './store/gefyra';
-import { resetSteps, setMode, setView } from './store/ui';
+import { resetSteps, setMode, setSnackbar, setView } from './store/ui';
 import { Gefyra } from './gefyraClient';
 import { GefyraListRequest, GefyraUnbridgeRequest } from 'gefyra/lib/protocol';
 
@@ -27,6 +27,7 @@ export function Home() {
   const [containersLoading, setContainersLoading] = useState(false);
   const [bridgesLoading, setBridgesLoading] = useState(true);
   const [showCargo, setShowCargo] = useState(false);
+  const [unbridgeLoadingList, setUnbridgeLoadingList] = useState([] as Array<string>);
   const [containerNamsepaceMap, setContainerNamespaceMap] = useState({} as { [key: string]: string });
   const ddClient = createDockerDesktopClient();
   const dispatch = useDispatch();
@@ -54,15 +55,22 @@ export function Home() {
     dispatch(setView('bridge'));
   }
 
-  function unbridgeContainer(containerName: string): void {
+  async function unbridgeContainer(containerName: string) {
     const bridge = bridges.find((bridge) => bridge.includes(containerName + '-to-'));
-    console.log(bridges);
     if (bridge) {
       const unbridgeRequest = new GefyraUnbridgeRequest();
       unbridgeRequest.name = bridge;
       const gefyraClient = new Gefyra(ddClient);
-      gefyraClient.unbridge(unbridgeRequest);
-      getBridges();
+      setUnbridgeLoadingList([...unbridgeLoadingList, containerName]);
+      gefyraClient.unbridge(unbridgeRequest).then(res => {
+        if (res.success) {
+          setUnbridgeLoadingList(unbridgeLoadingList.filter((name) => name !== containerName));
+          getBridges();
+          dispatch(setSnackbar({ text: `Unbridge for ${containerName} succeeded.`, type: 'success' }));
+        } else {
+          dispatch(setSnackbar({ text: `Unbridge for ${containerName} failed.`, type: 'error' }));
+        }
+      });
     } else {
       console.error('Could not find bridge for container: ' + containerName);
     }
@@ -139,6 +147,7 @@ export function Home() {
             return (
               <Tooltip title="Unbridge container">
                 <IconButton
+                  disabled={unbridgeLoadingList.includes(containerName)}
                   component="label"
                   color="primary"
                   onClick={() => unbridgeContainer(containerName)}>
