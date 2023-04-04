@@ -42,6 +42,7 @@ const useDockerImages = (namespace: string) => {
     // @ts-ignore
     request.namespace = namespace || 'default';
     gefyraClient.k8sImages(request).then((imageResponse) => {
+      const resultImages: DockerImage[] = [];
       imageResponse.response.containers.map((c: { image: string }) => {
         const image = {} as DockerImage;
         image.repo = c.image.split(':')[0];
