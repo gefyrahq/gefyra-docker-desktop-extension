@@ -55,6 +55,14 @@ export type SelectProps = {
   handleChange: (e: any, b: any) => void;
 };
 
+export type PortMappingsProps = {
+  loading?: boolean;
+  set: any;
+  add: any;
+  remove: any;
+  state: PortMapping[];
+}
+
 export type ContainerLogsProps = {
   container: string;
   height: number;
@@ -112,6 +120,11 @@ export const statusMap = {
     text: 'Loading available namespaces',
     loading: true
   }
+};
+
+export type GefyraBridge = {
+  name: string;
+  container: string;
 };
 
 export type GefyraStatusBarProps = {

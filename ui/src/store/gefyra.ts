@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
   EnvironmentVariable,
+  GefyraBridge,
   PortMapping,
   PortMappingUpdate,
   VolumeMount,
@@ -19,9 +20,15 @@ interface GefyraState {
   environmentVariables: Array<EnvironmentVariable>;
   volumeMounts: Array<VolumeMount>;
   command: string;
-  portMappings: Array<PortMapping>;
+  containerPortMappings: Array<PortMapping>;
+  bridgePortMappings: Array<PortMapping>;
   availableWorkloads: Array<string>;
   envFrom: string;
+  activeBridges: Array<GefyraBridge>;
+  target: string;
+  timeout: string;
+  bridgeContainer: string;
+  bridgeNamespace: string;
 }
 
 const initialState: GefyraState = {
@@ -36,9 +43,15 @@ const initialState: GefyraState = {
   environmentVariables: [],
   volumeMounts: JSON.parse(localStorage.getItem('volumeMounts') || '[]'),
   command: JSON.parse(localStorage.getItem('command') || 'null') || '',
-  portMappings: JSON.parse(localStorage.getItem('portMappings') || '[]'),
+  containerPortMappings: JSON.parse(localStorage.getItem('portMappings') || '[]'),
+  bridgePortMappings: JSON.parse(localStorage.getItem('bridgePortMappings') || '[]'),
   availableWorkloads: [],
-  envFrom: JSON.parse(localStorage.getItem('envFrom') || 'null') || ''
+  envFrom: JSON.parse(localStorage.getItem('envFrom') || 'null') || '',
+  activeBridges: [],
+  target: localStorage.getItem('target') || '',
+  timeout: localStorage.getItem('timeout') || '',
+  bridgeContainer: localStorage.getItem('bridgeContainer') || '',
+  bridgeNamespace: localStorage.getItem('bridgeNamespace') || '',
 };
 
 export const gefyraSlice = createSlice({
@@ -52,6 +65,10 @@ export const gefyraSlice = createSlice({
     setPort(state, action: PayloadAction<number>) {
       state.port = action.payload;
       localStorage.setItem('port', action.payload.toString());
+    },
+    unsetPort(state) {
+      state.port = 0;
+      localStorage.removeItem('port');
     },
     setKubeconfig: (state, action: PayloadAction<string>) => {
       state.kubeconfig = action.payload;
@@ -113,17 +130,48 @@ export const gefyraSlice = createSlice({
       state.envFrom = action.payload;
       localStorage.setItem('envFrom', JSON.stringify(state.envFrom));
     },
-    addPortMapping(state, action: PayloadAction<PortMapping>) {
-      state.portMappings.push(action.payload);
-      localStorage.setItem('portMappings', JSON.stringify(state.portMappings));
+    addContainerPortMapping(state, action: PayloadAction<PortMapping>) {
+      state.containerPortMappings.push(action.payload);
+      localStorage.setItem('portMappings', JSON.stringify(state.containerPortMappings));
     },
-    removePortMapping(state, action: PayloadAction<number>) {
-      state.portMappings = state.portMappings.filter((e, index) => index !== action.payload);
-      localStorage.setItem('portMappings', JSON.stringify(state.portMappings));
+    removeContainerPortMapping(state, action: PayloadAction<number>) {
+      state.containerPortMappings = state.containerPortMappings.filter((e, index) => index !== action.payload);
+      localStorage.setItem('portMappings', JSON.stringify(state.containerPortMappings));
     },
-    setPortMapping(state, action: PayloadAction<PortMappingUpdate>) {
-      state.portMappings[action.payload.index] = action.payload.ports;
-      localStorage.setItem('portMappings', JSON.stringify(state.portMappings));
+    setContainerPortMapping(state, action: PayloadAction<PortMappingUpdate>) {
+      state.containerPortMappings[action.payload.index] = action.payload.ports;
+      localStorage.setItem('portMappings', JSON.stringify(state.containerPortMappings));
+    },
+    addBridgePortMapping(state, action: PayloadAction<PortMapping>) {
+      state.bridgePortMappings.push(action.payload);
+      localStorage.setItem('bridgePortMappings', JSON.stringify(state.bridgePortMappings));
+    },
+    removeBridgePortMapping(state, action: PayloadAction<number>) {
+      state.bridgePortMappings = state.bridgePortMappings.filter((e, index) => index !== action.payload);
+      localStorage.setItem('bridgePortMappings', JSON.stringify(state.bridgePortMappings));
+    },
+    setBridgePortMapping(state, action: PayloadAction<PortMappingUpdate>) {
+      state.bridgePortMappings[action.payload.index] = action.payload.ports;
+      localStorage.setItem('bridgePortMappings', JSON.stringify(state.bridgePortMappings));
+    },
+    setActiveBridges(state, action: PayloadAction<Array<GefyraBridge>>) {
+      state.activeBridges = action.payload;
+    },
+    setTarget(state, action: PayloadAction<string>) {
+      state.target = action.payload;
+      localStorage.setItem('target', action.payload);
+    },
+    setBridgeTimeout(state, action: PayloadAction<string>) {
+      state.timeout = action.payload;
+      localStorage.setItem('timeout', action.payload);
+    },
+    setBridgeContainer(state, action: PayloadAction<string>) {
+      state.bridgeContainer = action.payload;
+      localStorage.setItem('bridgeContainer', action.payload);
+    },
+    setBridgeNamespace(state, action: PayloadAction<string>) {
+      state.bridgeNamespace = action.payload;
+      localStorage.setItem('bridgeNamespace', action.payload);
     }
   }
 });
@@ -146,9 +194,18 @@ export const {
   setEnvFrom,
   setHost,
   setPort,
-  setPortMapping,
-  addPortMapping,
-  removePortMapping
+  setContainerPortMapping,
+  addContainerPortMapping,
+  removeContainerPortMapping,
+  addBridgePortMapping,
+  removeBridgePortMapping,
+  setBridgePortMapping,
+  setActiveBridges,
+  setBridgeTimeout,
+  setTarget,
+  setBridgeContainer,
+  setBridgeNamespace,
+  unsetPort
 } = gefyraSlice.actions;
 
 export default gefyraSlice.reducer;

@@ -1,15 +1,34 @@
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { Button, FormControlLabel, FormGroup, Grid, Link, Switch, Tooltip } from '@mui/material';
+import SyncAltIcon from '@mui/icons-material/SyncAlt';
+import StopCircleIcon from '@mui/icons-material/StopCircle';
+import {
+  Button,
+  CircularProgress,
+  FormControlLabel,
+  FormGroup,
+  Grid,
+  IconButton,
+  Link,
+  Switch,
+  Tooltip
+} from '@mui/material';
 import { DataGrid, GridRenderCellParams, GridRowParams } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { resetSteps, setMode, setView } from './store/ui';
+import { setBridgeContainer, setBridgeNamespace } from './store/gefyra';
+import { resetSteps, setMode, setSnackbar, setView } from './store/ui';
+import { Gefyra } from './gefyraClient';
+import { GefyraListRequest, GefyraUnbridgeRequest } from 'gefyra/lib/protocol';
 
 export function Home() {
   const [containers, setContainers] = useState([]);
+  const [bridges, setBridges] = useState([] as Array<string>);
   const [containersLoading, setContainersLoading] = useState(false);
+  const [bridgesLoading, setBridgesLoading] = useState(true);
   const [showCargo, setShowCargo] = useState(false);
+  const [unbridgeLoadingList, setUnbridgeLoadingList] = useState([] as Array<string>);
+  const [containerNamsepaceMap, setContainerNamespaceMap] = useState({} as { [key: string]: string });
   const ddClient = createDockerDesktopClient();
   const dispatch = useDispatch();
 
@@ -28,6 +47,33 @@ export function Home() {
 
   function handleChangeHideCargo(event: React.ChangeEvent<HTMLInputElement>) {
     setShowCargo(event.target.checked);
+  }
+
+  function bridgeContainer(containerName: string, namespace: string) {
+    dispatch(setBridgeContainer(containerName));
+    dispatch(setBridgeNamespace(namespace));
+    dispatch(setView('bridge'));
+  }
+
+  async function unbridgeContainer(containerName: string) {
+    const bridge = bridges.find((bridge) => bridge.includes(containerName + '-to-'));
+    if (bridge) {
+      const unbridgeRequest = new GefyraUnbridgeRequest();
+      unbridgeRequest.name = bridge;
+      const gefyraClient = new Gefyra(ddClient);
+      setUnbridgeLoadingList([...unbridgeLoadingList, containerName]);
+      gefyraClient.unbridge(unbridgeRequest).then(res => {
+        if (res.success) {
+          setUnbridgeLoadingList(unbridgeLoadingList.filter((name) => name !== containerName));
+          getBridges();
+          dispatch(setSnackbar({ text: `Unbridge for ${containerName} succeeded.`, type: 'success' }));
+        } else {
+          dispatch(setSnackbar({ text: `Unbridge for ${containerName} failed.`, type: 'error' }));
+        }
+      });
+    } else {
+      console.error('Could not find bridge for container: ' + containerName);
+    }
   }
 
   function configureRun() {
@@ -84,39 +130,98 @@ export function Home() {
         });
       }
     },
-    { flex: 1, field: 'Status', headerName: 'Status' }
+    { flex: 1, field: 'Status', headerName: 'Status' },
+    {
+      flex: 1,
+      field: 'Bridge',
+      headerName: 'Bridge',
+      type: 'actions',
+      renderCell: (params: GridRenderCellParams) => {
+        if (bridgesLoading) {
+          return <CircularProgress size={20} />
+        }
+        const names = params.row.Names;
+        const containerName = names[0].substring(1, names[0].length) as string;
+        if (!params.row.Names.includes('/gefyra-cargo')) {
+          if (bridges.filter((bridge) => bridge.includes(containerName)).length) {
+            return (
+              <Tooltip title="Unbridge container">
+                <IconButton
+                  disabled={unbridgeLoadingList.includes(containerName)}
+                  component="label"
+                  color="primary"
+                  onClick={() => unbridgeContainer(containerName)}>
+                  <StopCircleIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            );
+          } else {
+            return (
+              <Tooltip title="Bridge container">
+                <IconButton
+                  component="label"
+                  color="primary"
+                  onClick={() => bridgeContainer(containerName, containerNamsepaceMap[containerName])}>
+                  <SyncAltIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            );
+          }
+        } else {
+          return '';
+        }
+      }
+    }
   ];
 
-  function getContainers(): Promise<any> {
-    setContainersLoading(true);
-    return new Promise((resolve, reject) => {
-      const filters = '{"label":["created_by.gefyra.dev=true"], "status": ["running"]}';
-      ddClient.docker
-        .listContainers({
-          all: true,
-          filters: filters
-        })
-        .then((containers: any) => {
-          if (!showCargo) {
-            containers = containers.filter((container: { Names: string[] }) => {
-              return !container.Names.includes('/gefyra-cargo');
-            });
-          }
-          setContainersLoading(false);
-          resolve(containers);
+  function getBridges(): void {
+    setBridgesLoading(true);
+
+    const ddClient = createDockerDesktopClient();
+    const gefyraClient = new Gefyra(ddClient);
+    const listRequest = new GefyraListRequest();
+    gefyraClient.list(listRequest).then((response) => {
+      if (response.success) {
+        response.response.containers.forEach((container: any) => {
+          setContainerNamespaceMap((prevState) => ({ ...prevState, [container[0]]: container[2] }));
         });
+        setBridges(response.response.bridges);
+      }
+      setBridgesLoading(false);
     });
   }
 
+  async function refresh() {
+    await getContainers();
+    getBridges();
+  }
+
+  async function getContainers() {
+    setContainersLoading(true);
+    const filters = '{"label":["created_by.gefyra.dev=true"], "status": ["running"]}';
+    return ddClient.docker
+      .listContainers({
+        all: true,
+        filters: filters
+      })
+      .then((containers: any) => {
+        if (!showCargo) {
+          containers = containers.filter((container: { Names: string[] }) => {
+            return !container.Names.includes('/gefyra-cargo');
+          });
+        }
+        setContainers(containers);
+        setContainersLoading(false);
+      });
+  }
+
   useEffect(() => {
-    getContainers().then((containers: any) => {
-      setContainers(containers);
-    });
+    getContainers();
   }, [showCargo]);
 
   useEffect(() => {
-    getContainers().then((containers: any) => {
-      setContainers(containers);
+    getContainers().then(() => {
+      getBridges();
     });
   }, []);
 
@@ -139,14 +244,6 @@ export function Home() {
             onClick={configureRun}>
             Run Container
           </Button>
-          <Button
-            variant="contained"
-            component="label"
-            color="primary"
-            sx={{ marginTop: 1, marginLeft: 2 }}
-            disabled>
-            Bridge Container
-          </Button>
         </div>
       </Grid>
 
@@ -162,12 +259,12 @@ export function Home() {
         </Grid>
 
         <Grid item xs={6} container justifyContent="flex-end">
-          <Tooltip title="Refresh container list">
+          <Tooltip title="Refresh table">
             <Button
               variant="contained"
               component="label"
               color="primary"
-              onClick={getContainers}
+              onClick={refresh}
               disabled={containersLoading}>
               <RefreshIcon />
             </Button>

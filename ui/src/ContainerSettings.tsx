@@ -20,7 +20,10 @@ import {
   setCommand,
   setEnvFrom,
   setImage,
-  setAvailableNamespaces
+  setAvailableNamespaces,
+  setContainerPortMapping,
+  addContainerPortMapping,
+  removeContainerPortMapping
 } from './store/gefyra';
 import useNavigation from './composable/navigation';
 import { LSelect } from './components/LSelect';
@@ -34,6 +37,7 @@ import { createDockerDesktopClient } from '@docker/extension-api-client';
 import useDockerImages from './composable/dockerImages';
 import { DockerImage } from './types';
 import { PortMappings } from './components/PortMappings';
+import getWorkloads from './composable/workloads';
 
 export function ContainerSettings() {
   const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
@@ -54,7 +58,7 @@ export function ContainerSettings() {
   const image = useAppSelector((state) => state.gefyra.image);
   const envFrom = useAppSelector((state) => state.gefyra.envFrom);
   const environmentVariables = useAppSelector((state) => state.gefyra.environmentVariables);
-  const portMappings = useAppSelector((state) => state.gefyra.portMappings);
+  const portMappings = useAppSelector((state) => state.gefyra.containerPortMappings);
   const volumeMounts = useAppSelector((state) => state.gefyra.volumeMounts);
   const kubeconfig = useAppSelector((state) => state.gefyra.kubeconfig);
   const context = useAppSelector((state) => state.gefyra.context);
@@ -77,35 +81,22 @@ export function ContainerSettings() {
   const updateEnvFromSelect = (namespaceVal: string) => {
     setEnvFromActive(false);
     setSelectEnvFrom([]);
-    const wlrRequest = new K8sWorkloadsRequest();
-    wlrRequest.kubeconfig = kubeconfig;
-    wlrRequest.context = context;
-    const gefyraClient = new Gefyra(ddClient);
-    gefyraClient
-      .exec(wlrRequest)
-      .then((res) => {
-        const wlr: K8sWorkloadsResponse = JSON.parse(res);
-        // TODO fix in gefyra-json package
-        // @ts-ignore
-        const workloads = (wlr?.response?.workloads[namespaceVal] as string[]) || undefined;
-        if (!envFrom || (workloads && !workloads.includes(envFrom))) {
-          dispatch(setEnvFrom('select'));
-        }
-        if (workloads) {
-          setSelectEnvFrom(
-            [{ label: 'Select a workload', value: 'select' }].concat(
-              workloads.map((w) => ({ label: w, value: w }))
-            )
-          );
-        } else {
-          setSelectEnvFrom([{ label: 'No workloads available', value: 'select' }]);
-          dispatch(setEnvFrom('select'));
-        }
-        setEnvFromActive(true);
-      })
-      .catch((err) => {
-        console.debug(err);
-      });
+    getWorkloads(namespaceVal).then((workloads) => {
+      if (!envFrom || (workloads && !workloads.includes(envFrom))) {
+        dispatch(setEnvFrom('select'));
+      }
+      if (workloads) {
+        setSelectEnvFrom(
+          [{ label: 'Select a workload', value: 'select' }].concat(
+            workloads.map((w) => ({ label: w, value: w }))
+          )
+        );
+      } else {
+        setSelectEnvFrom([{ label: 'No workloads available', value: 'select' }]);
+        dispatch(setEnvFrom('select'));
+      }
+      setEnvFromActive(true);
+    });
   };
 
   function handleNamespaceChange(e: SelectChangeEvent<string>, b: object): any {
@@ -132,8 +123,7 @@ export function ContainerSettings() {
         const nsRequest = new K8sNamespaceRequest();
         nsRequest.kubeconfig = kubeconfig;
         nsRequest.context = context;
-        await gefyraClient.exec(nsRequest).then((res) => {
-          const resp = JSON.parse(res);
+        await gefyraClient.k8sNamespaces(nsRequest).then((resp) => {
           if (resp.status !== 'error' && resp.response && resp.response.namespaces) {
             dispatch(setAvailableNamespaces(resp.response.namespaces));
           } else {
@@ -237,7 +227,7 @@ export function ContainerSettings() {
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <PortMappings></PortMappings>
+            <PortMappings state={portMappings} set={setContainerPortMapping} add={addContainerPortMapping} remove={removeContainerPortMapping}></PortMappings>
           </AccordionDetails>
         </Accordion>
       </Grid>

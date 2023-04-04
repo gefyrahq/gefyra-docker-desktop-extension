@@ -31,8 +31,7 @@ export function Stop() {
     async function down() {
       setRunLabel('Gracefully stopping Gefyra');
       setRunProgress(20);
-      const downRequest = new GefyraDownRequest();
-      await gefyraClient.exec(downRequest);
+      await gefyraClient.down();
       setRunLabel('Gefyra has been stopped');
       setRunProgress(100);
       setBackEnabled(true);

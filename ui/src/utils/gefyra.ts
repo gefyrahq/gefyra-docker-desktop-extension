@@ -1,32 +1,24 @@
 import { GefyraStatusRequest, GefyraUpRequest } from 'gefyra/lib/protocol';
 import { Gefyra } from '../gefyraClient';
+import { GefyraClientStatus, GefyraClusterStatus } from 'gefyra/lib/types';
 
-export const checkStowawayReady = async (
-  gefyraClient: Gefyra,
-  times = 1,
-  resolver: ((value: unknown) => void) | undefined = undefined,
-  rejecter: ((value: unknown) => void) | undefined = undefined
-) => {
+export const checkStowawayReady = async (gefyraClient: Gefyra, times = 1): Promise<boolean> => {
   /*
    * Check whether Stowaway is ready and available.
    * `times` determines how often the check is repeated before failing.
    */
-  const statusRequest = new GefyraStatusRequest();
-  if (times === 0 && rejecter) {
-    rejecter(null);
-    return;
+  if (times === 0) {
+    throw Error('Stowaway is not ready');
   }
-  return new Promise((resolve, reject) => {
-    gefyraClient.exec(statusRequest).then(async (res) => {
-      const response = JSON.parse(res).response;
+  return new Promise((resolve: (value: boolean) => void, reject) => {
+    gefyraClient.status().then(async (res) => {
+      const response = res.response;
       const cluster = response.cluster;
       if (cluster.stowaway) {
-        resolve(cluster);
+        resolve(true);
       } else {
         setTimeout(() => {
-          checkStowawayReady(gefyraClient, times - 1, resolver ? resolver : resolve, reject)
-            .catch((err) => reject())
-            .then((res) => resolve(true));
+          return checkStowawayReady(gefyraClient, times - 1).catch((err) => reject(err));
         }, 1000);
       }
     });
@@ -35,30 +27,24 @@ export const checkStowawayReady = async (
 
 export const checkCargoReady = async (
   gefyraClient: Gefyra,
-  times = 1,
-  resolver: ((value: unknown) => void) | undefined = undefined,
-  rejecter: ((value: unknown) => void) | undefined = undefined
-) => {
+  times = 1
+): Promise<GefyraClientStatus> => {
   /*
-   * Check whether Stowaway is ready and available.
+   * Check whether Cargo is ready and available.
    * `times` determines how often the check is repeated before failing.
    */
-  const statusRequest = new GefyraStatusRequest();
-  if (times === 0 && rejecter) {
-    rejecter(null);
-    return;
+  if (times === 0) {
+    throw Error('Cargo is not ready');
   }
   return new Promise((resolve, reject) => {
-    gefyraClient.exec(statusRequest).then(async (res) => {
-      const response = JSON.parse(res).response;
+    gefyraClient.status().then(async (res) => {
+      const response = res.response;
       const client = response.client;
       if (client.cargo) {
         resolve(client);
       } else {
         setTimeout(() => {
-          checkCargoReady(gefyraClient, times - 1, resolver ? resolver : resolve, reject)
-            .catch((err) => reject())
-            .then((res) => resolve(true));
+          return checkCargoReady(gefyraClient, times - 1).catch((err) => reject(err));
         }, 1000);
       }
     });

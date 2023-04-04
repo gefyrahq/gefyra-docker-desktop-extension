@@ -37,7 +37,7 @@ export function RunProgress() {
   const namespace = useAppSelector((state) => state.gefyra.namespace);
   const command = useAppSelector((state) => state.gefyra.command);
   const envFrom = useAppSelector((state) => state.gefyra.envFrom);
-  const portMappings = useAppSelector((state) => state.gefyra.portMappings);
+  const portMappings = useAppSelector((state) => state.gefyra.containerPortMappings);
   const host = useAppSelector((state) => state.gefyra.host);
   const port = useAppSelector((state) => state.gefyra.port);
 
@@ -105,12 +105,10 @@ export function RunProgress() {
   useEffect(() => {
     async function run() {
       updateProgress('Checking current state of Gefyra.', 0, false);
-      const statusRequest = new GefyraStatusRequest();
 
       setCancelEnabled(true);
-      await gefyraClient.exec(statusRequest).then(async (res) => {
-        const response = JSON.parse(res).response;
-        const client = response.client;
+      await gefyraClient.status().then(async (res) => {
+        const client = res.response.client;
         if (client.kubeconfig !== kubeconfig || client.context !== context) {
           if (client.kubeconfig !== kubeconfig) {
             updateProgress('Kubeconfig changed. Restarting Gefyra.', 5);
@@ -118,8 +116,7 @@ export function RunProgress() {
             updateProgress('Context changed. Restarting Gefyra.', 5);
           }
           // This is done to make sure Cargo is started with the correct settings
-          const downRequest = new GefyraDownRequest();
-          await gefyraClient.exec(downRequest);
+          await gefyraClient.down();
         }
       });
       if (stopRunning) {
@@ -160,10 +157,10 @@ export function RunProgress() {
       runRequest.volumes = volumeMounts.map((item) => `${item.host}:${item.container}`);
 
       await gefyraClient
-        .exec(statusRequest)
+        .status()
         .then(async (res) => {
-          const response = JSON.parse(res).response;
-          let cluster = response.cluster;
+          const response = res.response;
+          const cluster = response.cluster;
           let client = response.client;
           if (!cluster.connected) {
             displayError('Cluster connection not available.');
@@ -184,9 +181,9 @@ export function RunProgress() {
             updateProgress('Gefyra Operator confirmed.', 20);
           }
           updateProgress('Waiting for stowaway to become ready.', 25);
-          cluster = await checkStowawayReady(gefyraClient, 10).catch((err) => false);
+          const stowAwayReady = await checkStowawayReady(gefyraClient, 10).catch((err) => false);
           // cycles stowaway retry
-          if (!cluster.stowaway) {
+          if (!stowAwayReady) {
             displayError('Could not confirm Stowaway - fatal error.');
             return;
           }
@@ -194,7 +191,7 @@ export function RunProgress() {
           if (!client.cargo) {
             updateProgress('Cargo not found - starting Cargo now...', 35);
             await gefyraUp(gefyraClient, upRequest);
-            client = await checkCargoReady(gefyraClient, 10).catch((err) => false);
+            client = await checkCargoReady(gefyraClient, 10);
             if (!client.cargo) {
               displayError('Gefyra Cargo not running.');
               return;
@@ -217,10 +214,11 @@ export function RunProgress() {
             return;
           }
           const runResult = await gefyraClient
-            .exec(runRequest)
+            .run(runRequest)
             .then((res) => {
-              const r = JSON.parse(res);
+              const r = res;
               if (r.status === 'error') {
+                // @ts-ignore
                 displayError(`Error: ${r.reason}`);
                 return false;
               }
