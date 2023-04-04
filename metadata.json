@@ -37,7 +37,7 @@
 	  {"path": "/windows/lib/bin"},
 	  {"path": "/windows/lib/pywin32.version.txt"},
 	  {"path": "/windows/lib/win32com"},
-	  {"path": "/windows/lib/pywin32-305.dist-info"},
+	  {"path": "/windows/lib/pywin32-306.dist-info"},
 	  {"path": "/windows/lib/libssl-1_1-x64.dll"},
 	  {"path": "/windows/lib/_ssl.pyd"},
 	  {"path": "/windows/lib/pywin32.pth"},
@@ -312,12 +312,12 @@
 	  {"path": "/windows/lib/win32com/__init__.py"},
 	  {"path": "/windows/lib/win32com/__pycache__/__init__.cpython-39.opt-1.pyc"},
 	  {"path": "/windows/lib/win32com/__pycache__/__init__.cpython-39.pyc"},
-	  {"path": "/windows/lib/pywin32-305.dist-info/WHEEL"},
-	  {"path": "/windows/lib/pywin32-305.dist-info/RECORD"},
-	  {"path": "/windows/lib/pywin32-305.dist-info/METADATA"},
-	  {"path": "/windows/lib/pywin32-305.dist-info/REQUESTED"},
-	  {"path": "/windows/lib/pywin32-305.dist-info/top_level.txt"},
-	  {"path": "/windows/lib/pywin32-305.dist-info/INSTALLER"}
+	  {"path": "/windows/lib/pywin32-306.dist-info/WHEEL"},
+	  {"path": "/windows/lib/pywin32-306.dist-info/RECORD"},
+	  {"path": "/windows/lib/pywin32-306.dist-info/METADATA"},
+	  {"path": "/windows/lib/pywin32-306.dist-info/REQUESTED"},
+	  {"path": "/windows/lib/pywin32-306.dist-info/top_level.txt"},
+	  {"path": "/windows/lib/pywin32-306.dist-info/INSTALLER"}
 	]
       }
     ]
