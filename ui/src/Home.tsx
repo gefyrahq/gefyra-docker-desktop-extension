@@ -4,6 +4,7 @@ import SyncAltIcon from '@mui/icons-material/SyncAlt';
 import StopCircleIcon from '@mui/icons-material/StopCircle';
 import {
   Button,
+  CircularProgress,
   FormControlLabel,
   FormGroup,
   Grid,
@@ -15,17 +16,18 @@ import {
 import { DataGrid, GridRenderCellParams, GridRowParams } from '@mui/x-data-grid';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { setBridgeContainer } from './store/gefyra';
+import { setBridgeContainer, setBridgeNamespace } from './store/gefyra';
 import { resetSteps, setMode, setView } from './store/ui';
 import { Gefyra } from './gefyraClient';
-import { getBridgeName } from './utils/gefyra';
-import { GefyraListRequest } from 'gefyra/lib/protocol';
+import { GefyraListRequest, GefyraUnbridgeRequest } from 'gefyra/lib/protocol';
 
 export function Home() {
   const [containers, setContainers] = useState([]);
-  const [bridges, setBridges] = useState([]);
+  const [bridges, setBridges] = useState([] as Array<string>);
   const [containersLoading, setContainersLoading] = useState(false);
+  const [bridgesLoading, setBridgesLoading] = useState(true);
   const [showCargo, setShowCargo] = useState(false);
+  const [containerNamsepaceMap, setContainerNamespaceMap] = useState({} as { [key: string]: string });
   const ddClient = createDockerDesktopClient();
   const dispatch = useDispatch();
 
@@ -46,12 +48,25 @@ export function Home() {
     setShowCargo(event.target.checked);
   }
 
-  function bridgeContainer(containerName: string) {
-    dispatch(setBridgeContainer(getBridgeName(containerName)));
+  function bridgeContainer(containerName: string, namespace: string) {
+    dispatch(setBridgeContainer(containerName));
+    dispatch(setBridgeNamespace(namespace));
     dispatch(setView('bridge'));
   }
 
-  function unbridgeContainer(bridgeName: string): void {}
+  function unbridgeContainer(containerName: string): void {
+    const bridge = bridges.find((bridge) => bridge.includes(containerName + '-to-'));
+    console.log(bridges);
+    if (bridge) {
+      const unbridgeRequest = new GefyraUnbridgeRequest();
+      unbridgeRequest.name = bridge;
+      const gefyraClient = new Gefyra(ddClient);
+      gefyraClient.unbridge(unbridgeRequest);
+      getBridges();
+    } else {
+      console.error('Could not find bridge for container: ' + containerName);
+    }
+  }
 
   function configureRun() {
     dispatch(setMode('run'));
@@ -114,18 +129,19 @@ export function Home() {
       headerName: 'Bridge',
       type: 'actions',
       renderCell: (params: GridRenderCellParams) => {
+        if (bridgesLoading) {
+          return <CircularProgress size={20} />
+        }
         const names = params.row.Names;
-        const containerName = names[0].substring(1, names[0].length);
-        const containerBridgeName = getBridgeName(containerName);
+        const containerName = names[0].substring(1, names[0].length) as string;
         if (!params.row.Names.includes('/gefyra-cargo')) {
-          if (bridges.filter((bridge) => containerBridgeName === bridge).length) {
+          if (bridges.filter((bridge) => bridge.includes(containerName)).length) {
             return (
               <Tooltip title="Unbridge container">
                 <IconButton
                   component="label"
                   color="primary"
-                  onClick={() => unbridgeContainer(containerBridgeName)}
-                  size="small">
+                  onClick={() => unbridgeContainer(containerName)}>
                   <StopCircleIcon fontSize="small" />
                 </IconButton>
               </Tooltip>
@@ -136,8 +152,7 @@ export function Home() {
                 <IconButton
                   component="label"
                   color="primary"
-                  onClick={() => bridgeContainer(containerName)}
-                  size="small">
+                  onClick={() => bridgeContainer(containerName, containerNamsepaceMap[containerName])}>
                   <SyncAltIcon fontSize="small" />
                 </IconButton>
               </Tooltip>
@@ -150,15 +165,26 @@ export function Home() {
     }
   ];
 
-  function getBridges(): Promise<any> {
-    return new Promise((resolve, reject) => {
-      const ddClient = createDockerDesktopClient();
-      const gefyraClient = new Gefyra(ddClient);
-      const listRequest = new GefyraListRequest();
-      gefyraClient.list(listRequest).then((response) => {
-        resolve(response.response.bridges);
-      });
+  function getBridges(): void {
+    setBridgesLoading(true);
+
+    const ddClient = createDockerDesktopClient();
+    const gefyraClient = new Gefyra(ddClient);
+    const listRequest = new GefyraListRequest();
+    gefyraClient.list(listRequest).then((response) => {
+      if (response.success) {
+        response.response.containers.forEach((container: any) => {
+          setContainerNamespaceMap((prevState) => ({ ...prevState, [container[0]]: container[2] }));
+        });
+        setBridges(response.response.bridges);
+      }
+      setBridgesLoading(false);
     });
+  }
+
+  async function refresh() {
+    await getContainers();
+    getBridges();
   }
 
   function getContainers(): Promise<any> {
@@ -192,9 +218,7 @@ export function Home() {
     getContainers().then((containers: any) => {
       setContainers(containers);
     });
-    getBridges().then((bridges: any) => {
-      setBridges(bridges);
-    });
+    getBridges();
   }, []);
 
   return (
@@ -231,12 +255,12 @@ export function Home() {
         </Grid>
 
         <Grid item xs={6} container justifyContent="flex-end">
-          <Tooltip title="Refresh container list">
+          <Tooltip title="Refresh table">
             <Button
               variant="contained"
               component="label"
               color="primary"
-              onClick={getContainers}
+              onClick={refresh}
               disabled={containersLoading}>
               <RefreshIcon />
             </Button>

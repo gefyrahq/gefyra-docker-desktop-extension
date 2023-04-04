@@ -27,6 +27,7 @@ interface GefyraState {
   target: string;
   timeout: string;
   bridgeContainer: string;
+  bridgeNamespace: string;
 }
 
 const initialState: GefyraState = {
@@ -47,7 +48,8 @@ const initialState: GefyraState = {
   activeBridges: [],
   target: localStorage.getItem('target') || '',
   timeout: localStorage.getItem('timeout') || '',
-  bridgeContainer: localStorage.getItem('bridgeContainer') || ''
+  bridgeContainer: localStorage.getItem('bridgeContainer') || '',
+  bridgeNamespace: localStorage.getItem('bridgeNamespace') || '',
 };
 
 export const gefyraSlice = createSlice({
@@ -148,6 +150,10 @@ export const gefyraSlice = createSlice({
     setBridgeContainer(state, action: PayloadAction<string>) {
       state.bridgeContainer = action.payload;
       localStorage.setItem('bridgeContainer', action.payload);
+    },
+    setBridgeNamespace(state, action: PayloadAction<string>) {
+      state.bridgeNamespace = action.payload;
+      localStorage.setItem('bridgeNamespace', action.payload);
     }
   }
 });
@@ -176,7 +182,8 @@ export const {
   setActiveBridges,
   setBridgeTimeout,
   setTarget,
-  setBridgeContainer
+  setBridgeContainer,
+  setBridgeNamespace
 } = gefyraSlice.actions;
 
 export default gefyraSlice.reducer;

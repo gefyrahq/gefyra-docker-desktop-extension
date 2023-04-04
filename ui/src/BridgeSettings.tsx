@@ -12,32 +12,20 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useState, useEffect } from 'react';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
-import { EnvironmentVariables } from './components/EnvironmentVariables';
-import { VolumeMounts } from './components/VolumeMounts';
 import { RootState } from './store';
 import {
-  setNamespace,
-  setCommand,
-  setEnvFrom,
-  setImage,
-  setAvailableNamespaces,
   setBridgeTimeout,
   setTarget
 } from './store/gefyra';
 import useNavigation from './composable/navigation';
 import { LSelect } from './components/LSelect';
 import {
-  GefyraBridgeRequest,
-  K8sNamespaceRequest,
-  K8sWorkloadsRequest,
-  K8sWorkloadsResponse
+  GefyraBridgeRequest
 } from 'gefyra/lib/protocol';
 import { Gefyra } from './gefyraClient';
 import { createDockerDesktopClient } from '@docker/extension-api-client';
-import useDockerImages from './composable/dockerImages';
-import { DockerImage, PortMapping } from './types';
+import { PortMapping } from './types';
 import { PortMappings } from './components/PortMappings';
-import { gefyraClient } from 'gefyra';
 import getWorkloads from './composable/workloads';
 
 export function BridgeSettings() {
@@ -47,7 +35,7 @@ export function BridgeSettings() {
   const [selectTarget, setSelectTarget] = useState([] as { label: string; value: string }[]);
   const [targetActive, setTargetActive] = useState(false);
 
-  const namespace = useAppSelector((state) => state.gefyra.namespace);
+  const namespace = useAppSelector((state) => state.gefyra.bridgeNamespace);
   const bridgeContainer = useAppSelector((state) => state.gefyra.bridgeContainer);
 
   const target = useAppSelector((state) => state.gefyra.target);
@@ -83,6 +71,7 @@ export function BridgeSettings() {
     bridgeRequest.timeout = 5000;
     const ddClient = createDockerDesktopClient();
     const gefyraClient = new Gefyra(ddClient);
+    console.log(bridgeRequest);
     gefyraClient.bridge(bridgeRequest).then((response) => {
       console.log(response);
     });

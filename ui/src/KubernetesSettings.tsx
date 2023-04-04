@@ -15,7 +15,6 @@ import { useState, useEffect } from 'react';
 import {
   K8sContextRequest,
   K8sContextResponse,
-  K8sDefaultKubeconfigRequest,
   K8sDefaultKubeconfigResponse,
   K8sNamespaceRequest
 } from 'gefyra/lib/protocol';
@@ -60,15 +59,18 @@ export function KubernetesSettings() {
 
   const gefyraClient = new Gefyra(ddClient);
 
-  function loadContexts() {
+  useEffect(() => {
     setContextLoading(true);
     const contextRequest = new K8sContextRequest();
     contextRequest.kubeconfig = store.getState().gefyra.kubeconfig;
+    console.log(kubeconfig);
+    if (!kubeconfig) { return; }
 
     gefyraClient
       .exec(contextRequest)
       .then((res) => {
         const parsed: K8sContextResponse = JSON.parse(res);
+        console.log(parsed);
         const contexts = parsed.response.contexts;
         const contextItems = contexts.map((c) => {
           return { label: c, value: c };
@@ -87,7 +89,7 @@ export function KubernetesSettings() {
         setContextLoading(false);
       })
       .catch((err) => console.error(err));
-  }
+  }, [kubeconfig]);
 
   async function handleKubeConfigChange() {
     dispatch(setContext(''));
@@ -104,7 +106,6 @@ export function KubernetesSettings() {
       if (directory !== undefined) {
         dispatch(setKubeconfig(directory));
       }
-      loadContexts();
     }
   }
 
@@ -184,14 +185,12 @@ export function KubernetesSettings() {
 
   function setDefaultKubeconfig() {
     gefyraClient.k8sDefaultKubeconfig().then((res: K8sDefaultKubeconfigResponse) => {
-      dispatch(setKubeconfig(res.response.kubeconfig));
+      // @ts-ignore
+      dispatch(setKubeconfig(res.response));
     });
   }
 
   useEffect(() => {
-    if (kubeconfig && !availableContexts.length) {
-      loadContexts();
-    }
     if (!kubeconfig) {
       setDefaultKubeconfig();
     }
