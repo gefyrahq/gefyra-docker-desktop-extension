@@ -57,6 +57,10 @@ export type SelectProps = {
 
 export type PortMappingsProps = {
   loading?: boolean;
+  set: any;
+  add: any;
+  remove: any;
+  state: PortMapping[];
 }
 
 export type ContainerLogsProps = {

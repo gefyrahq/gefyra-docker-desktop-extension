@@ -37,7 +37,7 @@ export function RunProgress() {
   const namespace = useAppSelector((state) => state.gefyra.namespace);
   const command = useAppSelector((state) => state.gefyra.command);
   const envFrom = useAppSelector((state) => state.gefyra.envFrom);
-  const portMappings = useAppSelector((state) => state.gefyra.portMappings);
+  const portMappings = useAppSelector((state) => state.gefyra.containerPortMappings);
   const host = useAppSelector((state) => state.gefyra.host);
   const port = useAppSelector((state) => state.gefyra.port);
 

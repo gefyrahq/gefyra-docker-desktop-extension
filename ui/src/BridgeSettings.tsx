@@ -14,6 +14,9 @@ import { useState, useEffect } from 'react';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import { RootState } from './store';
 import {
+  addBridgePortMapping,
+  removeBridgePortMapping,
+  setBridgePortMapping,
   setBridgeTimeout,
   setTarget
 } from './store/gefyra';
@@ -42,7 +45,7 @@ export function BridgeSettings() {
   const bridgeContainer = useAppSelector((state) => state.gefyra.bridgeContainer);
 
   const target = useAppSelector((state) => state.gefyra.target);
-  const portMappings = useAppSelector((state) => state.gefyra.portMappings);
+  const portMappings = useAppSelector((state) => state.gefyra.bridgePortMappings);
 
   const timeout = useAppSelector((state) => state.gefyra.timeout);
 
@@ -141,7 +144,7 @@ export function BridgeSettings() {
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <PortMappings loading={bridgeProcessing}></PortMappings>
+            <PortMappings state={portMappings} set={setBridgePortMapping} add={addBridgePortMapping} remove={removeBridgePortMapping} loading={bridgeProcessing}></PortMappings>
           </AccordionDetails>
         </Accordion>
       </Grid>

@@ -196,38 +196,33 @@ export function Home() {
     getBridges();
   }
 
-  function getContainers(): Promise<any> {
+  async function getContainers() {
     setContainersLoading(true);
-    return new Promise((resolve, reject) => {
-      const filters = '{"label":["created_by.gefyra.dev=true"], "status": ["running"]}';
-      ddClient.docker
-        .listContainers({
-          all: true,
-          filters: filters
-        })
-        .then((containers: any) => {
-          if (!showCargo) {
-            containers = containers.filter((container: { Names: string[] }) => {
-              return !container.Names.includes('/gefyra-cargo');
-            });
-          }
-          setContainersLoading(false);
-          resolve(containers);
-        });
-    });
+    const filters = '{"label":["created_by.gefyra.dev=true"], "status": ["running"]}';
+    return ddClient.docker
+      .listContainers({
+        all: true,
+        filters: filters
+      })
+      .then((containers: any) => {
+        if (!showCargo) {
+          containers = containers.filter((container: { Names: string[] }) => {
+            return !container.Names.includes('/gefyra-cargo');
+          });
+        }
+        setContainers(containers);
+        setContainersLoading(false);
+      });
   }
 
   useEffect(() => {
-    getContainers().then((containers: any) => {
-      setContainers(containers);
-    });
+    getContainers();
   }, [showCargo]);
 
   useEffect(() => {
-    getContainers().then((containers: any) => {
-      setContainers(containers);
+    getContainers().then(() => {
+      getBridges();
     });
-    getBridges();
   }, []);
 
   return (
@@ -247,7 +242,7 @@ export function Home() {
             color="primary"
             sx={{ marginTop: 1 }}
             onClick={configureRun}>
-            Run New Container
+            Run Container
           </Button>
         </div>
       </Grid>

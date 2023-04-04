@@ -1,21 +1,16 @@
 import { Button, Grid, TextField } from '@mui/material';
-import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../store';
-import { removePortMapping, addPortMapping, setPortMapping } from '../store/gefyra';
+import { useDispatch } from 'react-redux';
 import { PortMapping, PortMappingsProps } from '../types';
 
 export function PortMappings(props: PortMappingsProps) {
   const dispatch = useDispatch();
-  const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
-
-  const portMappings = useAppSelector((state) => state.gefyra.portMappings);
 
   const add = () => {
-    dispatch(addPortMapping({ '': '' }));
+    dispatch(props.add({ '': '' }));
   };
 
   const handleChange = (i: number, t: 'host' | 'container', value: string) => {
-    portMappings.forEach((v: PortMapping, index) => {
+    props.state.forEach((v: PortMapping, index) => {
       if (i === index) {
         const res: PortMapping = {};
         if (t === 'host') {
@@ -23,7 +18,7 @@ export function PortMappings(props: PortMappingsProps) {
         } else {
           res[Object.keys(v)[0]] = value;
         }
-        dispatch(setPortMapping({ ports: res, index: index }));
+        dispatch(props.set({ ports: res, index: index }));
       }
       return v;
     });
@@ -31,7 +26,7 @@ export function PortMappings(props: PortMappingsProps) {
 
   return (
     <>
-      {portMappings.map((ports, index) =>
+      {props.state.map((ports, index) =>
         ports ? (
           <Grid item xs={12} key={index} sx={{ mb: 2 }}>
             <Grid container spacing={4}>
@@ -68,7 +63,7 @@ export function PortMappings(props: PortMappingsProps) {
                   variant="contained"
                   color="error"
                   disabled={props.loading}
-                  onClick={() => dispatch(removePortMapping(index))}>
+                  onClick={() => dispatch(props.remove(index))}>
                   X
                 </Button>
               </Grid>

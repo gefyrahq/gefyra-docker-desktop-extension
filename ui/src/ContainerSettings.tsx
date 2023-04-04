@@ -20,7 +20,10 @@ import {
   setCommand,
   setEnvFrom,
   setImage,
-  setAvailableNamespaces
+  setAvailableNamespaces,
+  setContainerPortMapping,
+  addContainerPortMapping,
+  removeContainerPortMapping
 } from './store/gefyra';
 import useNavigation from './composable/navigation';
 import { LSelect } from './components/LSelect';
@@ -55,7 +58,7 @@ export function ContainerSettings() {
   const image = useAppSelector((state) => state.gefyra.image);
   const envFrom = useAppSelector((state) => state.gefyra.envFrom);
   const environmentVariables = useAppSelector((state) => state.gefyra.environmentVariables);
-  const portMappings = useAppSelector((state) => state.gefyra.portMappings);
+  const portMappings = useAppSelector((state) => state.gefyra.containerPortMappings);
   const volumeMounts = useAppSelector((state) => state.gefyra.volumeMounts);
   const kubeconfig = useAppSelector((state) => state.gefyra.kubeconfig);
   const context = useAppSelector((state) => state.gefyra.context);
@@ -223,7 +226,7 @@ export function ContainerSettings() {
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <PortMappings></PortMappings>
+            <PortMappings state={portMappings} set={setContainerPortMapping} add={addContainerPortMapping} remove={removeContainerPortMapping}></PortMappings>
           </AccordionDetails>
         </Accordion>
       </Grid>
