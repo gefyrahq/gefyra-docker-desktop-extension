@@ -1,0 +1,25 @@
+name: Test Build for Dependency Changes
+on:
+  pull_request:
+    paths:
+      - ui/package.json
+      - ui/package-lock.json
+    branches:
+      - main
+
+
+jobs:
+  build:    
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 16
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Install dependencies
+        working-directory: ui
+        run: npm ci
+      - name: Build
+        working-directory: ui
+        run: npm run build
