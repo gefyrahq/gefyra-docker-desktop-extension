@@ -38,6 +38,7 @@ export function BridgeSettings() {
 
   const [selectTarget, setSelectTarget] = useState([] as { label: string; value: string }[]);
   const [targetActive, setTargetActive] = useState(false);
+  const [portMapValid, setPortMapValid] = useState(true);
 
   const [bridgeProcessing, setBridgeProcessing] = useState(false);
 
@@ -144,7 +145,7 @@ export function BridgeSettings() {
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <PortMappings state={portMappings} set={setBridgePortMapping} add={addBridgePortMapping} remove={removeBridgePortMapping} loading={bridgeProcessing}></PortMappings>
+            <PortMappings isValid={setPortMapValid} state={portMappings} set={setBridgePortMapping} add={addBridgePortMapping} remove={removeBridgePortMapping} loading={bridgeProcessing} />
           </AccordionDetails>
         </Accordion>
       </Grid>
@@ -162,7 +163,7 @@ export function BridgeSettings() {
           variant="contained"
           component="label"
           color="primary"
-          disabled={bridgeProcessing}
+          disabled={bridgeProcessing || !portMapValid}
           onClick={bridge}
           sx={{ marginTop: 1, ml: 2 }}>
           Bridge
