@@ -65,6 +65,8 @@ export function ContainerSettings() {
   const availableWorkloads = useAppSelector((state) => state.gefyra.availableWorkloads);
 
   const command = useAppSelector((state) => state.gefyra.command);
+
+  const [portMapValid, setPortMapValid] = useState(true);
   // TODO check if container is already running on startup
 
   const dispatch = useDispatch();
@@ -227,7 +229,7 @@ export function ContainerSettings() {
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <PortMappings state={portMappings} set={setContainerPortMapping} add={addContainerPortMapping} remove={removeContainerPortMapping}></PortMappings>
+            <PortMappings state={portMappings} set={setContainerPortMapping} add={addContainerPortMapping} remove={removeContainerPortMapping} isValid={setPortMapValid} />
           </AccordionDetails>
         </Accordion>
       </Grid>
@@ -259,7 +261,8 @@ export function ContainerSettings() {
           component="label"
           color="primary"
           onClick={next}
-          sx={{ marginTop: 1, ml: 2 }}>
+          sx={{ marginTop: 1, ml: 2 }}
+          disabled={!portMapValid}>
           Run
         </Button>
       </Grid>
