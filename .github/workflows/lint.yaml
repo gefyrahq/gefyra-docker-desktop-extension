@@ -26,5 +26,7 @@ jobs:
         - name: Lint UI
           working-directory: ./ui
           run: npm run lint
+        - name: Validate metadata.json
+          run: docker extension validate metadata.json
 
           
