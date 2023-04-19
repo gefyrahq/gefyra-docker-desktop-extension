@@ -12,8 +12,8 @@ export function TopBar() {
 
   const [apiVersion, setApiVersion] = useState('');
 
-  function githubLink() {
-    docker.host.openExternal('https://github.com/gefyrahq/gefyra');
+  function discordLink() {
+    docker.host.openExternal('https://discord.gg/8NTPMVPaKy');
   }
 
   const gefyra_api_version = '';
@@ -40,9 +40,8 @@ export function TopBar() {
       </Grid>
       <Grid item xs={4} sx={{ pt: 1 }} textAlign="right" alignSelf={'flex-end'}>
         <div>
-          Star us on{' '}
-          <Link href="#" onClick={githubLink}>
-            Github
+          <Link href="#" onClick={discordLink}>
+            Join our Discord
           </Link>
         </div>
         <div>
