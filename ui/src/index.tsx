@@ -9,7 +9,7 @@ import { Provider } from 'react-redux';
 import store from './store';
 import pjson from '../package.json';
 Sentry.init({
-  dsn: 'https://11cee47c7bdd4a2a91e211b2119cb8fb@sentry.unikube.io/6',
+  dsn: 'https://f59f66844b804b79adc7983308a8b8dc@o146863.ingest.sentry.io/4505119987597312',
   release: pjson.version,
   environment: process.env.NODE_ENV,
   integrations: (integrations) => {
