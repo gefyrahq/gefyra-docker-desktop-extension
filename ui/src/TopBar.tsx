@@ -3,7 +3,7 @@ import { ReactComponent as LogoDark } from './assets/gefyra_horizontal_dark.svg'
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import { Grid, Link, Typography, useMediaQuery } from '@mui/material';
 import { Gefyra } from './gefyraClient';
-import { GefyraListRequest, GefyraResponse } from 'gefyra/lib/protocol';
+import { GefyraHelpRequest } from 'gefyra/lib/protocol';
 import { useState } from 'react';
 
 export function TopBar() {
@@ -20,11 +20,11 @@ export function TopBar() {
 
   const ddClient = createDockerDesktopClient();
   const gefyraClient = new Gefyra(ddClient);
-  const helpRequest = new GefyraListRequest();
+  const helpRequest = new GefyraHelpRequest();
   gefyraClient.exec(helpRequest).then((res: string) => {
     const v = JSON.parse(res);
     setApiVersion(v.apiVersion as string);
-  });
+  }).catch(err => console.log(err));
 
   function githubExtensionLink() {
     docker.host.openExternal('https://github.com/gefyrahq/gefyra-docker-desktop-extension/issues');
