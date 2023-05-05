@@ -21,7 +21,10 @@ import { resetSteps, setMode, setSnackbar, setView } from './store/ui';
 import { Gefyra } from './gefyraClient';
 import { GefyraListRequest, GefyraUnbridgeRequest } from 'gefyra/lib/protocol';
 
+const noRowsDefault = 'No containers found';
+
 export function Home() {
+  
   const [containers, setContainers] = useState([]);
   const [bridges, setBridges] = useState([] as Array<string>);
   const [containersLoading, setContainersLoading] = useState(false);
@@ -29,6 +32,8 @@ export function Home() {
   const [showCargo, setShowCargo] = useState(false);
   const [unbridgeLoadingList, setUnbridgeLoadingList] = useState([] as Array<string>);
   const [containerNamsepaceMap, setContainerNamespaceMap] = useState({} as { [key: string]: string });
+  const [noRowsLabel, setNoRowsLabel] = useState(noRowsDefault);
+
   const ddClient = createDockerDesktopClient();
   const dispatch = useDispatch();
 
@@ -205,12 +210,16 @@ export function Home() {
         filters: filters
       })
       .then((containers: any) => {
+        setNoRowsLabel(noRowsDefault)
         if (!showCargo) {
           containers = containers.filter((container: { Names: string[] }) => {
             return !container.Names.includes('/gefyra-cargo');
           });
         }
         setContainers(containers);
+        setContainersLoading(false);
+      }).catch(err => {
+        setNoRowsLabel(`An error occured retrieving the containers: ${err}`)
         setContainersLoading(false);
       });
   }
@@ -280,7 +289,7 @@ export function Home() {
             getRowId={getRowId}
             disableRowSelectionOnClick={true}
             onRowClick={openContainer}
-            localeText={{ noRowsLabel: 'No containers found' }}
+            localeText={{ noRowsLabel: noRowsLabel }}
           />
         </div>
       </Grid>
