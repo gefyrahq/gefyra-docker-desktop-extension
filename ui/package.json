@@ -52,7 +52,7 @@
     }
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.21.3",
+    "@babel/eslint-parser": "^7.21.8",
     "@docker/extension-api-client-types": "^0.3.4",
     "@sentry/vite-plugin": "^0.7.2",
     "@types/jest": "^29.5.1",
