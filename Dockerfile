@@ -28,7 +28,6 @@ COPY ui /ui
 
 ARG SENTRY_ORG
 ARG SENTRY_PROJECT
-ARG SENTRY_URL
 ARG PRODUCTION_BUILD=false
 RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN npm run build
 

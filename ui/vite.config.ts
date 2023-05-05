@@ -16,7 +16,6 @@ export default defineConfig({
     ignore: ["node_modules", "vite.config.ts"],
     org: process.env.SENTRY_ORG,
     project: process.env.SENTRY_PROJECT,
-    url: process.env.SENTRY_URL,
     authToken: SENTRY_AUTH_TOKEN,
     telemetry: false,
     release: pjson.version,
