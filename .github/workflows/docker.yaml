@@ -17,8 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     steps: 
         - uses: actions/checkout@v3
-          with:
-            set-safe-directory: '*'
         - name: Check metadata.json Windows files are up to date.
           run: |
             make update-windows-file-list
