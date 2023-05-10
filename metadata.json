@@ -40,6 +40,9 @@
             "path": "/windows/lib/libcrypto-1_1-x64.dll"
           },
           {
+            "path": "/windows/lib/libssl-1_1-x64.dll"
+          },
+          {
             "path": "/windows/lib/pythoncom.py"
           },
           {

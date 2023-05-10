@@ -20,6 +20,7 @@ jobs:
         - name: Check metadata.json Windows files are up to date.
           run: |
             make update-windows-file-list
+            rm gefyra-*.zip
         - name: If files changed exit here.
           run: |
             export FILES_CHANGED=$(git status --porcelain | wc -l | xargs)
