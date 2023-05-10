@@ -24,9 +24,11 @@ jobs:
             make update-windows-file-list
         - name: Check if there are changes
           id: changes
-          uses: UnicornGlobal/has-changes-action@v1.0.11
+          run: |
+            export FILES_CHANGED=git status --porcelain | wc -l | xargs
+            echo "changed=$FILES_CHANGED" >> $GITHUB_OUTPUT
         - name: Fail on changes
-          if: steps.changes.outputs.changed == 1
+          if: steps.changes.outputs.changed != 0
           run: |
             echo "There are changes in metadata.json Windows file. Please update it first."
             exit 255
