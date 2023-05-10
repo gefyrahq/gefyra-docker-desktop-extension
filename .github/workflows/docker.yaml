@@ -27,6 +27,7 @@ jobs:
           run: |
             export FILES_CHANGED=git status --porcelain | wc -l | xargs
             echo "changed=$FILES_CHANGED" >> $GITHUB_OUTPUT
+
         - name: Fail on changes
           if: steps.changes.outputs.changed != 0
           run: |
