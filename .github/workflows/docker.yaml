@@ -17,6 +17,17 @@ jobs:
     runs-on: ubuntu-latest
     steps: 
         - uses: actions/checkout@v3
+        - name: Check metadata.json Windows files are up to date
+          run: |
+            make update-windows-file-list
+        - name: Check if there are changes
+          id: changes
+          uses: UnicornGlobal/has-changes-action@v1.0.11
+        - name: Fail on changes
+          if: steps.changes.outputs.changed == 1
+          run: |
+            echo "There are changes in metadata.json Windows file. Please update it first."
+            exit 255
         - name: Set up QEMU
           uses: docker/setup-qemu-action@v2
         - name: Set up Docker Buildx
