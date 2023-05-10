@@ -8,6 +8,9 @@ GEFYRA_EXT_RELEASE=$$(cat ./ui/package.json | jq -r '.dependencies.gefyra' | cut
 INFO_COLOR = \033[0;36m
 NO_COLOR   = \033[m
 
+update-windows-file-list:
+	@./scripts/update-windows-file-list.sh ${GEFYRA_EXT_RELEASE}
+
 build-extension: ## Build service image to be deployed as a desktop extension
 	docker build --build-arg GEFYRA_EXT_RELEASE=${GEFYRA_EXT_RELEASE} --tag=$(IMAGE):$(TAG) .
 
