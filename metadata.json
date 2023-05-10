@@ -43,9 +43,6 @@
             "path": "/windows/lib/libssl-1_1-x64.dll"
           },
           {
-            "path": "/windows/lib/pythoncom.py"
-          },
-          {
             "path": "/windows/lib/pythonwin/pywin/debugger/configui.py"
           },
           {
