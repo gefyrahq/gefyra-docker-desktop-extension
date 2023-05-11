@@ -67,6 +67,18 @@ Just bump the `gefyra` package in the `ui/package.json` file (via `npm`).
 Rebuild the extension - it references the version found in the package file and will download
 the corresponding binary files.
 
+### Windows Binary
+The windows binary for `gefyra-ext` consists out of many files. These files need to be 
+present in `metadata.json` under the `host.binaries.windows` key.
+To make sure the file list and actual files in the Docker image are consistant use following command from the Makefile:
+
+```sh
+make update-windows-file-list
+```
+
+This command is also used in the CI when building a new image. 
+In case the `metadata.json` file is changed the CI job for building an image fails.
+
 ## Release
 
 1. Bump package.json (`npm version`)
