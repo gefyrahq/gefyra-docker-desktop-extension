@@ -22,13 +22,25 @@
         ],
         "windows": [
           {
+            "path": "/windows/"
+          },
+          {
             "path": "/windows/gefyra-json.exe"
+          },
+          {
+            "path": "/windows/lib/"
+          },
+          {
+            "path": "/windows/lib/bin/"
           },
           {
             "path": "/windows/lib/bin/pywin32_postinstall.py"
           },
           {
             "path": "/windows/lib/bin/pywin32_testall.py"
+          },
+          {
+            "path": "/windows/lib/bin/__pycache__/"
           },
           {
             "path": "/windows/lib/bin/__pycache__/pywin32_postinstall.cpython-39.pyc"
@@ -44,6 +56,15 @@
           },
           {
             "path": "/windows/lib/pythoncom.py"
+          },
+          {
+            "path": "/windows/lib/pythonwin/"
+          },
+          {
+            "path": "/windows/lib/pythonwin/pywin/"
+          },
+          {
+            "path": "/windows/lib/pythonwin/pywin/debugger/"
           },
           {
             "path": "/windows/lib/pythonwin/pywin/debugger/configui.py"
@@ -62,6 +83,9 @@
           },
           {
             "path": "/windows/lib/pythonwin/pywin/debugger/__init__.py"
+          },
+          {
+            "path": "/windows/lib/pythonwin/pywin/debugger/__pycache__/"
           },
           {
             "path": "/windows/lib/pythonwin/pywin/debugger/__pycache__/configui.cpython-39.pyc"
@@ -85,6 +109,12 @@
             "path": "/windows/lib/pythonwin/pywin/default.cfg"
           },
           {
+            "path": "/windows/lib/pythonwin/pywin/Demos/"
+          },
+          {
+            "path": "/windows/lib/pythonwin/pywin/Demos/app/"
+          },
+          {
             "path": "/windows/lib/pythonwin/pywin/Demos/app/basictimerapp.py"
           },
           {
@@ -101,6 +131,9 @@
           },
           {
             "path": "/windows/lib/pythonwin/pywin/Demos/app/helloapp.py"
+          },
+          {
+            "path": "/windows/lib/pythonwin/pywin/Demos/app/__pycache__/"
           },
           {
             "path": "/windows/lib/pythonwin/pywin/Demos/app/__pycache__/basictimerapp.cpython-39.pyc"
@@ -154,6 +187,9 @@
             "path": "/windows/lib/pythonwin/pywin/Demos/objdoc.py"
           },
           {
+            "path": "/windows/lib/pythonwin/pywin/Demos/ocx/"
+          },
+          {
             "path": "/windows/lib/pythonwin/pywin/Demos/ocx/demoutils.py"
           },
           {
@@ -173,6 +209,9 @@
           },
           {
             "path": "/windows/lib/pythonwin/pywin/Demos/ocx/__init__.py"
+          },
+          {
+            "path": "/windows/lib/pythonwin/pywin/Demos/ocx/__pycache__/"
           },
           {
             "path": "/windows/lib/pythonwin/pywin/Demos/ocx/__pycache__/demoutils.cpython-39.pyc"
@@ -212,6 +251,9 @@
           },
           {
             "path": "/windows/lib/pythonwin/pywin/Demos/toolbar.py"
+          },
+          {
+            "path": "/windows/lib/pythonwin/pywin/Demos/__pycache__/"
           },
           {
             "path": "/windows/lib/pythonwin/pywin/Demos/__pycache__/cmdserver.cpython-39.pyc"
@@ -265,6 +307,9 @@
             "path": "/windows/lib/pythonwin/pywin/Demos/__pycache__/toolbar.cpython-39.pyc"
           },
           {
+            "path": "/windows/lib/pythonwin/pywin/dialogs/"
+          },
+          {
             "path": "/windows/lib/pythonwin/pywin/dialogs/ideoptions.py"
           },
           {
@@ -278,6 +323,9 @@
           },
           {
             "path": "/windows/lib/pythonwin/pywin/dialogs/__init__.py"
+          },
+          {
+            "path": "/windows/lib/pythonwin/pywin/dialogs/__pycache__/"
           },
           {
             "path": "/windows/lib/pythonwin/pywin/dialogs/__pycache__/ideoptions.cpython-39.pyc"
@@ -295,16 +343,25 @@
             "path": "/windows/lib/pythonwin/pywin/dialogs/__pycache__/__init__.cpython-39.pyc"
           },
           {
+            "path": "/windows/lib/pythonwin/pywin/docking/"
+          },
+          {
             "path": "/windows/lib/pythonwin/pywin/docking/DockingBar.py"
           },
           {
             "path": "/windows/lib/pythonwin/pywin/docking/__init__.py"
           },
           {
+            "path": "/windows/lib/pythonwin/pywin/docking/__pycache__/"
+          },
+          {
             "path": "/windows/lib/pythonwin/pywin/docking/__pycache__/DockingBar.cpython-39.pyc"
           },
           {
             "path": "/windows/lib/pythonwin/pywin/docking/__pycache__/__init__.cpython-39.pyc"
+          },
+          {
+            "path": "/windows/lib/pythonwin/pywin/framework/"
           },
           {
             "path": "/windows/lib/pythonwin/pywin/framework/app.py"
@@ -322,10 +379,19 @@
             "path": "/windows/lib/pythonwin/pywin/framework/dlgappcore.py"
           },
           {
+            "path": "/windows/lib/pythonwin/pywin/framework/editor/"
+          },
+          {
+            "path": "/windows/lib/pythonwin/pywin/framework/editor/color/"
+          },
+          {
             "path": "/windows/lib/pythonwin/pywin/framework/editor/color/coloreditor.py"
           },
           {
             "path": "/windows/lib/pythonwin/pywin/framework/editor/color/__init__.py"
+          },
+          {
+            "path": "/windows/lib/pythonwin/pywin/framework/editor/color/__pycache__/"
           },
           {
             "path": "/windows/lib/pythonwin/pywin/framework/editor/color/__pycache__/coloreditor.cpython-39.pyc"
@@ -356,6 +422,9 @@
           },
           {
             "path": "/windows/lib/pythonwin/pywin/framework/editor/__init__.py"
+          },
+          {
+            "path": "/windows/lib/pythonwin/pywin/framework/editor/__pycache__/"
           },
           {
             "path": "/windows/lib/pythonwin/pywin/framework/editor/__pycache__/configui.cpython-39.pyc"
@@ -421,6 +490,9 @@
             "path": "/windows/lib/pythonwin/pywin/framework/__init__.py"
           },
           {
+            "path": "/windows/lib/pythonwin/pywin/framework/__pycache__/"
+          },
+          {
             "path": "/windows/lib/pythonwin/pywin/framework/__pycache__/app.cpython-39.pyc"
           },
           {
@@ -475,6 +547,9 @@
             "path": "/windows/lib/pythonwin/pywin/framework/__pycache__/__init__.cpython-39.pyc"
           },
           {
+            "path": "/windows/lib/pythonwin/pywin/idle/"
+          },
+          {
             "path": "/windows/lib/pythonwin/pywin/idle/AutoExpand.py"
           },
           {
@@ -494,6 +569,9 @@
           },
           {
             "path": "/windows/lib/pythonwin/pywin/idle/__init__.py"
+          },
+          {
+            "path": "/windows/lib/pythonwin/pywin/idle/__pycache__/"
           },
           {
             "path": "/windows/lib/pythonwin/pywin/idle/__pycache__/AutoExpand.cpython-39.pyc"
@@ -520,6 +598,9 @@
             "path": "/windows/lib/pythonwin/pywin/IDLE.cfg"
           },
           {
+            "path": "/windows/lib/pythonwin/pywin/mfc/"
+          },
+          {
             "path": "/windows/lib/pythonwin/pywin/mfc/activex.py"
           },
           {
@@ -544,6 +625,9 @@
             "path": "/windows/lib/pythonwin/pywin/mfc/__init__.py"
           },
           {
+            "path": "/windows/lib/pythonwin/pywin/mfc/__pycache__/"
+          },
+          {
             "path": "/windows/lib/pythonwin/pywin/mfc/__pycache__/activex.cpython-39.pyc"
           },
           {
@@ -566,6 +650,9 @@
           },
           {
             "path": "/windows/lib/pythonwin/pywin/mfc/__pycache__/__init__.cpython-39.pyc"
+          },
+          {
+            "path": "/windows/lib/pythonwin/pywin/scintilla/"
           },
           {
             "path": "/windows/lib/pythonwin/pywin/scintilla/bindings.py"
@@ -604,6 +691,9 @@
             "path": "/windows/lib/pythonwin/pywin/scintilla/__init__.py"
           },
           {
+            "path": "/windows/lib/pythonwin/pywin/scintilla/__pycache__/"
+          },
+          {
             "path": "/windows/lib/pythonwin/pywin/scintilla/__pycache__/bindings.cpython-39.pyc"
           },
           {
@@ -640,6 +730,9 @@
             "path": "/windows/lib/pythonwin/pywin/scintilla/__pycache__/__init__.cpython-39.pyc"
           },
           {
+            "path": "/windows/lib/pythonwin/pywin/tools/"
+          },
+          {
             "path": "/windows/lib/pythonwin/pywin/tools/browseProjects.py"
           },
           {
@@ -659,6 +752,9 @@
           },
           {
             "path": "/windows/lib/pythonwin/pywin/tools/__init__.py"
+          },
+          {
+            "path": "/windows/lib/pythonwin/pywin/tools/__pycache__/"
           },
           {
             "path": "/windows/lib/pythonwin/pywin/tools/__pycache__/browseProjects.cpython-39.pyc"
@@ -685,7 +781,13 @@
             "path": "/windows/lib/pythonwin/pywin/__init__.py"
           },
           {
+            "path": "/windows/lib/pythonwin/pywin/__pycache__/"
+          },
+          {
             "path": "/windows/lib/pythonwin/pywin/__pycache__/__init__.cpython-39.pyc"
+          },
+          {
+            "path": "/windows/lib/pywin32-306.dist-info/"
           },
           {
             "path": "/windows/lib/pywin32-306.dist-info/INSTALLER"
@@ -712,10 +814,19 @@
             "path": "/windows/lib/pywin32.version.txt"
           },
           {
+            "path": "/windows/lib/pywin32_system32/"
+          },
+          {
             "path": "/windows/lib/pywin32_system32/pythoncom39.dll"
           },
           {
             "path": "/windows/lib/pywin32_system32/pywintypes39.dll"
+          },
+          {
+            "path": "/windows/lib/win32/"
+          },
+          {
+            "path": "/windows/lib/win32/lib/"
           },
           {
             "path": "/windows/lib/win32/lib/pywin32_bootstrap.py"
@@ -727,6 +838,9 @@
             "path": "/windows/lib/win32/lib/pywintypes.py"
           },
           {
+            "path": "/windows/lib/win32/lib/__pycache__/"
+          },
+          {
             "path": "/windows/lib/win32/lib/__pycache__/pywin32_bootstrap.cpython-39.pyc"
           },
           {
@@ -736,10 +850,19 @@
             "path": "/windows/lib/win32/lib/__pycache__/pywintypes.cpython-39.pyc"
           },
           {
+            "path": "/windows/lib/win32/libs/"
+          },
+          {
             "path": "/windows/lib/win32/libs/pywintypes.lib"
           },
           {
+            "path": "/windows/lib/win32/test/"
+          },
+          {
             "path": "/windows/lib/win32/test/test_pywintypes.py"
+          },
+          {
+            "path": "/windows/lib/win32/test/__pycache__/"
           },
           {
             "path": "/windows/lib/win32/test/__pycache__/test_pywintypes.cpython-39.pyc"
@@ -751,7 +874,13 @@
             "path": "/windows/lib/win32/win32pipe.pyd"
           },
           {
+            "path": "/windows/lib/win32com/"
+          },
+          {
             "path": "/windows/lib/win32com/__init__.py"
+          },
+          {
+            "path": "/windows/lib/win32com/__pycache__/"
           },
           {
             "path": "/windows/lib/win32com/__pycache__/__init__.cpython-39.opt-1.pyc"
@@ -761,6 +890,9 @@
           },
           {
             "path": "/windows/lib/_ssl.pyd"
+          },
+          {
+            "path": "/windows/lib/__pycache__/"
           },
           {
             "path": "/windows/lib/__pycache__/pythoncom.cpython-39.opt-1.pyc"
