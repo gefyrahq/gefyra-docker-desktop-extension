@@ -44,6 +44,9 @@ class Gefyra extends GefyraBaseClient {
             reject(error);
           },
           onClose(exitCode: number): void {
+            if (exitCode !== 0) {
+              Sentry.captureMessage('geyfra-ext action failed - onClose');
+            }
             console.debug('onClose with exit code ' + exitCode);
           }
         }
