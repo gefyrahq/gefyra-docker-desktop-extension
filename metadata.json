@@ -799,9 +799,6 @@
             "path": "/windows/lib/pywin32-306.dist-info/RECORD"
           },
           {
-            "path": "/windows/lib/pywin32-306.dist-info/REQUESTED"
-          },
-          {
             "path": "/windows/lib/pywin32-306.dist-info/top_level.txt"
           },
           {
@@ -866,6 +863,12 @@
           },
           {
             "path": "/windows/lib/win32/test/__pycache__/test_pywintypes.cpython-39.pyc"
+          },
+          {
+            "path": "/windows/lib/win32/win32api.pyd"
+          },
+          {
+            "path": "/windows/lib/win32/win32event.pyd"
           },
           {
             "path": "/windows/lib/win32/win32file.pyd"
