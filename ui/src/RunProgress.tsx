@@ -172,9 +172,17 @@ export function RunProgress() {
             if (stopRunning) {
               return;
             }
-            const res = await gefyraUp(gefyraClient, upRequest);
-            if (!res) {
-              displayError('Could not install Gefyra');
+            try {
+              const res = await gefyraUp(gefyraClient, upRequest);
+              if (!res) {
+                if (!runError) {
+                  console.log(runError);
+                  displayError('Could not install Gefyra');
+                  return;
+                }
+              }
+            } catch (e: any) {
+              displayError(e.toString() + " - Couldn't install Gefyra.");
               return;
             }
           } else {
