@@ -21,7 +21,7 @@ export default defineConfig({
       name: pjson.version
     },
     sourcemaps: {
-      assets: ['./build/*'],
+      assets: ['./build/**'],
     }
   }),],
   define: {
