@@ -1,13 +1,16 @@
 import { createDockerDesktopClient } from '@docker/extension-api-client';
-import { K8sImagesRequest } from 'gefyra/lib/protocol';
+import { K8sImagesRequest, K8sImagesResponse } from 'gefyra/lib/protocol';
 import { useEffect, useMemo, useState } from 'react';
 import { Gefyra } from '../gefyraClient';
 import { DockerImage } from '../types';
+import { setSnackbar } from '../store/ui';
+import { useDispatch } from 'react-redux';
 
 const useDockerImages = (namespace: string) => {
   const [localImages, setLocalImages] = useState<DockerImage[]>([]);
   const [kubernetesImages, setKubernetesImages] = useState<DockerImage[]>([]);
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const ddClient = createDockerDesktopClient();
@@ -41,8 +44,13 @@ const useDockerImages = (namespace: string) => {
     const request = new K8sImagesRequest();
     // @ts-ignore
     request.namespace = namespace || 'default';
-    gefyraClient.k8sImages(request).then((imageResponse) => {
+    gefyraClient.k8sImages(request).then((imageResponse: K8sImagesResponse) => {
       const resultImages: DockerImage[] = [];
+      if (!imageResponse.success || !imageResponse.response) {
+        setKubernetesImages([]);
+        dispatch(setSnackbar({ text: 'Failed to load Kubernetes images', type: 'warning' }));
+        return
+      };
       imageResponse.response.containers.map((c: { image: string }) => {
         const image = {} as DockerImage;
         image.repo = c.image.split(':')[0];
