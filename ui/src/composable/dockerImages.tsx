@@ -49,8 +49,8 @@ const useDockerImages = (namespace: string) => {
       if (!imageResponse.success || !imageResponse.response) {
         setKubernetesImages([]);
         dispatch(setSnackbar({ text: 'Failed to load Kubernetes images', type: 'warning' }));
-        return
-      };
+        return;
+      }
       imageResponse.response.containers.map((c: { image: string }) => {
         const image = {} as DockerImage;
         image.repo = c.image.split(':')[0];
@@ -62,24 +62,21 @@ const useDockerImages = (namespace: string) => {
       setKubernetesImages(resultImages);
     });
   }, []);
-  const value = useMemo(
-    () => {
-      const images = [...localImages, ...kubernetesImages];
-      // sort images by type then by name
-      images.sort((a, b) => {
-        if (a.type < b.type) return 1;
-        if (a.type > b.type) return -1;
-        if (a.name < b.name) return -1;
-        if (a.name > b.name) return 1;
-        return 0;
-      });
-      return {
-        images,
-        loading
-      }
-    },
-    [localImages, kubernetesImages, loading]
-  );
+  const value = useMemo(() => {
+    const images = [...localImages, ...kubernetesImages];
+    // sort images by type then by name
+    images.sort((a, b) => {
+      if (a.type < b.type) return 1;
+      if (a.type > b.type) return -1;
+      if (a.name < b.name) return -1;
+      if (a.name > b.name) return 1;
+      return 0;
+    });
+    return {
+      images,
+      loading
+    };
+  }, [localImages, kubernetesImages, loading]);
 
   return value;
 };

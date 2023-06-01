@@ -62,7 +62,7 @@ export type PortMappingsProps = {
   remove: any;
   state: PortMapping[];
   isValid: (e: any) => void;
-}
+};
 
 export type ContainerLogsProps = {
   container: string;

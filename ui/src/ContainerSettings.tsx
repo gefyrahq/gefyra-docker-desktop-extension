@@ -229,7 +229,13 @@ export function ContainerSettings() {
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <PortMappings state={portMappings} set={setContainerPortMapping} add={addContainerPortMapping} remove={removeContainerPortMapping} isValid={setPortMapValid} />
+            <PortMappings
+              state={portMappings}
+              set={setContainerPortMapping}
+              add={addContainerPortMapping}
+              remove={removeContainerPortMapping}
+              isValid={setPortMapValid}
+            />
           </AccordionDetails>
         </Accordion>
       </Grid>

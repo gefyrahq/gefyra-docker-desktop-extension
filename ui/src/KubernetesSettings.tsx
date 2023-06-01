@@ -64,7 +64,9 @@ export function KubernetesSettings() {
     const contextRequest = new K8sContextRequest();
     contextRequest.kubeconfig = store.getState().gefyra.kubeconfig;
     console.log(kubeconfig);
-    if (!kubeconfig) { return; }
+    if (!kubeconfig) {
+      return;
+    }
 
     gefyraClient
       .exec(contextRequest)

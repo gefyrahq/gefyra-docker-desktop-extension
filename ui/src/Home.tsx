@@ -24,14 +24,15 @@ import { GefyraListRequest, GefyraUnbridgeRequest } from 'gefyra/lib/protocol';
 const noRowsDefault = 'No containers found';
 
 export function Home() {
-  
   const [containers, setContainers] = useState([]);
   const [bridges, setBridges] = useState([] as Array<string>);
   const [containersLoading, setContainersLoading] = useState(false);
   const [bridgesLoading, setBridgesLoading] = useState(true);
   const [showCargo, setShowCargo] = useState(false);
   const [unbridgeLoadingList, setUnbridgeLoadingList] = useState([] as Array<string>);
-  const [containerNamsepaceMap, setContainerNamespaceMap] = useState({} as { [key: string]: string });
+  const [containerNamsepaceMap, setContainerNamespaceMap] = useState(
+    {} as { [key: string]: string }
+  );
   const [noRowsLabel, setNoRowsLabel] = useState(noRowsDefault);
 
   const ddClient = createDockerDesktopClient();
@@ -67,11 +68,13 @@ export function Home() {
       unbridgeRequest.name = bridge;
       const gefyraClient = new Gefyra(ddClient);
       setUnbridgeLoadingList([...unbridgeLoadingList, containerName]);
-      gefyraClient.unbridge(unbridgeRequest).then(res => {
+      gefyraClient.unbridge(unbridgeRequest).then((res) => {
         if (res.success) {
           setUnbridgeLoadingList(unbridgeLoadingList.filter((name) => name !== containerName));
           getBridges();
-          dispatch(setSnackbar({ text: `Unbridge for ${containerName} succeeded.`, type: 'success' }));
+          dispatch(
+            setSnackbar({ text: `Unbridge for ${containerName} succeeded.`, type: 'success' })
+          );
         } else {
           dispatch(setSnackbar({ text: `Unbridge for ${containerName} failed.`, type: 'error' }));
         }
@@ -143,7 +146,7 @@ export function Home() {
       type: 'actions',
       renderCell: (params: GridRenderCellParams) => {
         if (bridgesLoading) {
-          return <CircularProgress size={20} />
+          return <CircularProgress size={20} />;
         }
         const names = params.row.Names;
         const containerName = names[0].substring(1, names[0].length) as string;
@@ -166,7 +169,9 @@ export function Home() {
                 <IconButton
                   component="label"
                   color="primary"
-                  onClick={() => bridgeContainer(containerName, containerNamsepaceMap[containerName])}>
+                  onClick={() =>
+                    bridgeContainer(containerName, containerNamsepaceMap[containerName])
+                  }>
                   <SyncAltIcon fontSize="small" />
                 </IconButton>
               </Tooltip>
@@ -210,7 +215,7 @@ export function Home() {
         filters: filters
       })
       .then((containers: any) => {
-        setNoRowsLabel(noRowsDefault)
+        setNoRowsLabel(noRowsDefault);
         if (!showCargo) {
           containers = containers.filter((container: { Names: string[] }) => {
             return !container.Names.includes('/gefyra-cargo');
@@ -218,8 +223,9 @@ export function Home() {
         }
         setContainers(containers);
         setContainersLoading(false);
-      }).catch(err => {
-        setNoRowsLabel(`An error occured retrieving the containers: ${err}`)
+      })
+      .catch((err) => {
+        setNoRowsLabel(`An error occured retrieving the containers: ${err}`);
         setContainersLoading(false);
       });
   }

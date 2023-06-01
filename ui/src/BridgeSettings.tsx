@@ -22,9 +22,7 @@ import {
 } from './store/gefyra';
 import useNavigation from './composable/navigation';
 import { LSelect } from './components/LSelect';
-import {
-  GefyraBridgeRequest
-} from 'gefyra/lib/protocol';
+import { GefyraBridgeRequest } from 'gefyra/lib/protocol';
 import { Gefyra } from './gefyraClient';
 import { createDockerDesktopClient } from '@docker/extension-api-client';
 import { PortMapping } from './types';
@@ -82,7 +80,9 @@ export function BridgeSettings() {
     console.log(bridgeRequest);
     gefyraClient.bridge(bridgeRequest).then((response) => {
       console.log(response);
-      dispatch(setSnackbar({ text: `Bridge for ${target} has been established.`, type: 'success' }));
+      dispatch(
+        setSnackbar({ text: `Bridge for ${target} has been established.`, type: 'success' })
+      );
       setBridgeProcessing(false);
       back();
     });
@@ -145,7 +145,14 @@ export function BridgeSettings() {
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <PortMappings isValid={setPortMapValid} state={portMappings} set={setBridgePortMapping} add={addBridgePortMapping} remove={removeBridgePortMapping} loading={bridgeProcessing} />
+            <PortMappings
+              isValid={setPortMapValid}
+              state={portMappings}
+              set={setBridgePortMapping}
+              add={addBridgePortMapping}
+              remove={removeBridgePortMapping}
+              loading={bridgeProcessing}
+            />
           </AccordionDetails>
         </Accordion>
       </Grid>

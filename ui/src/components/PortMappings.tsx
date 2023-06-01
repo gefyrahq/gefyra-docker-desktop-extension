@@ -4,15 +4,15 @@ import { PortMapping, PortMappingsProps } from '../types';
 import { useEffect, useState } from 'react';
 
 const PORT_ERROR_MESSAGES = {
-  'RANGE_ERROR': 'Port must be between 0 and 65535',
-  'NAN_ERROR': 'Port must be a number',
-  'DUPLICATE_ERROR': 'Port is already in use'
-}
+  RANGE_ERROR: 'Port must be between 0 and 65535',
+  NAN_ERROR: 'Port must be a number',
+  DUPLICATE_ERROR: 'Port is already in use'
+};
 
 type PortError = {
   port1: string;
   port2: string;
-}
+};
 
 export function PortMappings(props: PortMappingsProps) {
   const [errors, setErrors] = useState({} as { [key: number]: PortError });
@@ -47,11 +47,13 @@ export function PortMappings(props: PortMappingsProps) {
       return;
     }
 
-    const ports = props.state.map((p) => type === 'port1' ? Object.keys(p)[0] : Object.values(p)[0]);
+    const ports = props.state.map((p) =>
+      type === 'port1' ? Object.keys(p)[0] : Object.values(p)[0]
+    );
     const first = ports.findIndex((p) => p === port);
     const last = ports.findLastIndex((p) => p === port);
     if (first !== last) {
-      setErrors({ ...errors, [first]: error });  
+      setErrors({ ...errors, [first]: error });
       error[type] = PORT_ERROR_MESSAGES['DUPLICATE_ERROR'];
       setErrors({ ...errors, [last]: error });
       return;
@@ -67,9 +69,8 @@ export function PortMappings(props: PortMappingsProps) {
       error.port2 = '';
       setErrors({ ...errors, [index]: error });
     }
-    dispatch(props.remove(index))
-
-  };
+    dispatch(props.remove(index));
+  }
 
   function handleBlur(i: number, t: 'port1' | 'port2', value: string) {
     validatePort(value, t, i);
@@ -152,7 +153,12 @@ export function PortMappings(props: PortMappingsProps) {
         )
       )}
       <Grid item xs={12} sx={{ mt: 3 }}>
-        <Button variant="contained" component="label" color="primary" onClick={add} disabled={props.loading}>
+        <Button
+          variant="contained"
+          component="label"
+          color="primary"
+          onClick={add}
+          disabled={props.loading}>
           + Port Mapping
         </Button>
       </Grid>

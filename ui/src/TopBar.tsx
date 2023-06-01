@@ -21,10 +21,13 @@ export function TopBar() {
   const ddClient = createDockerDesktopClient();
   const gefyraClient = new Gefyra(ddClient);
   const helpRequest = new GefyraHelpRequest();
-  gefyraClient.exec(helpRequest).then((res: string) => {
-    const v = JSON.parse(res);
-    setApiVersion(v.apiVersion as string);
-  }).catch(err => console.log(err));
+  gefyraClient
+    .exec(helpRequest)
+    .then((res: string) => {
+      const v = JSON.parse(res);
+      setApiVersion(v.apiVersion as string);
+    })
+    .catch((err) => console.log(err));
 
   function githubExtensionLink() {
     docker.host.openExternal('https://github.com/gefyrahq/gefyra-docker-desktop-extension/issues');
@@ -51,7 +54,10 @@ export function TopBar() {
           </Link>
         </div>
         <div>
-          Version: <span>{APP_VERSION} | API: {apiVersion}</span>
+          Version:{' '}
+          <span>
+            {APP_VERSION} | API: {apiVersion}
+          </span>
         </div>
       </Grid>
       <Grid item xs={12} sx={{ marginTop: 1 }}>

@@ -52,14 +52,12 @@ export const checkCargoReady = async (
 };
 
 export const gefyraUp = async (gefyraClient: Gefyra, upRequest: GefyraUpRequest) => {
-  return gefyraClient
-    .exec(upRequest)
-    .then((res) => {
-      const response = JSON.parse(res);
-      const success = response.status === 'success'
-      if (!success) {
-        throw Error(response.reason);
-      }
-      return success;
-    })
+  return gefyraClient.exec(upRequest).then((res) => {
+    const response = JSON.parse(res);
+    const success = response.status === 'success';
+    if (!success) {
+      throw Error(response.reason);
+    }
+    return success;
+  });
 };

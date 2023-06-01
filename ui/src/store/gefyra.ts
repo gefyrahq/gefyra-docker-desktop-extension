@@ -51,7 +51,7 @@ const initialState: GefyraState = {
   target: localStorage.getItem('target') || '',
   timeout: localStorage.getItem('timeout') || '',
   bridgeContainer: localStorage.getItem('bridgeContainer') || '',
-  bridgeNamespace: localStorage.getItem('bridgeNamespace') || '',
+  bridgeNamespace: localStorage.getItem('bridgeNamespace') || ''
 };
 
 export const gefyraSlice = createSlice({
@@ -135,7 +135,9 @@ export const gefyraSlice = createSlice({
       localStorage.setItem('portMappings', JSON.stringify(state.containerPortMappings));
     },
     removeContainerPortMapping(state, action: PayloadAction<number>) {
-      state.containerPortMappings = state.containerPortMappings.filter((e, index) => index !== action.payload);
+      state.containerPortMappings = state.containerPortMappings.filter(
+        (e, index) => index !== action.payload
+      );
       localStorage.setItem('portMappings', JSON.stringify(state.containerPortMappings));
     },
     setContainerPortMapping(state, action: PayloadAction<PortMappingUpdate>) {
@@ -147,7 +149,9 @@ export const gefyraSlice = createSlice({
       localStorage.setItem('bridgePortMappings', JSON.stringify(state.bridgePortMappings));
     },
     removeBridgePortMapping(state, action: PayloadAction<number>) {
-      state.bridgePortMappings = state.bridgePortMappings.filter((e, index) => index !== action.payload);
+      state.bridgePortMappings = state.bridgePortMappings.filter(
+        (e, index) => index !== action.payload
+      );
       localStorage.setItem('bridgePortMappings', JSON.stringify(state.bridgePortMappings));
     },
     setBridgePortMapping(state, action: PayloadAction<PortMappingUpdate>) {
