@@ -1,6 +1,10 @@
 {
     "git": {
-      "commitMessage": "chore: bump version to ${version}"
+      "commitMessage": "chore: bump version to ${version}",
+      "requireBranch": "main"
+    },
+    "hooks": {
+        "before:init": ["npm run lint"]
     },
     "github": {
       "release": true,
