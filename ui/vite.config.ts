@@ -12,14 +12,17 @@ const SENTRY_AUTH_TOKEN = process.env.PRODUCTION_BUILD === 'true' ? fs.readFileS
 export default defineConfig({
   plugins: [react(), viteTsconfigPaths(), svgrPlugin(),
   sentryVitePlugin({
-    include: ".",
-    ignore: ["node_modules", "vite.config.ts"],
     org: process.env.SENTRY_ORG,
     project: process.env.SENTRY_PROJECT,
     authToken: SENTRY_AUTH_TOKEN,
     telemetry: false,
-    release: pjson.version,
-    dryRun: process.env.PRODUCTION_BUILD !== 'true'
+    debug: true,
+    release: {
+      name: pjson.version
+    },
+    sourcemaps: {
+      assets: ['./build/*'],
+    }
   }),],
   define: {
     APP_VERSION: JSON.stringify(process.env.npm_package_version),
