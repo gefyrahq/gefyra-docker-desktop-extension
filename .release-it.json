@@ -9,6 +9,7 @@
     "github": {
       "release": true,
       "autoGenerate": true,
+      "releaseName": "${version}",
       "tokenRef": "GH_PAT"
     }
   }
