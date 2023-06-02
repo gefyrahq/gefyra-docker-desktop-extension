@@ -8,6 +8,7 @@
     },
     "github": {
       "release": true,
-      "autoGenerate": true
+      "autoGenerate": true,
+      "tokenRef": "GH_PAT"
     }
   }
