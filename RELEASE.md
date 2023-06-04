@@ -1,5 +1,13 @@
 # Release Hints
 
+
+## Automatic
+1. Run Github Workflow [Release & Publish on Docker Hub](https://github.com/gefyrahq/gefyra-docker-desktop-extension/actions/workflows/release.yaml).
+2. Once finished it prints a link to create a new release on GitHub.
+3. Generate release notes and publish.
+
+## Manual
+
 To release a new version of the extension, follow these steps:
 
 1. Bump package.json (`npm version patch|minor|major`)
